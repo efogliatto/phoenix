@@ -2,29 +2,34 @@
 #define D2Q9_H
 
 
-#include <basicLBModel.h>
+#include <latticeModel.H>
 
-class D2Q9 : public basicLBModel {
+class D2Q9 : public latticeModel {
 
 
     /* ----------------------  Public member functions ----------------------  */
 
 public:
 
-    // Constructors and destructors
+  
+  // Constructors and destructors
 
-    // Default constructor
-    D2Q9();
+  
+  /** Default constructor */
+  
+  D2Q9();
 
-    // Default destructor
-    ~D2Q9();
+  
+  /** Default destructor */
+  
+  ~D2Q9();
 
 
-    // Acces members
-    const uint& D() const;
+  // Acces members
 
-    // Main index
-    const bool is_principal(const uint& id) const;
+  /** Dimension */
+  
+  const uint& d() const;
     
 };
 

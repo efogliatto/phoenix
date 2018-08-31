@@ -35,7 +35,7 @@ protected:
 
   /** Discrete lattice velocities */
   
-  std::vector<int> _lvel;
+  std::vector< std::vector<int> > _lvel;
 
 
   /** Lattice weights */
@@ -87,27 +87,27 @@ public:
   
   /** Number of lattice velocities */
   
-  virtual const uint q() const = 0;
+  const uint q() const;
 
   
   /** Square of sound speed */
   
-  virtual const scalar& cs2() const = 0;
+  const scalar& cs2() const;
 
 
   /** Discrete lattice velocities */
   
-  const std::vector<int>& lvel() const;
+  const std::vector< std::vector<int> >& lvel() const;
   
   
   /** Lattice weights */
   
-  virtual const std::vector<scalar>& omega() const = 0;
+  const std::vector<scalar>& omega() const;
   
 
   /** Reverse indices */
   
-  virtual const std::vector<uint>& reverse() const = 0;
+  const std::vector<uint>& reverse() const;
   
 
 };

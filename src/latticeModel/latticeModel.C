@@ -20,9 +20,6 @@ latticeModel::latticeModel() {}
 latticeModel::~latticeModel() {}
 
 
-// // The copy-constructor
-// LBMmodel(const LBMmodel& lbm)
-
 
 
 
@@ -30,7 +27,7 @@ latticeModel::~latticeModel() {}
 
 /** Discrete lattice velocities */
 
-const vector<int>& latticeModel::lvel() const {
+const vector< vector<int> >& latticeModel::lvel() const {
 
   return _lvel;
 
