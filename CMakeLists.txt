@@ -38,6 +38,7 @@ SET( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall -lm -pedantic --std=c++11" )
 
 set ( PROJECT_LINK_LIBS
   liblatticemodel.so
+  libalgebra.so
   m
   # ${MPI_LIBRARIES}
   )
