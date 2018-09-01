@@ -4,5 +4,5 @@
 add_library(latticemodel SHARED 
   latticeModel.C
   D2Q9.C  
-  # LBModelCreator.C
+  latticeModelCreator.C
   )

@@ -45,8 +45,7 @@ protected:
     
   /** Reverse direction */
   
-  std::vector<uint> _reverse;
-  
+  std::vector<uint> _reverse;  
 
 
   /** Squared sound speed */

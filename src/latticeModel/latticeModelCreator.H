@@ -1,21 +1,17 @@
-#ifndef LBMODELCREATOR_H
-#define LBMODELCREATOR_H
+#ifndef LATTICEMODELCREATOR_H
+#define LATTICEMODELCREATOR_H
 
-#include <D2Q9.h>
-#include <D2Q5.h>
-#include <D2Q4.h>
-#include <D3Q7.h>
-
-class LBModelCreator {
+#include <D2Q9.H>
 
 
-    /* ----------------------  Public member functions ----------------------  */
+class latticeModelCreator {
+
 
 public:
 
-    basicLBModel* create(const std::string& modelName);
+    latticeModel* create( const std::string& modelName );
 
 };
 
 
-#endif // LBMODELCREATOR_H
+#endif // LATTICEMODELCREATOR_H

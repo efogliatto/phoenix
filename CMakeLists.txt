@@ -36,32 +36,14 @@ SET( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall -lm -pedantic --std=c++11" )
 
 
 
-# set ( PROJECT_LINK_LIBS
-#   libio.so
-#   libdictio.so
-#   libbasic.so
-#   liblatticemodel.so
-#   libgenerallbe.so
-#   libpseudopot.so
-#   libpseudopot.so
-#   liblimrtmodel.so
-#   liblitempmrtmodel.so
-#   libmymrtmodel.so
-#   libxumrtmodel.so
-#   libboundary.so
-#   libeos.so
-#   libfinitedifference.so
-#   libpvtu.so
-#   libasciiraw.so
-#   libbinaryraw.so
-#   libensight.so
-#   libd2q9.so
-#   libd3q15.so
-#   m
-#   ${MPI_LIBRARIES}
-#   )
+set ( PROJECT_LINK_LIBS
+  liblatticemodel.so
+  m
+  # ${MPI_LIBRARIES}
+  )
 
 
+link_directories( ${CMAKE_SOURCE_DIR}/lib )
 
 
 # # Optional: Metis decomposition
