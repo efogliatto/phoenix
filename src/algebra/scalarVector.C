@@ -75,11 +75,13 @@ void scalarVector::update() {
 
 ostream& operator<<(ostream& os, const scalarVector& V) {
 
-    for(uint i = 0 ; i < V.sz() ; i++) {
+    for(uint i = 0 ; i < V.sz()-1 ; i++) {
 
-	    os << V[i] << endl;
+	os << V[i] << " ";
 
-    }    
+    }
+
+    os << V.back();
 
     return os;
     
