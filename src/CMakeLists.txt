@@ -13,6 +13,11 @@ add_subdirectory (algebra)
 add_subdirectory (IO)
 
 
+# mesh library
+
+add_subdirectory (mesh)
+
+
 # unit tests
 
 add_subdirectory (test)
