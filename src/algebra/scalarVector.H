@@ -63,12 +63,7 @@ public:
     /** Overloaded << operator */
 
     friend std::ostream& operator<<(std::ostream& os, const scalarVector& V);
-    
-
-    
-    // /** Matrix - vector multiplication */
-    
-    // friend scalarVector& operator*(const scalarMatrix& M, const scalarVector& V);
+        
     
 };
 

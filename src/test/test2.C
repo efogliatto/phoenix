@@ -18,12 +18,16 @@ int main() {
 
 
     const scalarVector V( M[1] );
+
+    scalarVector res( M[1] );
     
     cout << M << endl;
     
     cout << V << endl;
 
-    cout << M * V ;
+    M.matDotVec(V, res);
+
+    cout << res ;
 
 
 }

@@ -51,18 +51,19 @@ public:
     /** Update matrix information */
 
     void update();
-
-
-    
-    /** Matrix - vector multiplication */
-
-    const scalarVector operator* (const scalarVector& V) const;
-
+   
 
 
     /** Overloaded << operator */
 
     friend std::ostream& operator<<(std::ostream& os, const scalarMatrix& M);
+
+
+
+    /** Matrix - vector multiplication */
+
+    const void matDotVec (const scalarVector& V, scalarVector& res) const;
+
     
 
 };

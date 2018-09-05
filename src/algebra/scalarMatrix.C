@@ -69,42 +69,6 @@ void scalarMatrix::update() {
 
 
 
-/** Matrix - vector multiplication */
-
-const scalarVector scalarMatrix::operator* (const scalarVector& V) const{
-
-    scalarVector result( V.sz(), 0 );
-
-    // result.resize(V.sz());
-    
-    // for( uint i = 0 ; i < _size ; i++) {
-    // 	result[i] = 0;
-    // }
-
-    
-    if( _size == V.sz() ) {
-
-	for( uint i = 0 ; i < _size ; i++) {
-
-	    for( uint j = 0 ; j < _size ; j++) {
-
-		result[i] += (*this)[i][j] * V[j];
-
-	    }
-
-	}
-
-    }
-
-
-    result.update();
-
-    return result;
-
-}
-
-
-
 /** Overloaded << operator */
 
 ostream& operator<<(ostream& os, const scalarMatrix& M) {
@@ -124,3 +88,30 @@ ostream& operator<<(ostream& os, const scalarMatrix& M) {
     return os;
     
 } 
+
+
+
+/** Matrix - vector multiplication */
+
+const void scalarMatrix::matDotVec (const scalarVector& V, scalarVector& res) const {
+
+    
+    // Res MUST be preallocated for efficiency
+
+    if( _size == V.sz() ) {
+
+	for( uint i = 0 ; i < _size ; i++ ) {
+
+	    res[i] = 0;
+
+	    for( uint j = 0 ; j < _size ; j++ ) {
+
+		res[i] += (*this)[i][j] * V[j];
+
+	    }
+
+	}	
+
+    }
+
+}
