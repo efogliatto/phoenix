@@ -19,3 +19,8 @@ target_link_libraries(test3 ${PROJECT_LINK_LIBS} ${PROJECT_LINK_LIBS})
 # Test 4. Dictionary
 add_executable(test4 "test4.C")
 target_link_libraries(test4 ${PROJECT_LINK_LIBS} ${PROJECT_LINK_LIBS})
+
+
+# Test 5. mpiInfo
+add_executable(test5 "test5.C")
+target_link_libraries(test5 ${PROJECT_LINK_LIBS} ${PROJECT_LINK_LIBS})

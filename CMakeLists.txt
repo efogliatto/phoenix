@@ -49,6 +49,7 @@ set ( PROJECT_LINK_LIBS
   libalgebra.so
   libio.so
   libsimulation.so
+  libmesh.so
   m
   # ${MPI_LIBRARIES}
   )

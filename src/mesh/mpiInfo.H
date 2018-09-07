@@ -1,7 +1,7 @@
 #ifndef MPIINFO_H
 #define MPIINFO_H
 
-#include <mpi.h>
+// #include <mpi.h>
 
 #include <dataTypes.H>
 

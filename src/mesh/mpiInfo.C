@@ -6,6 +6,8 @@
 
 #include <string>
 
+#include <iostream>
+
 
 using namespace std;
 
@@ -15,54 +17,144 @@ using namespace std;
 mpiInfo::mpiInfo( const uint& id ) : pid(id) {
 
 
-    // // Read recv ghosts
+    // Read recv ghosts
     
-    // ostringstream fname;
-    // fname << "processor" << pid << "/lattice/recvGhosts";
-    // ifstream inFile( fname.c_str() );
-    
+    ifstream inFile( ("processor" + to_string(pid) + "/lattice/recvGhosts").c_str() );
 
-    // sprintf(command,"processor%d/lattice/recvGhosts", pid);
-
-    // inFile = fopen( command, "r" );
-
-  
-    // status = fscanf(inFile, "%d\n", &mesh.parallel.worldSize);
-
-    // mesh.parallel.nrg        = (uint*)malloc( mesh.parallel.worldSize * sizeof(uint) );
-
-    // mesh.parallel.recvGhosts = (uint**)malloc( mesh.parallel.worldSize * sizeof(uint*) );
-    
-   
-    
-    // for( i = 0 ; i < mesh.parallel.worldSize ; i++ ) {
-
-    // 	uint auxPid;
-	
-    // 	status = fscanf(inFile, "%d", &auxPid );
-
-
-    // 	if( auxPid == i ) {
-	
-
-    // 	    status = fscanf(inFile, "%d", &mesh.parallel.nrg[i] );
-	
-    // 	    mesh.parallel.recvGhosts[i] = (uint*)malloc( mesh.parallel.nrg[i] * sizeof(uint) );
+    if( inFile.is_open() ) {
 
 	
-    // 	    for( j = 0 ; j < mesh.parallel.nrg[i] ; j++ ) {
+	// Total number of processors
 
-    // 		status = fscanf( inFile, "%d", &mesh.parallel.recvGhosts[i][j] );
+	inFile >> worldSize;
 
-    // 	    }
 
+	// Resize identifiers
+
+	recvGhosts.resize(worldSize);
+
+
+	// Read elements
+
+	for( uint i = 0 ; i < worldSize ; i++ ) {
+
+	    uint gid, nrg;
+
+	    inFile >> gid;
 	    
-    // 	}
+	    inFile >> nrg;
 
-    // }
+	    recvGhosts[gid].resize(nrg);
+
+	    for(uint j = 0 ; j < nrg ; j++)
+		inFile >> recvGhosts[gid][j];
+
+	}
+ 
+
+	inFile.close();
+
+    }
+
+    else {
+
+	if( pid == 0 ) {
+
+	    cout << endl << " [ERROR] Unable to open file" << "processor" + to_string(pid) + "/lattice/recvGhosts"  << endl << endl;
+
+	}
+
+    }
+
+
+
+
+
+
+
+    // Read send ghosts
+    
+    inFile.open( ("processor" + to_string(pid) + "/lattice/sendGhosts").c_str() );
+
+    if( inFile.is_open() ) {
+
+	
+	// Total number of processors
+
+	inFile >> worldSize;
+
+
+	// Resize identifiers
+
+	sendGhosts.resize(worldSize);
+
+
+	// Read elements
+
+	for( uint i = 0 ; i < worldSize ; i++ ) {
+
+	    uint gid, nsg;
+
+	    inFile >> gid;
+
+	    inFile >> nsg;
+
+	    sendGhosts[gid].resize(nsg);
+
+	    for(uint j = 0 ; j < nsg ; j++)
+		inFile >> sendGhosts[gid][j];
+
+	}
+ 
+
+	inFile.close();
+
+    }
+
+    else {
+
+	if( pid == 0 ) {
+
+	    cout << endl << " [ERROR] Unable to open file" << "processor" + to_string(pid) + "/lattice/sendGhosts"  << endl << endl;
+
+	}
+
+    }    
+
+
 
     
-    // fclose(inFile);
+
+    // Total number of elements per patch
+
+    nodesPerPatch.resize( worldSize );
+
+    for( uint i = 0 ; i < worldSize ; i++ ) {	
+
+	inFile.open( ("processor" + to_string(pid) + "/lattice/points").c_str() );
+
+	uint npp;
+
+	inFile >> npp;
+
+	inFile.close();
+
+	nodesPerPatch[i] = npp;
+
+	
+
+	inFile.open( ("processor" + to_string(pid) + "/lattice/ghosts").c_str() );
+
+	inFile >> npp;
+
+	inFile.close();
+
+	nodesPerPatch[i] += npp;	
+
+    }
+
+
+
 
     
 
