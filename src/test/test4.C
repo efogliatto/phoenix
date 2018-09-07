@@ -1,4 +1,4 @@
-#include <dictionary.H>
+#include <timeOptions.H>
 
 #include <scalarVector.H>
 
@@ -7,7 +7,7 @@ using namespace std;
 
 int main() {
 
-    dictionary dict("macroProperties");
+    dictionary dict("properties/macroProperties");
 
     cout << dict.lookUp<string>("EOS/model") << endl;
 
@@ -24,7 +24,11 @@ int main() {
 
     scalarVector A( dict.lookUp< vector<scalar> >("g/Lambda") );
 
-    cout << A << endl;    
+    cout << A << endl;
+
+
+
+    timeOptions Time;
 
 
 }

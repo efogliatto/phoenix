@@ -82,7 +82,7 @@ dictionary::dictionary(const std::string& fname) {
 
     // Remove comments
 
-    for( uint i = 0 ; i < tmp.size()-1 ; i++ ) {
+    for( uint i = 0 ; i < tmp.size() ; i++ ) {
 
 	if( tmp[i] == "/*" ) {
 
@@ -98,9 +98,7 @@ dictionary::dictionary(const std::string& fname) {
 
 	content.push_back( tmp[i] );
 
-    }
-    
-
+    }   
 
 
 }

@@ -18,6 +18,11 @@ add_subdirectory (IO)
 add_subdirectory (mesh)
 
 
+# simulation properties library
+
+add_subdirectory (simulation)
+
+
 # unit tests
 
 add_subdirectory (test)

@@ -47,6 +47,7 @@ set ( PROJECT_LINK_LIBS
   liblatticemodel.so
   libalgebra.so
   libio.so
+  libsimulation.so
   m
   # ${MPI_LIBRARIES}
   )
