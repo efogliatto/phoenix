@@ -3,4 +3,5 @@
 # Mesh library
 add_library(mesh SHARED 
   basicMesh.C
+  mpiInfo.C
   )

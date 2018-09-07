@@ -17,9 +17,10 @@ set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/lib)
 
 
-# # Bibliotecas externas: MPI
 
-# find_package(MPI REQUIRED)
+# External libraries: MPI
+
+find_package(MPI REQUIRED)
 
 
 # External libraries: Boost
