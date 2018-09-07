@@ -2,6 +2,6 @@
  
 # Mesh library
 add_library(mesh SHARED 
-  basicMesh.C
+  latticeMesh.C
   mpiInfo.C
   )

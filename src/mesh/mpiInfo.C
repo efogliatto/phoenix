@@ -141,6 +141,12 @@ mpiInfo::mpiInfo( const uint& id ) : pid(id) {
 
 	nodesPerPatch[i] = npp;
 
+	if( i == pid ) {
+
+	    nlocal = npp;
+	    
+	}
+
 	
 
 	inFile.open( ("processor" + to_string(pid) + "/lattice/ghosts").c_str() );
@@ -149,13 +155,24 @@ mpiInfo::mpiInfo( const uint& id ) : pid(id) {
 
 	inFile.close();
 
-	nodesPerPatch[i] += npp;	
+	nodesPerPatch[i] += npp;
+
+
+	if( i == pid ) {
+
+	    nghosts = npp;
+	    
+	}
 
     }
 
 
 
 
+
+
+
+    
     
 
 }

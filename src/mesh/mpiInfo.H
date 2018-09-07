@@ -1,7 +1,7 @@
 #ifndef MPIINFO_H
 #define MPIINFO_H
 
-// #include <mpi.h>
+#include <mpi.h>
 
 #include <dataTypes.H>
 
@@ -64,7 +64,21 @@ public:
     /** Default destructor */
 
     ~mpiInfo();
-    
+
+
+    /** Processor id */
+
+    const uint id() const {  return pid; }
+
+
+    /** Number of local nodes */
+
+    const uint local() const {  return nlocal; }
+
+
+    /** Number of ghost nodes */
+
+    const uint ghosts() const {  return nghosts; }    
 
 };
 
