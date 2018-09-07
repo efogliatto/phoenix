@@ -9,6 +9,8 @@
 
 #include <chrono>
 
+#include <tuple>
+
 
 
 class timeOptions {
@@ -69,6 +71,15 @@ protected:
     const void updateCaseFile() const;
 
 
+    /** Simulation files */
+
+    std::vector<std::string> scalarFields;
+
+    std::vector<std::string> vectorFields;
+
+    std::vector< std::tuple<std::string, uint> > pdfFields;    
+
+
 
 
 public:
@@ -98,6 +109,15 @@ public:
     /** Write flag */
 
     const bool write() const;
+
+
+    /** Add simulation file names */
+
+    const void addScalarField( const std::string& name );
+
+    const void addVectorField( const std::string& name );
+
+    const void addPdfField( const std::string& name, const uint& q = 9 );    
 
 };
 

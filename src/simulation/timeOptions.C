@@ -106,6 +106,28 @@ const bool timeOptions::write() const {
 
 
 
+/** Add simulation file names */
+
+const void timeOptions::addScalarField( const string& name ) {
+
+    scalarFields.push_back(name);
+    
+}
+
+const void timeOptions::addVectorField( const string& name ) {
+
+    vectorFields.push_back(name);
+
+}
+
+const void timeOptions::addPdfField( const string& name, const uint& q ) {
+
+    pdfFields.push_back( make_tuple(name,q) );
+
+}
+
+
+
 
 
 /** Update ensight case file */
@@ -220,91 +242,71 @@ const void timeOptions::updateCaseFile() const {
 
     	}    
 
+	
 
 	
 
-	# warning Incomplete case file writing
+    	// Open File
 
+	ofstream outFile("lbm.case");       
 
-    // 	// .case file
-
-    // 	vtkInfo vtk = readVTKInfo();
-
-	
-
-    // 	// Open File
-	    
-    // 	cfile = fopen("lbm.case", "w");
-
-
-    // 	fprintf(cfile,"#\n");
-    // 	fprintf(cfile,"# EnSight 7.4.1 ((n))\n");
-    // 	fprintf(cfile,"# Case File: lattice.case\n");
-    // 	fprintf(cfile,"\n");
-    // 	fprintf(cfile,"FORMAT\n");
-    // 	fprintf(cfile,"\n");
-    // 	fprintf(cfile,"type:  ensight gold\n");
-    // 	fprintf(cfile,"\n");
-    // 	fprintf(cfile,"GEOMETRY\n");
-    // 	fprintf(cfile,"\n");
-    // 	fprintf(cfile,"model:                     lattice.geo\n");
-    // 	fprintf(cfile,"\n");
-    // 	fprintf(cfile,"VARIABLE\n");
-    // 	fprintf(cfile,"\n");
-
-    // 	uint fid;
+    	outFile << "#\n";
+    	outFile << "# EnSight 7.4.1 ((n))\n";
+    	outFile << "# Case File: lattice.case\n";
+    	outFile << "\n";
+    	outFile << "FORMAT\n";
+    	outFile << "\n";
+    	outFile << "type:  ensight gold\n";
+    	outFile << "\n";
+    	outFile << "GEOMETRY\n";
+    	outFile << "\n";
+    	outFile << "model:                     lattice.geo\n";
+    	outFile << "\n";
+    	outFile << "VARIABLE\n";
+    	outFile << "\n";
 		
-    // 	for( fid = 0 ; fid < vtk.nscalar ; fid++ ) {
-
-    // 	    fprintf(cfile,"scalar per node:           %s lattice.%s_*\n",vtk.scalarFields[fid],vtk.scalarFields[fid]);
+    	for( auto s : scalarFields )
+    	    outFile << "scalar per node:           " << s << " lattice." << s << "_*" << endl;
 	    
-    // 	}
-
-    // 	for( fid = 0 ; fid < vtk.npdf ; fid++ ) {
-
-    // 	    uint k;
-
-    // 	    for( k = 0 ; k < mesh->lattice.Q ; k++ ) {
-	    
-    // 		fprintf(cfile,"scalar per node:           %s%d lattice.%s%d_*\n",vtk.pdfFields[fid],k,vtk.pdfFields[fid],k);
-
-    // 	    }
-	    
-    // 	}
-	
-    // 	for( fid = 0 ; fid < vtk.nvector ; fid++ ) {
-
-    // 	    fprintf(cfile,"vector per node:           %s lattice.%s_*\n",vtk.vectorFields[fid],vtk.vectorFields[fid]);
-	    
-    // 	}
-
 
 	
-    // 	fprintf(cfile,"\n");
+    	for( auto s : pdfFields ) {       
+
+    	    for( uint k = 0 ; k < get<1>(s) ; k++ ) {
+
+		outFile << "scalar per node:           " << get<0>(s) << k << " lattice." << get<0>(s) << k << "_*" << endl;
+
+    	    }
+	    
+    	}
 	
-    // 	fprintf(cfile,"TIME\n");
 
-    // 	fprintf(cfile,"time set:                  1\n");
+	for( auto s : vectorFields )
+	    outFile << "vector per node:           " << s << " lattice." << s << "_*" << endl;
+	    
 
-    // 	fprintf(cfile,"number of steps:           %d\n", ns);
+	
+    	outFile << endl;
+	
+    	outFile << "TIME" << endl;
 
-    // 	fprintf(cfile,"filename start number:     0\n");
+    	outFile << "time set:                  1" << endl;
 
-    // 	fprintf(cfile,"filename increment:        1\n");
+    	outFile << "number of steps:           " << tsteps.size() << endl;
 
-    // 	fprintf(cfile,"time values:               %d\n", tsteps[0]);
+    	outFile << "filename start number:     0" << endl;
 
-    // 	for( fid = 1 ; fid < ns ; fid++ ) {
+    	outFile << "filename increment:        1" << endl;
 
-    // 	    fprintf(cfile,"                           %d\n", tsteps[fid]);
+    	outFile << "time values:               " << tsteps[0] << endl;
 
-    // 	}
-
-    // 	fclose(cfile);
-
+    	for( uint fid = 1 ; fid < tsteps.size() ; fid++ )
+    	    outFile << "                           " << tsteps[fid] << endl;
 
 
-    // 	free(tsteps);
+
+	
+    	outFile.close();
 
 
     }
