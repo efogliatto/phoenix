@@ -10,8 +10,18 @@ using namespace std;
 
 /** Default constructor */
 
-latticeMesh::latticeMesh( const int& pid ) : parallel(pid) {
+latticeMesh::latticeMesh( const int& pid, const bool& msg ) : parallel(pid) {
 
+    if(msg) {
+
+	if(pid==0) {
+
+	    cout << "Reading lattice mesh" << endl << endl;
+
+	}	
+
+    }
+    
     // Mesh points
 
     readPoints();

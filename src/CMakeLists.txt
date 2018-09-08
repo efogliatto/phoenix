@@ -23,6 +23,13 @@ add_subdirectory (mesh)
 add_subdirectory (simulation)
 
 
+
+
+# Specific applications
+
+add_subdirectory (applications)
+
+
 # unit tests
 
 add_subdirectory (test)

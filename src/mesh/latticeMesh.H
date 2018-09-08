@@ -74,7 +74,7 @@ public:
     
     /** Default constructor */
 
-    latticeMesh( const int& pid );
+    latticeMesh( const int& pid, const bool& msg = true );
 
 
     /** Default destructor */
