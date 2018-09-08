@@ -117,7 +117,17 @@ public:
 
     const void addVectorField( const std::string& name );
 
-    const void addPdfField( const std::string& name, const uint& q = 9 );    
+    const void addPdfField( const std::string& name, const uint& q = 9 );
+
+
+    /** Start time */
+
+    const uint startTime() const { return start; }
+
+
+    /** Match time to ensight index */
+
+    const uint timeToIndex( const uint& tid ) const;
 
 };
 

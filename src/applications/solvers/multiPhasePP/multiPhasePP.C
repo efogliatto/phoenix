@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include <latticeMesh.H>
+#include <scalarField.H>
 
 using namespace std;
 
@@ -33,9 +33,21 @@ int main( int argc, char **argv ) {
     }
 
 
-    
+
+
+    // Lattice mesh creation
     
     latticeMesh mesh(pid);
+
+
+    // Simulation handler
+
+    timeOptions Time;
+
+
+    // Macroscopic density
+
+    scalarField rho( mesh, Time, "rho" );
 
 
 

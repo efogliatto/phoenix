@@ -81,6 +81,22 @@ public:
 
     ~latticeMesh();
 
+
+    /** Process id */
+
+    const int pid() const { return parallel.id(); }
+
+
+    /** Total number of points */
+
+    const uint npoints() const { return nPoints; }
+
+    
+    /** Nodes per patch */
+
+    const uint npp( const uint& id ) const { return parallel.npp(id); }
+    
+    
 };
 
 #endif // LATTICEMESH_H

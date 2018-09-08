@@ -78,7 +78,12 @@ public:
 
     /** Number of ghost nodes */
 
-    const uint ghosts() const {  return nghosts; }    
+    const uint ghosts() const {  return nghosts; }
+
+
+    /** Nodes per patch */
+
+    const uint npp( const uint& id ) const { return nodesPerPatch[id]; }
 
 };
 

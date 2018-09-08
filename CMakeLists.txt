@@ -50,6 +50,7 @@ set ( PROJECT_LINK_LIBS
   libio.so
   libsimulation.so
   libmesh.so
+  liblatticefields.so
   m
   # ${MPI_LIBRARIES}
   )

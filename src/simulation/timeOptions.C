@@ -313,3 +313,122 @@ const void timeOptions::updateCaseFile() const {
 
 
 }
+
+
+
+
+
+
+
+
+
+/** Match time to ensight index */
+
+const uint timeOptions::timeToIndex( const uint& tid ) const {
+
+
+    uint idx(0);
+
+    
+    if( pid == 0 ) {
+	
+	
+
+    	// Try to open .case file to get time steps
+
+	ifstream cfile( "lbm.case" );
+
+	if( cfile.is_open() ) {	
+
+
+    	    // Read Number of steps
+
+    	    string word;
+
+    	    bool find(false);
+
+	    uint ns;
+
+
+	    
+    	    while(  ( !cfile.eof() )   &&   ( find == false )   ) {
+
+		cfile >> word;
+		
+    		if( word == "number" ) {
+
+		    cfile >> word;
+
+		    if (  ( !cfile.eof() )   &&   ( word == "of" )   ) {		    
+
+			cfile >> word;
+
+			if (  ( !cfile.eof() )   &&   ( word == "steps:" )   ) {		       
+			    
+			    cfile >> word;
+
+    			    ns = stoi( word );
+
+    			    find = true;
+			
+    			}
+			
+    		    }
+
+    		}
+
+    	    }
+
+
+
+
+    	    // Read Time list
+
+	    cfile.clear();
+	    
+	    cfile.seekg(0);
+	    
+    	    while( !cfile.eof() ) {
+
+		cfile >> word;
+
+    		if( word =="time" ) {
+
+		    cfile >> word;		   
+
+		    if(  (!cfile.eof())  &&  (word == "values:")  ) {
+
+    			for( uint k = 0 ; k < ns ; k++ ) {
+
+			    cfile >> word;
+
+			    if( stoi(word) == (int)tid )
+				idx = k;
+
+    			}
+			
+    		    }
+
+    		}
+
+    	    }
+
+
+
+
+
+    	    cfile.close();	    	    
+
+    	}
+	
+
+
+    }
+
+
+    
+
+    return idx;
+    
+
+}

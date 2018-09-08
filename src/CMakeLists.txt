@@ -23,6 +23,11 @@ add_subdirectory (mesh)
 add_subdirectory (simulation)
 
 
+# lattice fields
+
+add_subdirectory (latticeFields)
+
+
 
 
 # Specific applications
