@@ -9,7 +9,16 @@ class latticeModelCreator {
 
 public:
 
+
+    // Create with name
+    
     latticeModel* create( const std::string& modelName );
+
+
+    // Create with d and q
+
+    latticeModel* create( const uint& d, const uint& q );
+    
 
 };
 

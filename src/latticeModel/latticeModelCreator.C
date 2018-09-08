@@ -26,3 +26,29 @@ latticeModel* latticeModelCreator::create( const std::string& modelName ) {
     return 0;
 
 }
+
+
+
+latticeModel* latticeModelCreator::create( const uint& d, const uint& q ) {
+
+    if( (d == 2)  &&  (q == 9) ) {
+
+	return new D2Q9();
+
+    }
+
+    else {
+
+
+	// Default
+    
+	cout << endl << "LBModel D" << d << "Q" << q << " does not exist" << endl << endl;
+
+	exit(1);
+    
+    }
+
+    
+    return 0;
+
+}

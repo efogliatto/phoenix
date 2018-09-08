@@ -23,4 +23,4 @@ target_link_libraries(test4 ${PROJECT_LINK_LIBS} ${PROJECT_LINK_LIBS})
 
 # Test 5. mpiInfo
 add_executable(test5 "test5.C")
-target_link_libraries(test5 ${PROJECT_LINK_LIBS} ${PROJECT_LINK_LIBS} ${MPI_LIBRARIES})
+target_link_libraries(test5 ${PROJECT_LINK_LIBS} ${MPI_LIBRARIES} ${PROJECT_LINK_LIBS})

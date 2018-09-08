@@ -5,6 +5,10 @@
 
 #include <mpiInfo.H>
 
+#include <latticeModelCreator.H>
+
+#include <map>
+
 
 class latticeMesh {
 
@@ -24,17 +28,44 @@ protected:
 
     /** Neighbour indices array */
 
-    int** nb;
+    std::vector< std::vector<int> > nb;
     
 
     /** MPI comm information */
 
     const mpiInfo parallel;
 
+    
+    /** Lattice Model */
+
+    latticeModel* lbmodel;
+
+
+    /** Boundary nodes */
+
+    std::map< std::string, std::vector<uint> > boundary;
+
+
+
+    
+
+    
+
 
     /** Read mesh points */
 
     const void readPoints();
+
+
+    /** Read neighbours */
+
+    const void readNeighbours();
+
+    
+    /** Read boundary nodes */
+
+    const void readBoundaryNodes();
+    
 
 
 

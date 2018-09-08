@@ -16,6 +16,16 @@ latticeMesh::latticeMesh( const int& pid ) : parallel(pid) {
 
     readPoints();
 
+
+    // Lattice Neighbours
+
+    readNeighbours();
+
+
+    // Boundary nodes
+
+    readBoundaryNodes();
+
     
 
 }
@@ -124,5 +134,146 @@ const void latticeMesh::readPoints() {
     
     
 
+
+}
+
+
+
+
+
+/** Read lattice neighbours */
+
+const void latticeMesh::readNeighbours() {
+
+
+    const int pid = parallel.id();
+
+    
+    ifstream inFile( ("processor" + to_string(pid) + "/lattice/neighbours").c_str() );
+
+    if( inFile.is_open() ) {
+
+	
+	// Read lattice properties (local points, d and q)
+	
+	uint np, d, q;
+
+	inFile >> np;
+
+	inFile >> d;
+
+	inFile >> q;
+
+
+	
+	// Lattice model creation
+
+	latticeModelCreator lbm;
+	
+	lbmodel = lbm.create(d,q);
+
+	    
+
+	// Resize neighbour array
+	
+	nb.resize(np);
+
+	for( uint i = 0 ; i < np ; i++ )
+	    nb[i].resize(q);
+	
+
+	for( uint i = 0 ; i < np ; i++ ) {
+
+	    for( uint j = 0 ; j < q ; j++ ) {
+	    
+		inFile >> nb[i][j];
+
+	    }
+
+	}
+
+
+	inFile.close();	
+
+    }
+
+    else {
+
+	if( pid == 0 ) {
+
+	    cout << endl << " [ERROR] Unable to open file" << "processor" + to_string(pid) + "/lattice/neigbours"  << endl << endl;
+
+	}
+
+    }
+    
+
+}
+
+
+
+
+
+
+/** Read boundary nodes */
+
+const void latticeMesh::readBoundaryNodes() {
+
+
+    const int pid = parallel.id();
+
+    
+    ifstream inFile( ("processor" + to_string(pid) + "/lattice/boundary").c_str() );
+
+    if( inFile.is_open() ) {
+
+	// Total number of boundaries
+
+	uint nob;
+
+	inFile >> nob;
+
+
+	// Read boundaries
+
+	for( uint i = 0 ; i < nob ; i++ ) {
+
+
+	    // Boundary name and size
+
+	    string bdname;
+
+	    inFile >> bdname;
+
+	    uint bdsize;
+
+	    inFile >> bdsize;
+
+
+	    // Resize map and read
+
+	    boundary[bdname].resize(bdsize);
+
+	    for( uint j = 0 ; j < bdsize ; j++ )
+		inFile >> boundary[bdname][j];
+	    
+	    
+	}
+	
+
+	inFile.close();	
+
+    }
+
+    else {
+
+	if( pid == 0 ) {
+
+	    cout << endl << " [ERROR] Unable to open file" << "processor" + to_string(pid) + "/lattice/boundary"  << endl << endl;
+
+	}
+
+    }
+    
 
 }
