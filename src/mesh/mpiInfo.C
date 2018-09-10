@@ -131,7 +131,7 @@ mpiInfo::mpiInfo( const uint& id ) : pid(id) {
 
     for( uint i = 0 ; i < worldSize ; i++ ) {	
 
-	inFile.open( ("processor" + to_string(pid) + "/lattice/points").c_str() );
+	inFile.open( ("processor" + to_string(i) + "/lattice/points").c_str() );
 
 	uint npp;
 
@@ -149,7 +149,7 @@ mpiInfo::mpiInfo( const uint& id ) : pid(id) {
 
 	
 
-	inFile.open( ("processor" + to_string(pid) + "/lattice/ghosts").c_str() );
+	inFile.open( ("processor" + to_string(i) + "/lattice/ghosts").c_str() );
 
 	inFile >> npp;
 

@@ -125,6 +125,11 @@ public:
     const uint startTime() const { return start; }
 
 
+    /** Current time */
+
+    const uint currentTime() const { return current; }    
+
+
     /** Match time to ensight index */
 
     const uint timeToIndex( const uint& tid ) const;

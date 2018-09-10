@@ -70,6 +70,11 @@ public:
 
     const uint id() const {  return pid; }
 
+    
+    /** Total number of processors */
+
+    const uint wsize() const {  return worldSize; }
+   
 
     /** Number of local nodes */
 

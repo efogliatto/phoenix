@@ -27,7 +27,7 @@ public:
     
     /** Default constructor */
 
-    scalarField( const latticeMesh& m, const timeOptions& t, const std::string& nm );
+    scalarField( const latticeMesh& m, timeOptions& t, const std::string& nm );
 
 
     /** Default destructor */

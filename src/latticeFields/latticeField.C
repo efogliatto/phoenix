@@ -7,7 +7,7 @@ const void latticeField::read() {}
 
 /** Default constructor */
 
-latticeField::latticeField( const latticeMesh& m, const timeOptions& t, const std::string& nm ) : name(nm), mesh(m), Time(t)  {}
+latticeField::latticeField( const latticeMesh& m, timeOptions& t, const std::string& nm ) : name(nm), mesh(m), Time(t)  {}
 
 
 /** Default destructor */

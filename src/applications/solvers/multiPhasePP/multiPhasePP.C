@@ -1,5 +1,7 @@
 #include <iostream>
 
+#include <iomanip>
+
 #include <scalarField.H>
 
 using namespace std;
@@ -50,6 +52,44 @@ int main( int argc, char **argv ) {
     scalarField rho( mesh, Time, "rho" );
 
 
+
+
+
+
+    // Advance in time. Collide, stream, update and write
+    
+    while( Time.update() ) {
+
+
+	if( Time.write() ) {
+
+
+	    rho.write();
+
+    	    if(pid == 0) {
+		
+    		cout << "Time = " << Time.currentTime() << endl;
+		
+    		cout << "Elapsed time = " << std::fixed << std::setprecision(2) << Time.elapsed() << " seconds" << endl << endl;
+		
+    	    }
+
+	    
+
+	}
+
+    }
+
+
+
+
+
+
+    // Print info
+    if(pid == 0)	
+    	cout << endl << "  Finished in " << Time.elapsed() << " seconds " << endl << endl;
+	
+    
 
     MPI_Finalize();
 

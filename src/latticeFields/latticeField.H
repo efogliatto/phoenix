@@ -24,7 +24,7 @@ protected:
 
     /** Reference to time options */
 
-    const timeOptions& Time;
+    timeOptions& Time;
 
 
 
@@ -39,7 +39,7 @@ public:
 
     /** Default constructor */
 
-    latticeField( const latticeMesh& m, const timeOptions& t, const std::string& nm );
+    latticeField( const latticeMesh& m, timeOptions& t, const std::string& nm );
 
 
     /** Default destructor */

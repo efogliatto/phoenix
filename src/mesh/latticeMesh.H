@@ -86,6 +86,11 @@ public:
 
     const int pid() const { return parallel.id(); }
 
+    
+    /** Total number of processors */
+
+    const int wsize() const { return parallel.wsize(); }
+    
 
     /** Total number of points */
 
