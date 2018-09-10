@@ -4,4 +4,5 @@
 add_library(latticefields SHARED 
   latticeField.C
   scalarField.C
+  vectorField.C
   )

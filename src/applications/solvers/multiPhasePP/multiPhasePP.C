@@ -4,6 +4,8 @@
 
 #include <scalarField.H>
 
+#include <vectorField.H>
+
 using namespace std;
 
 
@@ -52,7 +54,16 @@ int main( int argc, char **argv ) {
     scalarField rho( mesh, Time, "rho" );
 
 
+    // Macroscopic temperature
 
+    scalarField T( mesh, Time, "T" );
+
+
+    // Macroscopic velocity
+
+    vectorField U( mesh, Time, "U" );
+    
+    
 
 
 
@@ -61,10 +72,17 @@ int main( int argc, char **argv ) {
     while( Time.update() ) {
 
 
+
+	// Write fields
+	
 	if( Time.write() ) {
 
 
 	    rho.write();
+
+	    T.write();
+
+	    U.write();
 
     	    if(pid == 0) {
 		
