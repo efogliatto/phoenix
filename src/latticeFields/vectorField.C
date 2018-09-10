@@ -94,18 +94,68 @@ const void vectorField::read() {
 
 /** Default constructor */
 
-vectorField::vectorField( const latticeMesh& m, timeOptions& t, const std::string& nm ) : latticeField(m,t,nm) {
+vectorField::vectorField( const latticeMesh& m, timeOptions& t, const std::string& nm, const IO iopt, const IO oopt ) : latticeField(m,t,nm) {
+
+
+    switch(iopt) {
+	
+
+    case IO::MUST_READ:    
 
     
-    // Read values from file
+	// Read values from file
 
-    vectorField::read();
+	vectorField::read();
+
+	break;
+
+
+
+    case IO::NO_READ:
+
+	
+	// Only allocate space
+
+	field.resize( mesh.npoints() );
+
+	for( uint i = 0 ; i < field.size() ; i++ )
+	    field[i].resize( 3 );   	
+	
+	break;
+
+
+    default:
+
+	break;
+
+
+
+    }
+
+
+
+
+
+
+    switch (oopt) {
+
+
+    case IO::MUST_WRITE:	
     
 
+	// Add to time list
 
-    // Add to time list
+	Time.addVectorField(name);
 
-    Time.addVectorField(name);
+	break;
+
+
+    default:
+
+	break;
+
+
+    }
     
     
 }

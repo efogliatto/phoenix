@@ -85,17 +85,59 @@ const void scalarField::read() {
 
 /** Default constructor */
 
-scalarField::scalarField( const latticeMesh& m, timeOptions& t, const string& nm ) : latticeField(m,t,nm) {
+scalarField::scalarField( const latticeMesh& m, timeOptions& t, const string& nm, const IO iopt, const IO oopt ) : latticeField(m,t,nm) {
+
+
+    switch(iopt) {
+	
+
+    case IO::MUST_READ:
+
+	
+	// Read values from file
+
+	scalarField::read();
+
+	break;
+
+
+    case IO::NO_READ:
+
+	
+	// Only allocate space
+        
+	field.resize( mesh.npoints() );
+
+	break;
+
+
+	
+    default:
+
+	break;
+
+    }
+
 
     
-    // Read values from file
 
-    scalarField::read();
+    switch (oopt) {
 
 
-    // Add to time list
+    case IO::MUST_WRITE:
+	
+	// Add to time list
 
-    Time.addScalarField(name);
+	Time.addScalarField(name);
+
+	break;
+
+	
+    default:
+
+	break;
+
+    }
     
 
 }

@@ -28,6 +28,11 @@ add_subdirectory (simulation)
 add_subdirectory (latticeFields)
 
 
+# lattice-boltzmann equations
+
+add_subdirectory (lbEquations)
+
+
 
 
 # Specific applications

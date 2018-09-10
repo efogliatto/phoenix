@@ -27,7 +27,7 @@ public:
     
     /** Default constructor */
 
-    pdfField( const latticeMesh& m, timeOptions& t, const std::string& nm );
+    pdfField( const latticeMesh& m, timeOptions& t, const std::string& nm, const IO iopt, const IO oopt );
 
 
     /** Default destructor */

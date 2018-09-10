@@ -99,18 +99,63 @@ const void pdfField::read() {
    
 /** Default constructor */
 
-pdfField::pdfField( const latticeMesh& m, timeOptions& t, const std::string& nm ) : latticeField(m, t, nm){
+pdfField::pdfField( const latticeMesh& m, timeOptions& t, const std::string& nm, const IO iopt, const IO oopt ) : latticeField(m, t, nm){
+
+
+    switch(iopt) {
+	
+
+    case IO::MUST_READ:
+    
+	// Read values from file
+
+	pdfField::read();
+
+	break;
+
+
+    case IO::NO_READ:
+
+	
+	// Only allocate space
+
+	field.resize( mesh.npoints() );
+
+	for( uint i = 0 ; i < field.size() ; i++ )
+	    field[i].resize( mesh.lmodel()->q() );   	
+	
+	break;
+
+
+    default:
+
+	break;
+
+    }
+    
+
 
     
-    // Read values from file
 
-    pdfField::read();
-    
+    switch (oopt) {
 
 
-    // Add to time list
+    case IO::MUST_WRITE:
 
-    Time.addPdfField(name);
+
+	// Add to time list
+
+	Time.addPdfField(name);
+
+	break;
+
+
+    default:
+
+	break;
+
+	
+    }
 
 }
 

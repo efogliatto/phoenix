@@ -27,7 +27,7 @@ public:
     
     /** Default constructor */
 
-    vectorField( const latticeMesh& m, timeOptions& t, const std::string& nm );
+    vectorField( const latticeMesh& m, timeOptions& t, const std::string& nm, const IO iopt, const IO oopt );
 
 
     /** Default destructor */

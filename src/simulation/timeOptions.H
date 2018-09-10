@@ -136,4 +136,13 @@ public:
 
 };
 
+
+
+
+// Read - write options
+
+enum class IO : int {MUST_READ, NO_READ, MUST_WRITE, NO_WRITE};
+
+
+
 #endif // TIMEOPTIONS_H

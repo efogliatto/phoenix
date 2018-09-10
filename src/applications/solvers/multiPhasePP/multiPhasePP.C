@@ -54,27 +54,27 @@ int main( int argc, char **argv ) {
 
     // Macroscopic density
 
-    scalarField rho( mesh, Time, "rho" );
+    scalarField rho( mesh, Time, "rho", IO::MUST_READ, IO::MUST_WRITE );
 
 
     // Macroscopic temperature
 
-    scalarField T( mesh, Time, "T" );
+    scalarField T( mesh, Time, "T", IO::MUST_READ, IO::MUST_WRITE );
 
 
     // Macroscopic velocity
 
-    vectorField U( mesh, Time, "U" );
+    vectorField U( mesh, Time, "U", IO::MUST_READ, IO::MUST_WRITE );
     
 
     // PDF field. Navier - Stokes equation
 
-    pdfField f( mesh, Time, "f" );
+    pdfField f( mesh, Time, "f", IO::MUST_READ, IO::MUST_WRITE );
 
 
-    // // PDF field. energy equation
+    // PDF field. energy equation
 
-    // pdfField g( mesh, Time, "g" );
+    pdfField g( mesh, Time, "g", IO::MUST_READ, IO::MUST_WRITE );
 
     
 
@@ -99,7 +99,7 @@ int main( int argc, char **argv ) {
 
 	    f.write();
 
-	    // g.write();
+	    g.write();
 
 	    
     	    if(pid == 0) {
