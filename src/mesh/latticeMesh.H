@@ -100,6 +100,11 @@ public:
     /** Nodes per patch */
 
     const uint npp( const uint& id ) const { return parallel.npp(id); }
+
+    
+    /** Reference to model */
+
+    const latticeModel* lmodel() const { return lbmodel; }
     
     
 };

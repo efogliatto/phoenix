@@ -107,7 +107,7 @@ vectorField::vectorField( const latticeMesh& m, timeOptions& t, const std::strin
 
     Time.addVectorField(name);
     
-
+    
 }
 
 

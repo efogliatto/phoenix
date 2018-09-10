@@ -6,6 +6,9 @@
 
 #include <vectorField.H>
 
+#include <pdfField.H>
+
+
 using namespace std;
 
 
@@ -63,6 +66,16 @@ int main( int argc, char **argv ) {
 
     vectorField U( mesh, Time, "U" );
     
+
+    // PDF field. Navier - Stokes equation
+
+    pdfField f( mesh, Time, "f" );
+
+
+    // // PDF field. energy equation
+
+    // pdfField g( mesh, Time, "g" );
+
     
 
 
@@ -84,6 +97,11 @@ int main( int argc, char **argv ) {
 
 	    U.write();
 
+	    f.write();
+
+	    // g.write();
+
+	    
     	    if(pid == 0) {
 		
     		cout << "Time = " << Time.currentTime() << endl;
@@ -91,7 +109,6 @@ int main( int argc, char **argv ) {
     		cout << "Elapsed time = " << std::fixed << std::setprecision(2) << Time.elapsed() << " seconds" << endl << endl;
 		
     	    }
-
 	    
 
 	}
