@@ -96,6 +96,11 @@ public:
 
     const uint npoints() const { return nPoints; }
 
+
+    /** Number of local points */
+
+    const uint local() const { return parallel.local(); }       
+    
     
     /** Nodes per patch */
 

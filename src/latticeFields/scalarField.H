@@ -36,8 +36,11 @@ public:
 
 
 
-    // Acces members. Forced interface
+    /** Access operator */
+    
+    scalar& operator[] (uint i) {  return field[i];  }
 
+    
     /** Synchronization across procceses */
 
     const void sync();

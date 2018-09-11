@@ -20,19 +20,24 @@ protected:
     std::string ename;
 
 
-    /** Reference to external scalar fields */
+    /** Reference to lattice mesh */
 
-    std::map<std::string, scalarField*> scfields;
+    const latticeMesh& mesh;
 
 
-    /** Reference to external vector fields */
+    /** Reference to time options */
 
-    std::map<std::string, vectorField*> vfields;
+    timeOptions& Time;
 
+
+    /** Cached lattice q (efficiency) */
+
+    const uint _q;
+    
 
     /** Reference to external pdf field */
 
-    pdfField* pdffield;
+    pdfField& pdf;
 
 
 
@@ -41,7 +46,10 @@ public:
 
     /** Default constructor */
 
-    lbEquation( const std::string& name );
+    lbEquation( const std::string& name,
+		const latticeMesh& mesh_,
+		timeOptions& Time_,
+		pdfField& pdf_);
 
 
     /** Default destructor */
@@ -58,12 +66,6 @@ public:
     /** Streamming process */
 
     virtual const void streamming() = 0;
-
-
-    /** Update macroscopic field */
-
-    virtual const void updateMacroField() = 0;
-
     
 
 };

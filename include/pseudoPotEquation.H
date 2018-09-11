@@ -1,0 +1,1 @@
+../src/lbEquations/pseudoPotEquation.H
