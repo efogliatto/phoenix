@@ -33,6 +33,11 @@ add_subdirectory (latticeFields)
 add_subdirectory (lbEquations)
 
 
+# Equations of State
+
+add_subdirectory (EOS)
+
+
 
 
 # Specific applications

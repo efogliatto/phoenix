@@ -79,7 +79,16 @@ pseudoPotEquation::pseudoPotEquation( const string& name,
 							 U(U_),
 							 T(T_),
 							 Fi(mesh,Time,"Fi",IO::NO_READ,IO::NO_WRITE),
-							 Ft(mesh,Time,"Ft",IO::NO_READ,IO::NO_WRITE)  {}
+							 Ft(mesh,Time,"Ft",IO::NO_READ,IO::NO_WRITE)  {
+
+
+    // Create EOS
+
+    EOSCreator creator;
+
+    eos = creator.create("properties/macroProperties");
+
+}
 
 
 /** Default destructor */

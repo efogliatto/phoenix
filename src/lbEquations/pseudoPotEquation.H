@@ -3,6 +3,9 @@
 
 #include <lbEquation.H>
 
+#include <EOSCreator.H>
+
+
 class pseudoPotEquation : public lbEquation {
 
 
@@ -32,6 +35,13 @@ protected:
     /** Total force */
 
     vectorField Ft;
+
+
+    /** Equation of state */
+
+    EOS* eos;
+    
+
 
     
 
