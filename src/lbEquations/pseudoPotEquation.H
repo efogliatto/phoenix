@@ -24,7 +24,7 @@ protected:
 
     /** Reference to external temperature field */
 
-    const scalarField& T;
+    scalarField& T;
 
 
     /** Interaction force */
@@ -40,7 +40,26 @@ protected:
     /** Equation of state */
 
     EOS* eos;
+
+
+    /** Gravity vector */
+
+    std::vector<scalar> gravity;
+
+
+    /** External fixed force */
+
+    std::vector<scalar> extForce;
     
+
+    /** Pseudopotential weights */
+
+    std::vector<scalar> weights;
+
+
+    /** Average density */
+
+    scalar rho_0;
 
 
     
@@ -53,9 +72,19 @@ protected:
     /** Compute local velocity */
     /** Density MUST be already updated */
 
-    const void localVelocity( std::vector<scalar>& v, const uint& id );    
+    const void localVelocity( std::vector<scalar>& v, const uint& id );
 
 
+    
+    /** Interaction force field */
+
+    const void updateIntForce();
+
+
+    
+    /** Total force field */
+
+    const void updateTotalForce();
     
 
 

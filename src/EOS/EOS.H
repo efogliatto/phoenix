@@ -53,6 +53,11 @@ public:
 
     virtual const scalar p_eos(const scalar& rho, const scalar& T) const = 0;
 
+
+    /** Interaction strength */
+
+    const scalar& G() const { return _G; }
+
 };
 
 #endif // EOS_H

@@ -40,6 +40,7 @@ public:
     
     scalar& operator[] (uint i) {  return field[i];  }
 
+
     
     /** Synchronization across procceses */
 
