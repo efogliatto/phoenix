@@ -8,7 +8,7 @@ class LiMRTEq : public pseudoPotEquation {
 public:
 
     
-    /** Default constructor */
+    /** Constructor */
 
     LiMRTEq( const std::string& name,
 	     const latticeMesh& mesh_,

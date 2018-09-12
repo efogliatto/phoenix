@@ -209,9 +209,9 @@ pseudoPotEquation::pseudoPotEquation( const string& name,
 
     dictionary dict("properties/macroProperties");
 
-    gravity  = dict.lookUp< vector<scalar> >("Navier-Stokes/gravity");
+    gravity  = dict.lookUp< vector<scalar> >(name + "/gravity");
 
-    extForce = dict.lookUp< vector<scalar> >("Navier-Stokes/extForce");
+    extForce = dict.lookUp< vector<scalar> >(name + "/extForce");
 
 
     
@@ -227,7 +227,7 @@ pseudoPotEquation::pseudoPotEquation( const string& name,
 	weights.push_back( 1.0/12 );
 	weights.push_back( 1.0/12 );
 	weights.push_back( 1.0/12 );
-	weights.push_back( 1.0/12 );	
+	weights.push_back( 1.0/12 );
 
     }
 
