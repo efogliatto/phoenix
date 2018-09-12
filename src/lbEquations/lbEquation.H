@@ -40,6 +40,12 @@ protected:
     pdfField& pdf;
 
 
+    /** Swap auxiliary field */
+
+    std::vector< std::vector<scalar> > swap;    
+    
+
+
 
 public:
 
@@ -65,7 +71,12 @@ public:
 
     /** Streamming process */
 
-    virtual const void streamming() = 0;
+    const void streaming();
+
+
+    /** Set pdf to equilibrium values */
+
+    virtual const void setEquilibrium() = 0;
     
 
 };

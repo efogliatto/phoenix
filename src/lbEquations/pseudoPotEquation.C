@@ -102,10 +102,6 @@ pseudoPotEquation::~pseudoPotEquation() {}
 const void pseudoPotEquation::collision() {}
 
 
-/** Streamming process */
-
-const void pseudoPotEquation::streamming() {}
-
 
 /** Update macroscopic density */
 

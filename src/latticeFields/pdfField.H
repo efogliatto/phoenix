@@ -15,7 +15,6 @@ protected:
     std::vector< std::vector<scalar> > field;
 
 
-
     /** Read field using ensight format */
 
     const void read();    
@@ -48,8 +47,8 @@ public:
 
     /** Write field using ensight format */
 
-    const void write() const;        
-    
+    const void write() const;
+
 
 };
 

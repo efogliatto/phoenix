@@ -26,7 +26,7 @@ const void pdfField::read() {
     uint q = mesh.lmodel()->q();
 
     for( uint i = 0 ; i < field.size() ; i++ )
-    	field[i].resize(q);    
+	field[i].resize(q);	
 
 
     float *auxField = (float*)malloc( mesh.npoints() * sizeof(float) );
@@ -122,7 +122,8 @@ pdfField::pdfField( const latticeMesh& m, timeOptions& t, const std::string& nm,
 	field.resize( mesh.npoints() );
 
 	for( uint i = 0 ; i < field.size() ; i++ )
-	    field[i].resize( mesh.lmodel()->q() );   	
+	    field[i].resize( mesh.lmodel()->q() );
+
 	
 	break;
 

@@ -4,4 +4,5 @@
 add_library(lbequations SHARED 
   lbEquation.C
   pseudoPotEquation.C
+  LiMRTEq.C
   )

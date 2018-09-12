@@ -110,6 +110,11 @@ public:
     /** Reference to model */
 
     const latticeModel* lmodel() const { return lbmodel; }
+
+
+    /** Reference to neighbours array */
+
+    const std::vector< std::vector<int> >& nbArray() const { return nb; }
     
     
 };

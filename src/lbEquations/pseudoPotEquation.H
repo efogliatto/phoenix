@@ -85,11 +85,6 @@ public:
     virtual const void collision() = 0;
 
 
-    /** Streamming process */
-
-    virtual const void streamming() = 0;
-
-
     /** Update macroscopic density */
 
     const void updateMacroDensity();
@@ -99,6 +94,13 @@ public:
 
     const void updateMacroVelocity();
 
+
+    /** Set pdf to equilibrium values */
+
+    virtual const void setEquilibrium() = 0;
+
+
+    
 };
 
 
