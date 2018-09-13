@@ -217,7 +217,7 @@ const vector<string> dictionary::tkEntry( const std::string& ename ) const {
 /** Extract string from entry */
 
 const void dictionary::extract( const std::vector<std::string>& elist, string& res ) const {
-
+   
     res = elist[0];
 
 }

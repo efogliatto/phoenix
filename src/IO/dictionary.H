@@ -83,7 +83,21 @@ public:
 
 	T out;
 
-	extract( tkEntry(entry), out );
+	std::vector<std::string> elist = tkEntry(entry);
+
+	if( elist.size() == 0 ) {
+
+	    std::cout << " [ERROR]  Unable to find entry " << entry << std::endl;
+
+	    exit(1);
+
+	}
+
+	else {
+
+	    extract( elist, out );
+
+	}
 	
 	return out;
 

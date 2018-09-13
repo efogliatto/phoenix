@@ -19,9 +19,9 @@ protected:
 public:
 
 
-    /** Default constructor */
+    /** Constructor */
 
-    vanDerWaals( const std::string fname );
+    vanDerWaals( const std::string& dictName, const std::string& eqName );
 
 
     /** Default destructor */

@@ -27,39 +27,39 @@ protected:
     scalarField& T;
 
 
-    /** Interaction force */
+    // /** Interaction force */
 
-    vectorField Fi;
-
-
-    /** Total force */
-
-    vectorField Ft;
+    // vectorField Fi;
 
 
-    /** Equation of state */
+    // /** Total force */
 
-    EOS* eos;
-
-
-    /** Gravity vector */
-
-    std::vector<scalar> gravity;
+    // vectorField Ft;
 
 
-    /** External fixed force */
+    // /** Equation of state */
 
-    std::vector<scalar> extForce;
+    // EOS* eos;
+
+
+    // /** Gravity vector */
+
+    // std::vector<scalar> gravity;
+
+
+    // /** External fixed force */
+
+    // std::vector<scalar> extForce;
     
 
-    /** Pseudopotential weights */
+    // /** Pseudopotential weights */
 
-    std::vector<scalar> weights;
+    // std::vector<scalar> weights;
 
 
-    /** Average density */
+    // /** Average density */
 
-    scalar rho_0;
+    // scalar rho_0;
 
 
     
@@ -76,15 +76,15 @@ protected:
 
 
     
-    /** Interaction force field */
+    // /** Interaction force field */
 
-    const void updateIntForce();
+    // const void updateIntForce();
 
 
     
-    /** Total force field */
+    // /** Total force field */
 
-    const void updateTotalForce();
+    // const void updateTotalForce();
     
 
 

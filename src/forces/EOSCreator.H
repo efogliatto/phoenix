@@ -12,7 +12,7 @@ public:
 
     // Create with name
     
-    EOS* create( const std::string& fname );
+    EOS* create( const std::string& dictName, const std::string& eqName );
     
 
 };

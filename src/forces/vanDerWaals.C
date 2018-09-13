@@ -8,16 +8,19 @@ using namespace std;
 
 /** Default constructor */
 
-vanDerWaals::vanDerWaals( const std::string fname ) : EOS("vanDerWaals") {
+vanDerWaals::vanDerWaals( const std::string& dictName,
+			  const std::string& eqName )
+
+    : EOS("vanDerWaals") {
 
 
     // Open dictionary
 
-    dictionary dict( fname );
+    dictionary dict( dictName );
 
-    a = dict.lookUp<scalar>("EOS/a_vdw");
+    a = dict.lookUp<scalar>( eqName + "/Forces/EOS/a" );
 
-    b = dict.lookUp<scalar>("EOS/b_vdw");
+    b = dict.lookUp<scalar>( eqName + "/Forces/EOS/b" );
 
 }
 

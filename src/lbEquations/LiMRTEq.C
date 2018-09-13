@@ -20,8 +20,8 @@ LiMRTEq::LiMRTEq( const string& name,
 						       T_) {
 
 
-    for(uint i = 0 ; i < mesh.npoints() ; i++)
-	cout << pdf_[i][0] << endl;
+    // for(uint i = 0 ; i < mesh.npoints() ; i++)
+    // 	cout << pdf_[i][0] << endl;
     
     // // Set equilibrium pdf values
 
@@ -46,44 +46,44 @@ const void LiMRTEq::collision() {}
 const void LiMRTEq::setEquilibrium() {
 
     
-    // Lattice model properties
+    // // Lattice model properties
 
-    vector< vector<int> > vel = mesh.lmodel()->lvel();
+    // vector< vector<int> > vel = mesh.lmodel()->lvel();
 
-    vector<scalar> omega = mesh.lmodel()->omega();
+    // vector<scalar> omega = mesh.lmodel()->omega();
     
-    scalar cs2 = mesh.lmodel()->cs2();
+    // scalar cs2 = mesh.lmodel()->cs2();
     
 
-    // Compute equilibrium for all points
+    // // Compute equilibrium for all points
     
-    for( uint i = 0 ; i < mesh.npoints() ; i++ ) {
+    // for( uint i = 0 ; i < mesh.npoints() ; i++ ) {
 
     
-    	for( uint k = 0 ; k < _q ; k++ ) {
+    // 	for( uint k = 0 ; k < _q ; k++ ) {
 
-    	    scalar alpha = 0,
-    		beta = 0;
+    // 	    scalar alpha = 0,
+    // 		beta = 0;
 
 
-    	    // Dot product
+    // 	    // Dot product
 	
-    	    for( uint j = 0 ; j < 3 ; j++ ) {
+    // 	    for( uint j = 0 ; j < 3 ; j++ ) {
 
-    		alpha += vel[k][j] * U[i][j];
+    // 		alpha += vel[k][j] * U[i][j];
 
-    		beta += U[i][j] * U[i][j];
+    // 		beta += U[i][j] * U[i][j];
 
-    	    }
+    // 	    }
 
 	    
-    	    // pdf[i][k] = rho[i] * omega[k] * ( 1 + alpha/cs2   +   0.5 * alpha * alpha / (cs2*cs2)  -  0.5 * beta / cs2 );
-	    // cout << pdf[i][0] << endl;	
+    // 	    // pdf[i][k] = rho[i] * omega[k] * ( 1 + alpha/cs2   +   0.5 * alpha * alpha / (cs2*cs2)  -  0.5 * beta / cs2 );
+    // 	    // cout << pdf[i][0] << endl;	
 
-    	}
+    // 	}
 	
 
-    }
+    // }
     
 
 }

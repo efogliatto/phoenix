@@ -1,1 +1,1 @@
-../src/EOS/vanDerWaals.H
+../src/forces/vanDerWaals.H

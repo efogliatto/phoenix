@@ -33,9 +33,9 @@ add_subdirectory (latticeFields)
 add_subdirectory (lbEquations)
 
 
-# Equations of State
+# Forces
 
-add_subdirectory (EOS)
+add_subdirectory (forces)
 
 
 
