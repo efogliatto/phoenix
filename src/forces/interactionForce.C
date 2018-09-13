@@ -26,7 +26,7 @@ interactionForce::interactionForce( const string& dictName,
 
     dictionary dict(dictName);
 
-    _G = dict.lookUp<scalar>( eqName + "/Forces/G" );
+    _G = dict.lookUp<scalar>( eqName + "/Forces/Interaction/G" );
 
 
 
