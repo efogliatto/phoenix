@@ -23,34 +23,34 @@ class latticeModel {
 protected:
 
   
-  /** Dimension */
+    /** Dimension */
 
-  uint _d;
-
-
-  /** Number of velocities */
-
-  uint _q;
+    uint _d;
 
 
-  /** Discrete lattice velocities */
+    /** Number of velocities */
+
+    uint _q;
+
+
+    /** Discrete lattice velocities */
   
-  std::vector< std::vector<int> > _lvel;
+    std::vector< std::vector<int> > _lvel;
 
 
-  /** Lattice weights */
+    /** Lattice weights */
 
-  std::vector<scalar> _omega;
+    std::vector<scalar> _omega;
   
     
-  /** Reverse direction */
+    /** Reverse direction */
   
-  std::vector<uint> _reverse;  
+    std::vector<uint> _reverse;  
 
 
-  /** Squared sound speed */
+    /** Squared sound speed */
   
-  scalar _cs2;
+    scalar _cs2;
   
 
 
@@ -62,52 +62,56 @@ protected:
 public:
 
   
-  // Constructors and destructors
+    // Constructors and destructors
 
-  /** Default constructor */
+    /** Default constructor */
 
-  latticeModel();
+    latticeModel();
 
   
-  /** Default destructor */
+    /** Default destructor */
 
-  ~latticeModel();
-
-
+    ~latticeModel();
 
 
-  // Access members
+
+
+    // Access members
  
   
-  /** Dimension */
+    /** Dimension */
   
-  virtual const uint& d() const = 0;
+    virtual const uint& d() const = 0;
 
   
-  /** Number of lattice velocities */
+    /** Number of lattice velocities */
   
-  const uint q() const;
+    const uint q() const;
 
   
-  /** Square of sound speed */
+    /** Square of sound speed */
   
-  const scalar& cs2() const;
+    const scalar& cs2() const;
 
 
-  /** Discrete lattice velocities */
+    /** Discrete lattice velocities */
   
-  const std::vector< std::vector<int> >& lvel() const;
+    const std::vector< std::vector<int> >& lvel() const;
   
   
-  /** Lattice weights */
+    /** Lattice weights */
   
-  const std::vector<scalar>& omega() const;
+    const std::vector<scalar>& omega() const;
   
 
-  /** Reverse indices */
+    /** Reverse indices */
   
-  const std::vector<uint>& reverse() const;
-  
+    const std::vector<uint>& reverse() const;
+
+
+    /** Model name */
+
+    const std::string name() const { return "D" + std::to_string(_d) + "Q" + std::to_string(_q);  }
 
 };
 

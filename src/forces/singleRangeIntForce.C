@@ -10,7 +10,45 @@ singleRangeIntForce::singleRangeIntForce( const string& dictName,
 					  const latticeMesh& mesh,
 					  timeOptions& Time )
 
-    : interactionForce(dictName, eqName, mesh, Time) {}
+    : interactionForce(dictName, eqName, mesh, Time) {
+
+
+    // Update pseudo pot weights
+
+    string model = mesh.lmodel()->name();
+
+    if( model == "D2Q9" ) {
+
+    	_weights.push_back( 0 );
+    	_weights.push_back( 1.0/3 );
+    	_weights.push_back( 1.0/3 );
+    	_weights.push_back( 1.0/3 );
+    	_weights.push_back( 1.0/3 );
+    	_weights.push_back( 1.0/12 );
+    	_weights.push_back( 1.0/12 );
+    	_weights.push_back( 1.0/12 );
+    	_weights.push_back( 1.0/12 );
+
+    }
+
+    else {
+
+	if( model == "D3Q15" ) {
+
+
+
+	}
+
+	else {
+
+	    cout << " [ERROR]  Potential weights not implemented yet for " << model << endl;
+
+	}
+
+    }
+
+}
+
 
 
 
