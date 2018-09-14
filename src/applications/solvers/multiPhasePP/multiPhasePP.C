@@ -4,6 +4,8 @@
 
 #include <LiMRTEq.H>
 
+#include <intForce.H>
+
 
 using namespace std;
 
@@ -72,50 +74,58 @@ int main( int argc, char **argv ) {
 
     pdfField g( mesh, Time, "g", IO::MUST_READ, IO::MUST_WRITE );
 
-    
-    
-    // Li MRT equation
 
-    LiMRTEq NS("Navier-Stokes", mesh, Time, f, rho, U, T);
+    // // Interaction force
+
+    // intForce fcreator;
+    
+    // interactionForce* Fi = fcreator.create("properties/macroProperties", "Navier-Stokes", mesh, Time);
+
+    
+    
+    
+    // // Li MRT equation
+
+    // LiMRTEq NS("Navier-Stokes", mesh, Time, f, rho, U, T);
 
     // for(uint i = 0 ; i < mesh.local() ; i++)
     // 	cout << f[i][0] << endl;
 
     
-    // // Advance in time. Collide, stream, update and write
+    // Advance in time. Collide, stream, update and write
     
-    // while( Time.update() ) {
+    while( Time.update() ) {
 
 
 
-    // 	// Write fields
+    	// Write fields
 	
-    // 	if( Time.write() ) {
+    	if( Time.write() ) {
 
 
-    // 	    rho.write();
+    	    rho.write();
 
-    // 	    T.write();
+    	    T.write();
 
-    // 	    U.write();
+    	    U.write();
 
-    // 	    f.write();
+    	    f.write();
 
-    // 	    g.write();
+    	    g.write();
 
 	    
-    // 	    if(pid == 0) {
+    	    if(pid == 0) {
 		
-    // 		cout << "Time = " << Time.currentTime() << endl;
+    		cout << "Time = " << Time.currentTime() << endl;
 		
-    // 		cout << "Elapsed time = " << std::fixed << std::setprecision(2) << Time.elapsed() << " seconds" << endl << endl;
+    		cout << "Elapsed time = " << std::fixed << std::setprecision(2) << Time.elapsed() << " seconds" << endl << endl;
 		
-    // 	    }
+    	    }
 	    
 
-    // 	}
+    	}
 
-    // }
+    }
 
 
 

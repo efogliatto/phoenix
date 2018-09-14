@@ -8,4 +8,7 @@ add_library(forces SHARED
   interactionForce.C
   singleRangeIntForce.C
   intForce.C
+  buoyantForce.C
+  fixedDensityBForce.C
+  bForces.C
   )

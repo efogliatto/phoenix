@@ -52,7 +52,7 @@ set ( PROJECT_LINK_LIBS
   libmesh.so
   liblatticefields.so
   liblbequations.so
-  libeos.so
+  libforces.so
   m
   # ${MPI_LIBRARIES}
   )

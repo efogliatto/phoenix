@@ -3,9 +3,9 @@
 using namespace std;
 
 
-/** Overloaded () operator */
+/** Force creator */
 
-interactionForce* intForce::operator() (const string& dictName, const string& eqName, const latticeMesh& mesh, timeOptions& Time) {
+interactionForce* intForce::create (const string& dictName, const string& eqName, const latticeMesh& mesh, timeOptions& Time) {
 
     
     // Load model name from dictionary

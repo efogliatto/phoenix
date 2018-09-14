@@ -8,19 +8,11 @@ class intForce {
 
 public:
 
-    /** Constructor */
     
-    intForce( const std::string& dictName, const std::string& eqName, const latticeMesh& mesh, timeOptions& Time );
+    /** Force creator */
+    
+    interactionForce* create( const std::string& dictName, const std::string& eqName, const latticeMesh& mesh, timeOptions& Time );
 
-
-    /** Destructor */
-
-    ~intForce();
-
-
-    /** Overloaded () operator */
-
-    interactionForce* operator() (const std::string& dictName, const std::string& eqName, const latticeMesh& mesh, timeOptions& Time);
 
 };
 
