@@ -30,7 +30,7 @@ protected:
     EOS* eos;
 
 
-    /** Interaction strenght */
+    /** Interaction strength */
 
     scalar _G;
 
@@ -62,6 +62,11 @@ public:
     /** Interaction potential */
 
     const scalar potential( const scalar& rho, const scalar& T, const scalar& cs2 ) const;
+
+
+    /** Synv force field */
+
+    const void sync() { _force.sync(); }
     
 
 };

@@ -15,7 +15,7 @@ fixedDensityBForce::fixedDensityBForce( const string& dictName,
     
     dictionary dict(dictName);
 
-    _rhoRef = dict.lookUp<scalar>( eqName + "/Buoyancy/rhoRef" );    
+    _rhoRef = dict.lookUp<scalar>( eqName + "/Buoyancy/rhoRef" );
 
 }
 

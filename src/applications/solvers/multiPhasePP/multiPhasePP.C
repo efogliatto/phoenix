@@ -4,8 +4,6 @@
 
 #include <LiMRTEq.H>
 
-#include <intForce.H>
-
 
 using namespace std;
 
@@ -75,13 +73,7 @@ int main( int argc, char **argv ) {
     pdfField g( mesh, Time, "g", IO::MUST_READ, IO::MUST_WRITE );
 
 
-    // // Interaction force
-
-    // intForce fcreator;
-    
-    // interactionForce* Fi = fcreator.create("properties/macroProperties", "Navier-Stokes", mesh, Time);
-
-    
+   
     
     
     // // Li MRT equation
