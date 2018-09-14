@@ -13,6 +13,8 @@
 
 #include <dataTypes.H>
 
+#include <scalarMatrix.H>
+
 
 
 
@@ -51,6 +53,14 @@ protected:
     /** Squared sound speed */
   
     scalar _cs2;
+
+
+    /** MRT Matrix */
+
+    scalarMatrix M;
+
+    scalarMatrix invM;
+    
   
 
 
@@ -112,6 +122,13 @@ public:
     /** Model name */
 
     const std::string name() const { return "D" + std::to_string(_d) + "Q" + std::to_string(_q);  }
+
+
+    /** MRT Matrices */
+
+    const scalarMatrix& MRTMatrix() const { return M; }
+
+    const scalarMatrix& MRTInvMatrix() const { return invM; }    
 
 };
 

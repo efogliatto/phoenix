@@ -1,1 +1,1 @@
-../src/lbEquations/pseudoPotEquation.H
+../src/lbEquations/pseudopotential/pseudoPotEquation.H

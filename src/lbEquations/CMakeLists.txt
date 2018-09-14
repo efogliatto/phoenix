@@ -3,6 +3,7 @@
 # lattice-boltzmann equations library
 add_library(lbequations SHARED 
   lbEquation.C
-  pseudoPotEquation.C
-  LiMRTEq.C
+  pseudopotential/pseudoPotEquation.C
+  pseudopotential/LiMRTEq.C
+  pseudopotential/PPEquation.C
   )

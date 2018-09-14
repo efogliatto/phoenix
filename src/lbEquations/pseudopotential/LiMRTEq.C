@@ -38,11 +38,76 @@ LiMRTEq::~LiMRTEq() {}
 
 
 
+
 /** Collision process */
 
-const void LiMRTEq::collision() {}
+const void LiMRTEq::collision() {
 
     
+    // Lattice constants
+
+    scalarMatrix M = mesh.lmodel()->MRTMatrix();
+
+    scalarMatrix invM = mesh.lmodel()->MRTInvMatrix();    
+
+    const uint nodes = mesh.npoints();
+
+
+    
+    // Partial distributions
+    
+    vector<scalar> m     = {0,0,0,0,0,0,0,0,0};   // m:  momentum space
+    
+    vector<scalar> m_eq  = {0,0,0,0,0,0,0,0,0};   // meq: equilibrium in momentum space
+
+    vector<scalar> S     = {0,0,0,0,0,0,0,0,0};   // MRT force
+
+    vector<scalar> C     = {0,0,0,0,0,0,0,0,0};   // Surface tension term
+
+
+    
+
+    // Move over all points
+
+    for( uint id = 0 ; id < nodes ; id++ ) {
+
+
+	// Velocity magnitude
+
+	scalar umag (0);
+	
+	for( uint j = 0 ; j < 3 ; j++ )	
+	    umag += U[id][j] * U[id][j];
+
+
+	
+	// Compute equilibrium in momentum space
+	
+	m_eq[0] = rho[id];
+	m_eq[1] = rho[id] * (-2 + 3*umag);
+	m_eq[2] = rho[id] * (1 - 3*umag);
+	m_eq[3] = rho[id] *   U[id][0];
+	m_eq[4] = rho[id] * (-U[id][0]);
+	m_eq[5] = rho[id] *   U[id][1];
+	m_eq[6] = rho[id] * (-U[id][1]);
+	m_eq[7] = rho[id] * (U[id][0]*U[id][0] - U[id][1]*U[id][1]);
+	m_eq[8] = rho[id] * U[id][0] * U[id][1];
+	
+
+	// Distribution in momentum space
+
+	// M.matDotVec(_pdf[id], m_eq);
+	
+
+    }
+
+    
+
+}
+
+
+
+
 /** Set pdf to equilibrium values */
 
 const void LiMRTEq::setEquilibrium() {

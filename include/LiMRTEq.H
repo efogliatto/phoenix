@@ -1,1 +1,1 @@
-../src/lbEquations/LiMRTEq.H
+../src/lbEquations/pseudopotential/LiMRTEq.H

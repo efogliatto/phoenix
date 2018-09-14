@@ -2,7 +2,7 @@
 
 #include <iomanip>
 
-#include <LiMRTEq.H>
+#include <PPEquation.H>
 
 
 using namespace std;
@@ -78,7 +78,9 @@ int main( int argc, char **argv ) {
     
     // Li MRT equation
 
-    LiMRTEq NS("Navier-Stokes", mesh, Time, f, rho, U, T);
+    PPEquation NSEq;
+
+    pseudoPotEquation* NS = NSEq.create("Navier-Stokes", mesh, Time, f, rho, U, T);
 
 
 
