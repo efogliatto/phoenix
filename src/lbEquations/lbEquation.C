@@ -8,21 +8,26 @@ using namespace std;
 lbEquation::lbEquation( const string& name,
 			const latticeMesh& mesh_,
 			timeOptions& Time_,
-			pdfField& pdf_) : ename (name),
-					  mesh(mesh_),
-					  Time(Time_),
-					  _q( mesh.lmodel()->q() ),					  
-					  pdf(pdf_) {
+			pdfField& pdf_)
+    : ename (name),
+      mesh(mesh_),
+      Time(Time_),
+      _pdf(pdf_) {
 
+
+    
 
     // Resize swap array
 
-    swap.resize( mesh.local() );
+    const uint q = mesh.lmodel()->q();
 
-    for( uint i = 0 ; i < swap.size() ; i++ )
-	swap[i].resize(_q);
+    const uint np = mesh.local();
+
+    _swap.resize( np );
+
+    for( uint i = 0 ; i < np ; i++ )
+    	_swap[i].resize(q);    
     
-
 }
 
 
@@ -48,19 +53,20 @@ const void lbEquation::streaming() {
 
     // References
 
-    const vector< vector<int> > nb = mesh.nbArray();
-    
+    const vector< vector<int> >& nb = mesh.nbArray();
+
+    const uint q = mesh.lmodel()->q();
     
     
     // Copy all values to swap
 
     for( uint i = 0 ; i < mesh.local() ; i++ ) {
 
-	for( uint k = 0 ; k < _q ; k++ ) {
+    	for( uint k = 0 ; k < q ; k++ ) {
 
-	    swap[i][k] = pdf[i][k];
+    	    _swap[i][k] = _pdf[i][k];
 	    
-	}
+    	}
 
     }
 
@@ -69,13 +75,13 @@ const void lbEquation::streaming() {
 
     for( uint i = 0 ; i < mesh.local() ; i++ ) {
 
-    	for( uint k = 0 ; k < _q ; k++ ) {
+    	for( uint k = 0 ; k < q ; k++ ) {
 
     	    int neighId = nb[i][k];
 
     	    if( neighId != -1 ) {
 
-    		swap[i][k] = pdf[neighId][k];
+    		_swap[i][k] = _pdf[neighId][k];
 
     	    }
     
@@ -89,9 +95,9 @@ const void lbEquation::streaming() {
     
     for( uint i = 0 ; i < mesh.local() ; i++ ) {
 
-    	for( uint k = 0 ; k < _q ; k++ ) {
+    	for( uint k = 0 ; k < q ; k++ ) {
 
-    	    pdf[i][k] = swap[i][k];
+    	    _pdf[i][k] = _swap[i][k];
 	    
     	}
 

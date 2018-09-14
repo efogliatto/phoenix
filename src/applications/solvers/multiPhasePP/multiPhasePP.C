@@ -76,12 +76,11 @@ int main( int argc, char **argv ) {
    
     
     
-    // // Li MRT equation
+    // Li MRT equation
 
-    // LiMRTEq NS("Navier-Stokes", mesh, Time, f, rho, U, T);
+    LiMRTEq NS("Navier-Stokes", mesh, Time, f, rho, U, T);
 
-    // for(uint i = 0 ; i < mesh.local() ; i++)
-    // 	cout << f[i][0] << endl;
+
 
     
     // Advance in time. Collide, stream, update and write

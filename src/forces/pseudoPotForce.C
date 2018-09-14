@@ -5,7 +5,12 @@ using namespace std;
 
 /** Constructor */
 
-pseudoPotForce::pseudoPotForce( const string& dictName, const string& eqName, const latticeMesh& mesh, timeOptions& Time ) {
+pseudoPotForce::pseudoPotForce( const string& dictName,
+				const string& eqName,
+				const latticeMesh& mesh,
+				timeOptions& Time )
+
+    : _Fe(dictName, eqName) {
 
 
     // Create interaction force
@@ -41,9 +46,9 @@ const vector<scalar> pseudoPotForce::total( const uint& id ) const {
 
     vector<scalar> Fb = _Fb->force(id);
 
-    return { Fi[0] + Fb[0],
-	     Fi[1] + Fb[1],
-	     Fi[2] + Fb[2]};    
+    return { Fi[0] + Fb[0] + _Fe[0],
+	     Fi[1] + Fb[1] + _Fe[1],
+	     Fi[2] + Fb[2] + _Fe[2] };    
 
 }
 

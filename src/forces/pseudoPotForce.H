@@ -5,6 +5,8 @@
 
 #include <intForce.H>
 
+#include <externalForce.H>
+
 
 class pseudoPotForce {
 
@@ -20,6 +22,11 @@ protected:
     /** Buoyant force */
 
     buoyantForce* _Fb;
+
+
+    /** External force */
+
+    externalForce _Fe;
 
 
 public:

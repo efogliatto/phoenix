@@ -28,21 +28,16 @@ protected:
     /** Reference to time options */
 
     timeOptions& Time;
-
-
-    /** Cached lattice q (efficiency) */
-
-    const uint _q;
     
 
     /** Reference to external pdf field */
 
-    pdfField& pdf;
+    pdfField& _pdf;
 
 
     /** Swap auxiliary field */
 
-    std::vector< std::vector<scalar> > swap;    
+    std::vector< std::vector<scalar> > _swap;
     
 
 

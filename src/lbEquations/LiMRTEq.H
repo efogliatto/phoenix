@@ -13,7 +13,7 @@ public:
     LiMRTEq( const std::string& name,
 	     const latticeMesh& mesh_,
 	     timeOptions& Time_,
-	     pdfField pdf_,
+	     pdfField& pdf_,
 	     scalarField& rho_,
 	     vectorField& U_,
 	     scalarField& T_);

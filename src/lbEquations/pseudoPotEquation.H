@@ -5,6 +5,9 @@
 
 #include <EOSCreator.H>
 
+#include <pseudoPotForce.H>
+
+
 
 class pseudoPotEquation : public lbEquation {
 
@@ -27,39 +30,9 @@ protected:
     scalarField& T;
 
 
-    // /** Interaction force */
+    /** Model related forces */
 
-    // vectorField Fi;
-
-
-    // /** Total force */
-
-    // vectorField Ft;
-
-
-    // /** Equation of state */
-
-    // EOS* eos;
-
-
-    // /** Gravity vector */
-
-    // std::vector<scalar> gravity;
-
-
-    // /** External fixed force */
-
-    // std::vector<scalar> extForce;
-    
-
-    // /** Pseudopotential weights */
-
-    // std::vector<scalar> weights;
-
-
-    // /** Average density */
-
-    // scalar rho_0;
+    pseudoPotForce F;
 
 
     
@@ -74,17 +47,6 @@ protected:
 
     const void localVelocity( std::vector<scalar>& v, const uint& id );
 
-
-    
-    // /** Interaction force field */
-
-    // const void updateIntForce();
-
-
-    
-    // /** Total force field */
-
-    // const void updateTotalForce();
     
 
 
@@ -97,7 +59,7 @@ public:
     pseudoPotEquation( const std::string& name,
 		       const latticeMesh& mesh_,
 		       timeOptions& Time_,
-		       pdfField pdf_,
+		       pdfField& pdf_,
 		       scalarField& rho_,
 		       vectorField& U_,
 		       scalarField& T_);

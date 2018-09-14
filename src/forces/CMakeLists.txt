@@ -11,5 +11,6 @@ add_library(forces SHARED
   buoyantForce.C
   fixedDensityBForce.C
   bForces.C
+  externalForce.C
   pseudoPotForce.C
   )

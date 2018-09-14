@@ -35,10 +35,15 @@ public:
 
 
 
-    /** Access operator */
+    /** Access operator [] */
     
     std::vector<scalar>& operator[] (uint i) {  return field[i];  }
 
+
+    /** Member set */
+    
+    const void set(uint& i, uint& j, const scalar& val) {  field[i][j] = val;  }    
+    
     
     /** Synchronization across procceses */
 
