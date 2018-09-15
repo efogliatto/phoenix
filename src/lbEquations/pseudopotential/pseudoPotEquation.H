@@ -90,7 +90,6 @@ public:
 
     virtual const void setEquilibrium() = 0;
 
-
     
 };
 

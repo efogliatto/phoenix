@@ -68,9 +68,9 @@ int main( int argc, char **argv ) {
     pdfField f( mesh, Time, "f", IO::MUST_READ, IO::MUST_WRITE );
 
 
-    // PDF field. energy equation
+    // // PDF field. energy equation
 
-    pdfField g( mesh, Time, "g", IO::MUST_READ, IO::MUST_WRITE );
+    // pdfField g( mesh, Time, "g", IO::MUST_READ, IO::MUST_WRITE );
 
 
    
@@ -94,7 +94,14 @@ int main( int argc, char **argv ) {
 
 	NS->collision();
 
-	// NS->streaming();
+	NS->streaming();
+
+
+	// Update macroscopic fields
+
+	NS->updateMacroDensity();
+
+	NS->updateMacroVelocity();
 
 	
 
@@ -113,7 +120,7 @@ int main( int argc, char **argv ) {
 
     	    f.write();
 
-    	    g.write();
+    	    // g.write();
 
 	    
     	    if(pid == 0) {
