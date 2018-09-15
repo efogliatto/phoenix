@@ -64,6 +64,7 @@ const void LiMRTEq::collision() {
 
     const scalar q = mesh.lmodel()->q();
 
+    scalar Ft[3];
 
     
     // Partial distributions
@@ -124,42 +125,37 @@ const void LiMRTEq::collision() {
 
 	scalar psi = F.potential( r, T.at(id), cs2 );
 
-	// const vector<scalar> Ft = F.total(id);
-	scalar Ft[3];
 	F.total(Ft, id);
 
 	const scalar Fi[3] = { F.interaction(id,0), F.interaction(id,1), F.interaction(id,2) };
 
 
-	// S[0] = 0;
-	// S[1] =  6 * (u[0]*Ft[0] + u[1]*Ft[1]) + 12 * _sigma * (Fi[0]*Fi[0] + Fi[1]*Fi[1]) / (psi * psi * ((1/_Tau[1])-0.5));
-	// S[2] = -6 * (u[0]*Ft[0] + u[1]*Ft[1]) - 12 * _sigma * (Fi[0]*Fi[0] + Fi[1]*Fi[1]) / (psi * psi * ((1/_Tau[2])-0.5));
-	// S[3] = Ft[0];
-	// S[4] = -Ft[0];
-	// S[5] = Ft[1];
-	// S[6] = -Ft[1];
-	// S[7] = 2 * (u[0]*Ft[0] - u[1]*Ft[1]);
-	// S[8] = u[0]*Ft[1] + u[1]*Ft[0];
+	S[0] = 0;
+	S[1] =  6 * (u[0]*Ft[0] + u[1]*Ft[1]) + 12 * _sigma * (Fi[0]*Fi[0] + Fi[1]*Fi[1]) / (psi * psi * ((1/_Tau[1])-0.5));
+	S[2] = -6 * (u[0]*Ft[0] + u[1]*Ft[1]) - 12 * _sigma * (Fi[0]*Fi[0] + Fi[1]*Fi[1]) / (psi * psi * ((1/_Tau[2])-0.5));
+	S[3] = Ft[0];
+	S[4] = -Ft[0];
+	S[5] = Ft[1];
+	S[6] = -Ft[1];
+	S[7] = 2 * (u[0]*Ft[0] - u[1]*Ft[1]);
+	S[8] = u[0]*Ft[1] + u[1]*Ft[0];
 
 
 
 
-	// // Collision in moment space
+	// Collision in moment space
 	
-	// for( uint k = 0 ; k < q ; k++ ) {
+	for( uint k = 0 ; k < q ; k++ ) {
 
-	//     m[k] = m[k]  -  _Tau[k]*( m[k] - m_eq[k] )  +  ( 1 - 0.5*_Tau[k] ) * S[k];
+	    m[k] = m[k]  -  _Tau[k]*( m[k] - m_eq[k] )  +  ( 1 - 0.5*_Tau[k] ) * S[k];
 	    
-	// }
+	}
 
 	
 	
-	// // Back to population space
+	// Back to population space
 	
-	// invM.matDotVec(m, _pdf[id]);
-	
-
-	
+	invM.matDotVec(m, _pdf[id]);		
 	
 
     }
