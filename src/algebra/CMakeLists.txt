@@ -4,4 +4,5 @@
 add_library(algebra SHARED 
   scalarVector.C
   scalarMatrix.C
+  sparseScalarMatrix.C
   )

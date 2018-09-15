@@ -115,3 +115,29 @@ const void scalarMatrix::matDotVec (const scalarVector& V, scalarVector& res) co
     }
 
 }
+
+
+
+/** Matrix - vector multiplication */
+
+const void scalarMatrix::matDotVec (const vector<scalar>& V, vector<scalar>& res) const {
+
+    // Res MUST be preallocated for efficiency
+
+    if( _size == V.size() ) {
+
+	for( uint i = 0 ; i < _size ; i++ ) {
+
+	    res[i] = 0;
+
+	    for( uint j = 0 ; j < _size ; j++ ) {
+
+		res[i] += (*this)[i][j] * V[j];
+
+	    }
+
+	}	
+
+    }
+
+}

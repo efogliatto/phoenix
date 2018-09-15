@@ -64,6 +64,11 @@ public:
 
     const void matDotVec (const scalarVector& V, scalarVector& res) const;
 
+
+    /** Matrix - vector multiplication */
+
+    const void matDotVec (const std::vector<scalar>& V, std::vector<scalar>& res) const;
+    
     
 
 };
