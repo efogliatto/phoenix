@@ -115,6 +115,13 @@ public:
     /** Reference to neighbours array */
 
     const std::vector< std::vector<int> >& nbArray() const { return nb; }
+
+
+    /** Reference to boundary indiced */
+
+    const std::vector<uint>& boundaryNodes( const std::string& bdname ) const;
+
+    const std::map< std::string, std::vector<uint> >& boundaries() const { return boundary; }
     
     
 };

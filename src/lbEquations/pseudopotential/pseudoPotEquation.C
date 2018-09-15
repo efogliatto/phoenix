@@ -25,6 +25,24 @@ pseudoPotEquation::pseudoPotEquation( const string& name,
 
     F.update(rho,T);
 
+
+
+    // Read Boundary conditions
+
+    dictionary dict("start/boundaries");
+
+    const map< string, vector<uint> >& bnd = mesh.boundaries();
+
+    ppBndCreator BndCreator;
+
+    for(map< string, vector<uint> >::const_iterator iter = bnd.begin(); iter != bnd.end(); ++iter)  {
+	
+	string bdname = iter->first;
+
+	_boundaries.push_back( BndCreator.create(name, bdname, mesh.boundaryNodes(bdname) ) );
+
+    }
+
 }
 
 
@@ -140,5 +158,18 @@ const void pseudoPotEquation::updateMacroVelocity() {
     
     for( uint i = 0 ; i < mesh.npoints() ; i++ )	
 	localVelocity( U[i], i );	
+
+}
+
+
+/** Update boundaries */
+
+void pseudoPotEquation::updateBoundaries() {
+
+    for(uint i = 0 ; i < _boundaries.size() ; i++) {
+
+	_boundaries[i]->update( mesh, _pdf, rho, T, U, &F );
+
+    }
 
 }

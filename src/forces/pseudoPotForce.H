@@ -58,7 +58,7 @@ public:
 
     const scalar interaction( const uint& i, const uint& j ) const { return _Fi->force(i,j); }
 
-    void total( scalar Ft[3], const uint& id );
+    void total( scalar Ft[3], const uint& id ) const;
 
 
     /** Interaction force at node */

@@ -96,6 +96,8 @@ int main( int argc, char **argv ) {
 
 	NS->streaming();
 
+	NS->updateBoundaries();
+
 
 	// Update macroscopic fields
 

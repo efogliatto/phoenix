@@ -287,3 +287,34 @@ const void latticeMesh::readBoundaryNodes() {
     
 
 }
+
+
+
+
+
+
+/** Reference to boundary indices */
+
+const vector<uint>& latticeMesh::boundaryNodes( const std::string& bdname ) const {
+
+    
+    // Check if boundary nodes are in map
+
+    if ( boundary.find(bdname) != boundary.end() ) {
+
+	return boundary.at(bdname);
+	
+    }
+
+    else {
+
+	cout << " [ERROR]  Unable to find nodes from " << bdname << endl;
+
+	exit(1);
+
+    }
+
+    return boundary.at("");
+
+
+}

@@ -7,6 +7,8 @@
 
 #include <pseudoPotForce.H>
 
+#include <ppBndCreator.H>
+
 
 
 class pseudoPotEquation : public lbEquation {
@@ -33,6 +35,11 @@ protected:
     /** Model related forces */
 
     pseudoPotForce F;
+
+
+    /** Boundary conditions */
+
+    std::vector< ppBndCond* > _boundaries;
 
 
     
@@ -89,6 +96,11 @@ public:
     /** Set pdf to equilibrium values */
 
     virtual const void setEquilibrium() = 0;
+
+
+    /** Update boundaries */
+
+    void updateBoundaries();
 
     
 };

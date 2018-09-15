@@ -58,7 +58,7 @@ const vector<scalar> pseudoPotForce::total( const uint& id ) const {
 
 /** Total force  at node*/
 
-void pseudoPotForce::total( scalar Ft[3], const uint& id ) {
+void pseudoPotForce::total( scalar Ft[3], const uint& id ) const {
 
     const scalar Fi[3] = { _Fi->force(id,0), _Fi->force(id,1), _Fi->force(id,2) };
 

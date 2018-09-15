@@ -38,6 +38,11 @@ add_subdirectory (lbEquations)
 add_subdirectory (forces)
 
 
+# Boundary conditions
+
+add_subdirectory (boundary)
+
+
 
 
 # Specific applications

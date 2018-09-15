@@ -53,6 +53,7 @@ set ( PROJECT_LINK_LIBS
   liblatticefields.so
   liblbequations.so
   libforces.so
+  libboundary.so
   m
   # ${MPI_LIBRARIES}
   )
