@@ -29,12 +29,17 @@ protected:
     externalForce _Fe;
 
 
+    /** Reference to external density */
+
+    const scalarField& _rho;
+
+
 public:
 
 
     /** Constructor */
 
-    pseudoPotForce( const std::string& dictName, const std::string& eqName, const latticeMesh& mesh, timeOptions& Time );
+    pseudoPotForce( const std::string& dictName, const std::string& eqName, const latticeMesh& mesh, timeOptions& Time, const scalarField& rho );
 
 
     /** Destructor */
@@ -49,7 +54,11 @@ public:
 
     /** Interaction force at node */
 
-    const std::vector<scalar> interaction( const uint& id ) const;
+    const std::vector<scalar>& interaction( const uint& id ) const;
+
+    const scalar interaction( const uint& i, const uint& j ) const { return _Fi->force(i,j); }
+
+    void total( scalar Ft[3], const uint& id );
 
 
     /** Interaction force at node */
@@ -65,6 +74,11 @@ public:
     /** Sync force fields */
 
     void sync();
+
+
+    /** Interaction potential */
+
+    const scalar potential(const scalar& rho, const scalar& T, const scalar& cs2) const;
     
     
 };

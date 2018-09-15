@@ -57,6 +57,105 @@ scalarMatrix::~scalarMatrix() {}
 
 
 
+/** The copy-constructor */
+
+scalarMatrix::scalarMatrix( const scalarMatrix& M ) {
+
+    
+    // Allocate memory
+
+    _size = M.sz();
+    
+    (*this).resize( _size );
+
+    for( uint i = 0 ; i < _size ; i++ )
+	(*this)[i].resize(_size);
+
+
+    // Copy values
+
+    for( uint i = 0 ; i < _size ; i++ ) {
+
+	for( uint j = 0 ; j < _size ; j++ ) {
+
+	    (*this)[i][j] = M[i][j];
+
+	}
+
+    }
+
+}
+
+
+
+/** Overloaded copy operator */
+
+scalarMatrix& scalarMatrix::operator= (const scalarMatrix& M) {
+
+    if( this != &M ) {
+
+	// Allocate memory
+
+	_size = M.sz();
+    
+	(*this).resize( _size );
+
+	for( uint i = 0 ; i < _size ; i++ )
+	    (*this)[i].resize(_size);
+
+
+	// Copy values
+
+	for( uint i = 0 ; i < _size ; i++ ) {
+
+	    for( uint j = 0 ; j < _size ; j++ ) {
+
+		(*this)[i][j] = M[i][j];
+
+	    }
+
+	}	
+
+    }
+
+    return *this;
+
+}
+
+
+
+
+
+/** Set from array */
+
+void scalarMatrix::setFromArray( const std::vector< std::vector<scalar> >& M ) {
+
+    // Allocate memory
+
+    _size = M.size();
+    
+    (*this).resize( _size );
+
+    for( uint i = 0 ; i < _size ; i++ )
+	(*this)[i].resize(_size);
+
+
+    // Copy values
+
+    for( uint i = 0 ; i < _size ; i++ ) {
+
+	for( uint j = 0 ; j < _size ; j++ ) {
+
+	    (*this)[i][j] = M[i][j];
+
+	}
+
+    }    
+
+}
+
+
+
 
 
 /** Update matrix information */
@@ -140,4 +239,14 @@ const void scalarMatrix::matDotVec (const vector<scalar>& V, vector<scalar>& res
 
     }
 
+    else {
+
+	cout << " [ERROR]  Dimension mismatch in matrix-vector multiplication" << endl << endl;
+
+	exit(1);
+
+    }
+
 }
+
+

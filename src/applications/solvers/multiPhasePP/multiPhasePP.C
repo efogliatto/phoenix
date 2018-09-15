@@ -90,6 +90,15 @@ int main( int argc, char **argv ) {
     while( Time.update() ) {
 
 
+	// Solve Navier-Stokes equation
+
+	NS->collision();
+
+	// NS->streaming();
+
+	
+
+	
 
     	// Write fields
 	

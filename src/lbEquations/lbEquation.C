@@ -15,6 +15,14 @@ lbEquation::lbEquation( const string& name,
       _pdf(pdf_) {
 
 
+
+    // Read coefficients from dictionary
+
+    dictionary dict("properties/macroProperties");
+
+    _Tau = dict.lookUp< vector<scalar> >( name + "/LBModel/Tau" );
+
+
     
 
     // Resize swap array

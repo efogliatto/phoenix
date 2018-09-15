@@ -16,7 +16,11 @@ sparseScalarMatrix::sparseScalarMatrix() {}
 
 sparseScalarMatrix::sparseScalarMatrix( const vector<scalar>& V ) {
 
+    for( uint i = 0 ; i < V.size() ; i++ ) {
 
+	addElement(V[i],i,i);
+
+    }
 
 }
 

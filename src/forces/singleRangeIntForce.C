@@ -142,7 +142,7 @@ void singleRangeIntForce::update( scalarField& rho, scalarField& T ) {
 
 	    // Extra constant
 		
-	    scalar beta = _G * potential( rho[i], T[i], cs2 );
+	    scalar beta = -_G * potential( rho[i], T[i], cs2 );
     
 	    for( uint j = 0 ; j < 3 ; j++) {
 	

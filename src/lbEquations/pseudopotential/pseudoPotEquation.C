@@ -89,7 +89,13 @@ pseudoPotEquation::pseudoPotEquation( const string& name,
       rho(rho_),
       U(U_),
       T(T_),
-      F("properties/macroProperties", name, mesh_, Time_){    
+      F("properties/macroProperties", name, mesh_, Time_, rho_){
+
+
+    
+    // Update Forces
+
+    F.update(rho,T);
 
 }
 

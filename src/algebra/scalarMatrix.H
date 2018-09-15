@@ -29,16 +29,19 @@ public:
     scalarMatrix();
 
 
-
     /** Constructor from vector< vector<scalar> > */
 
     scalarMatrix( const vector< vector<scalar> >& M );
 
 
-
     /** Default destructor */
 
     ~scalarMatrix();
+
+
+    /** The copy-constructor */
+
+    scalarMatrix( const scalarMatrix& M );
     
     
 
@@ -57,6 +60,16 @@ public:
     /** Overloaded << operator */
 
     friend std::ostream& operator<<(std::ostream& os, const scalarMatrix& M);
+
+
+    /** Overloaded copy operator */
+
+    scalarMatrix& operator= (const scalarMatrix& M);
+
+
+    /** Set from array */
+
+    void setFromArray( const std::vector< std::vector<scalar> >& M );
 
 
 

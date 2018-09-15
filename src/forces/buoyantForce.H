@@ -29,7 +29,9 @@ public:
 
     /** Force */
 
-    virtual const std::vector<scalar> force(const scalar& rho) = 0; 
+    virtual const std::vector<scalar> force(const scalar& rho) = 0;
+
+    virtual const scalar force(const scalar& rho, const uint& i) = 0; 
 
 };
 

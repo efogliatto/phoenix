@@ -27,7 +27,9 @@ public:
 
     /** Force */
 
-    const std::vector<scalar> force(const scalar& rho);     
+    const std::vector<scalar> force(const scalar& rho);
+
+    const scalar force(const scalar& rho, const uint& i) { return (rho-_rhoRef)*_gravity[i]; }
 
 };
 

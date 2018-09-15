@@ -40,6 +40,8 @@ public:
     
     scalar& operator[] (uint i) {  return field[i];  }
 
+    const scalar& at(uint i) const {  return field[i];  }
+
 
     
     /** Synchronization across procceses */

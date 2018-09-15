@@ -40,6 +40,8 @@ public:
     
     std::vector<scalar>& operator[] (uint i) {  return field[i];  }
 
+    const scalar at(const uint& i, const uint& j) const{ return field[i][j]; }
+
     
     /** Synchronization across procceses */
 

@@ -8,9 +8,11 @@ using namespace std;
 pseudoPotForce::pseudoPotForce( const string& dictName,
 				const string& eqName,
 				const latticeMesh& mesh,
-				timeOptions& Time )
+				timeOptions& Time,
+				const scalarField& rho)
 
-    : _Fe(dictName, eqName) {
+    : _Fe(dictName, eqName),
+      _rho(rho) {
 
 
     // Create interaction force
@@ -42,13 +44,29 @@ pseudoPotForce::~pseudoPotForce() {}
 
 const vector<scalar> pseudoPotForce::total( const uint& id ) const {
 
-    vector<scalar> Fi = _Fi->force(id);
+    const scalar Fi[3] = { _Fi->force(id,0), _Fi->force(id,1), _Fi->force(id,2) };
 
-    vector<scalar> Fb = _Fb->force(id);
-
+    const scalar Fb[3] = { _Fb->force( _rho.at(id), 0 ), _Fb->force( _rho.at(id), 1 ), _Fb->force( _rho.at(id), 2 ) }; 
+    
     return { Fi[0] + Fb[0] + _Fe[0],
 	     Fi[1] + Fb[1] + _Fe[1],
-	     Fi[2] + Fb[2] + _Fe[2] };    
+	     Fi[2] + Fb[2] + _Fe[2] };
+
+}
+
+
+
+/** Total force  at node*/
+
+void pseudoPotForce::total( scalar Ft[3], const uint& id ) {
+
+    const scalar Fi[3] = { _Fi->force(id,0), _Fi->force(id,1), _Fi->force(id,2) };
+
+    const scalar Fb[3] = { _Fb->force( _rho.at(id), 0 ), _Fb->force( _rho.at(id), 1 ), _Fb->force( _rho.at(id), 2 ) }; 
+    
+    Ft[0] = Fi[0] + Fb[0] + _Fe[0];
+    Ft[1] = Fi[1] + Fb[1] + _Fe[1];
+    Ft[2] = Fi[2] + Fb[2] + _Fe[2];
 
 }
 
@@ -56,7 +74,7 @@ const vector<scalar> pseudoPotForce::total( const uint& id ) const {
 
 /** Interaction force at node */
 
-const vector<scalar> pseudoPotForce::interaction( const uint& id ) const {
+const vector<scalar>& pseudoPotForce::interaction( const uint& id ) const {
 
     return _Fi->force(id);
 
@@ -89,5 +107,15 @@ void pseudoPotForce::update( scalarField& rho, scalarField& T ) {
 void pseudoPotForce::sync() {
 
     _Fi->sync();
+
+}
+
+
+
+/** Interaction potential */
+
+const scalar pseudoPotForce::potential(const scalar& rho, const scalar& T, const scalar& cs2) const {
+
+    return _Fi->potential(rho,T,cs2);
 
 }

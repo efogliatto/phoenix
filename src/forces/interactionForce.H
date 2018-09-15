@@ -53,6 +53,9 @@ public:
 
     const std::vector<scalar>& force( const uint& i ) { return _force[i]; }
 
+    const scalar force( const uint& i, const uint& j ) { return _force[i][j]; }
+    
+
 
     /** Update force field */
 

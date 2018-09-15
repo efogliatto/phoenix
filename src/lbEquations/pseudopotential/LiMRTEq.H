@@ -5,6 +5,14 @@
 
 class LiMRTEq : public pseudoPotEquation {
 
+protected:
+
+
+    /** Sigma constant */
+
+    scalar _sigma;
+
+    
 public:
 
     

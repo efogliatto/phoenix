@@ -35,6 +35,11 @@ protected:
     pdfField& _pdf;
 
 
+    /** Relaxation coefficients */
+
+    std::vector<scalar> _Tau;
+
+    
     /** Swap auxiliary field */
 
     std::vector< std::vector<scalar> > _swap;
