@@ -45,7 +45,7 @@ int main( int argc, char **argv ) {
 
     // Simulation handler
 
-    timeOptions Time;
+    timeOptions Time(pid);
 
 
     // Macroscopic density
