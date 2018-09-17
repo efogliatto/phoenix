@@ -147,6 +147,14 @@ const void pseudoPotEquation::updateMacroDensity() {
 }
 
 
+const void pseudoPotEquation::updateMacroDensity(const uint& first, const uint& last) {
+
+    for( uint i = first ; i < last ; i++ )
+	rho[i] = localDensity(i);
+
+}
+
+
 
 
 /** Update macroscopic velocity */

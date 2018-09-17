@@ -1,5 +1,6 @@
 #include <timeOptions.H>
 
+#include <mpi.h>
 
 using namespace std;
 
@@ -96,6 +97,8 @@ const bool timeOptions::write() const {
 
 	updateCaseFile();
 
+	MPI_Barrier(MPI_COMM_WORLD);
+	
     }
 	
     
@@ -241,6 +244,8 @@ const void timeOptions::updateCaseFile() const {
 
     	    tsteps.push_back(0);
 
+    	    cfile.close();	    
+
     	}    
 
 	
@@ -249,65 +254,79 @@ const void timeOptions::updateCaseFile() const {
 
     	// Open File
 
-	ofstream outFile("lbm.case");       
+	ofstream outFile("lbm.case");
 
-    	outFile << "#\n";
-    	outFile << "# EnSight 7.4.1 ((n))\n";
-    	outFile << "# Case File: lattice.case\n";
-    	outFile << "\n";
-    	outFile << "FORMAT\n";
-    	outFile << "\n";
-    	outFile << "type:  ensight gold\n";
-    	outFile << "\n";
-    	outFile << "GEOMETRY\n";
-    	outFile << "\n";
-    	outFile << "model:                     lattice.geo\n";
-    	outFile << "\n";
-    	outFile << "VARIABLE\n";
-    	outFile << "\n";
+	if( outFile.is_open() ) {
+
+	    outFile << "#\n";
+	    outFile << "# EnSight 7.4.1 ((n))\n";
+	    outFile << "# Case File: lattice.case\n";
+	    outFile << "\n";
+	    outFile << "FORMAT\n";
+	    outFile << "\n";
+	    outFile << "type:  ensight gold\n";
+	    outFile << "\n";
+	    outFile << "GEOMETRY\n";
+	    outFile << "\n";
+	    outFile << "model:                     lattice.geo\n";
+	    outFile << "\n";
+	    outFile << "VARIABLE\n";
+	    outFile << "\n";
 		
-    	for( auto s : scalarFields )
-    	    outFile << "scalar per node:           " << s << " lattice." << s << "_*" << endl;
+	    for( auto s : scalarFields )
+		outFile << "scalar per node:           " << s << " lattice." << s << "_*" << endl;
 	    
 
 	
-    	for( auto s : pdfFields ) {       
+	    for( auto s : pdfFields ) {       
 
-    	    for( uint k = 0 ; k < get<1>(s) ; k++ ) {
+		for( uint k = 0 ; k < get<1>(s) ; k++ ) {
 
-		outFile << "scalar per node:           " << get<0>(s) << k << " lattice." << get<0>(s) << k << "_*" << endl;
+		    outFile << "scalar per node:           " << get<0>(s) << k << " lattice." << get<0>(s) << k << "_*" << endl;
 
-    	    }
+		}
 	    
-    	}
+	    }
 	
 
-	for( auto s : vectorFields )
-	    outFile << "vector per node:           " << s << " lattice." << s << "_*" << endl;
+	    for( auto s : vectorFields )
+		outFile << "vector per node:           " << s << " lattice." << s << "_*" << endl;
 	    
 
 	
-    	outFile << endl;
+	    outFile << endl;
 	
-    	outFile << "TIME" << endl;
+	    outFile << "TIME" << endl;
 
-    	outFile << "time set:                  1" << endl;
+	    outFile << "time set:                  1" << endl;
 
-    	outFile << "number of steps:           " << tsteps.size() << endl;
+	    outFile << "number of steps:           " << tsteps.size() << endl;
 
-    	outFile << "filename start number:     0" << endl;
+	    outFile << "filename start number:     0" << endl;
 
-    	outFile << "filename increment:        1" << endl;
+	    outFile << "filename increment:        1" << endl;
 
-    	outFile << "time values:               " << tsteps[0] << endl;
+	    outFile << "time values:               " << tsteps[0] << endl;
 
-    	for( uint fid = 1 ; fid < tsteps.size() ; fid++ )
-    	    outFile << "                           " << tsteps[fid] << endl;
+	    for( uint fid = 1 ; fid < tsteps.size() ; fid++ )
+		outFile << "                           " << tsteps[fid] << endl;
 
 
 
 	
-    	outFile.close();
+	    outFile.close();
+
+
+	}
+
+
+	else {
+
+	    cout << " [ERROR]  Unable to open lbm.case " << endl << endl;
+
+	    exit(1);
+
+	}
 
 
     }

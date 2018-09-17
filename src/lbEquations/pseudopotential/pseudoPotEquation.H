@@ -87,6 +87,8 @@ public:
 
     const void updateMacroDensity();
 
+    const void updateMacroDensity(const uint& first, const uint& last);    
+
     
     /** Update macroscopic velocity */
 

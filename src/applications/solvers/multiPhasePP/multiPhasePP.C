@@ -85,7 +85,7 @@ int main( int argc, char **argv ) {
     
     while( Time.update() ) {
 
-
+	
 	
 	// Solve Navier-Stokes equation
 
@@ -114,12 +114,9 @@ int main( int argc, char **argv ) {
 
     	    rho.write();
 
-    	    T.write();
-
     	    U.write();
 
     	    f.write();
-
 
 	    
     	    if(pid == 0) {
