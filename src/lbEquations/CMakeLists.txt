@@ -6,4 +6,5 @@ add_library(lbequations SHARED
   pseudopotential/pseudoPotEquation.C
   pseudopotential/LiMRTEq.C
   pseudopotential/PPEquation.C
+  energy/energyEquation.C
   )

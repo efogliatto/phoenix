@@ -1,4 +1,4 @@
-#------------------ Multiphase solver within pseudopotencial framework with heat transfer ------------------#
+#------------------ Multiphase solver within pseudopotencial framework ------------------#
 
 add_executable(multiPhasePP "multiPhasePP.C")
 
