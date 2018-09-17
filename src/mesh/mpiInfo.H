@@ -90,6 +90,16 @@ public:
 
     const uint npp( const uint& id ) const { return nodesPerPatch[id]; }
 
+
+    /** Reference to recvGhosts */
+
+    const std::vector< std::vector<uint> >& recvg() const { return recvGhosts; }
+
+
+    /** Reference to sendGhosts */
+
+    const std::vector< std::vector<uint> >& sendg() const { return sendGhosts; }    
+
 };
 
 #endif // MPIINFO_H

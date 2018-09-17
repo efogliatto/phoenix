@@ -82,6 +82,11 @@ public:
     ~latticeMesh();
 
 
+    /** Reference to mpiInfo */
+
+    const mpiInfo& mpi() const { return parallel; }
+
+    
     /** Process id */
 
     const int pid() const { return parallel.id(); }

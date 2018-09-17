@@ -146,20 +146,67 @@ const void pseudoPotEquation::updateMacroDensity() {
 
 }
 
-    
+
+
+
 /** Update macroscopic velocity */
+/** Repeat for efficiency */
 
 const void pseudoPotEquation::updateMacroVelocity() {
 
+    
     // Update forces first
 
     F.update(rho,T);
 
+
+
+    // Lattice constants
+
+    const vector< vector<int> > vel = mesh.lmodel()->lvel();
+
+    const scalar q = mesh.lmodel()->q();
+
     
-    for( uint i = 0 ; i < mesh.npoints() ; i++ )	
-	localVelocity( U[i], i );	
+    // Local velocity
+    
+    scalar lv[3] = {0,0,0};
+
+    scalar Ft[3];
+    
+
+    
+    for( uint i = 0 ; i < mesh.npoints() ; i++ ) {
+
+
+	// Compute first moment
+    
+	for( uint j = 0 ; j < 3 ; j++ ) {
+
+	    lv[j] = 0;
+	    
+	    for( uint k = 0 ; k < q ; k++ ) {
+
+		lv[j] += vel[k][j] * _pdf[i][k];
+		    
+	    }
+	    
+	}
+
+
+	// Add interaction force and divide by density
+
+	F.total(Ft, i);
+    
+	for( uint j = 0 ; j < 3 ; j++ )
+	    U[i][j] = ( lv[j]   +   0.5 * Ft[j]   ) / rho.at(i);
+
+	
+    }
 
 }
+
+
 
 
 /** Update boundaries */

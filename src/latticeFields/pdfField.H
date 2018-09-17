@@ -50,6 +50,17 @@ public:
     const void sync();
 
 
+    /** Start sync */
+
+    const void startSync();
+
+
+    /** End sync */
+
+    const void endSync();
+    
+
+
     /** Write field using ensight format */
 
     const void write() const;

@@ -27,6 +27,25 @@ protected:
     timeOptions& Time;
 
 
+    /** MPI send buffer */
+
+    scalar** sbuf;
+
+
+    /** MPI recv buffer */
+
+    scalar** rbuf;
+
+
+    /** MPI requests */
+
+    MPI_Request _request[100];
+
+    MPI_Status _status[100];    
+    
+    int _nreq;
+
+    
 
 
     /** Read field using ensight format */
@@ -53,6 +72,16 @@ public:
     /** Synchronization across procceses */
 
     virtual const void sync() = 0;
+
+
+    /** Start sync */
+
+    virtual const void startSync() = 0;
+
+
+    /** End sync */
+
+    virtual const void endSync() = 0;
 
 
     /** Write field using ensight format */

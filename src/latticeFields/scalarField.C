@@ -153,10 +153,23 @@ scalarField::~scalarField() {}
 
 /** Synchronization across procceses */
 
-const void scalarField::sync() {}
+const void scalarField::sync() {
+
+    startSync();
+
+    endSync();
+
+}
 
 
+/** Start sync */
 
+const void scalarField::startSync() {}
+
+
+/** End sync */
+
+const void scalarField::endSync() {}
 
 
 

@@ -160,4 +160,8 @@ void singleRangeIntForce::update( scalarField& rho, scalarField& T ) {
 
 
 
+    // Sync across processors
+
+    _force.sync();
+
 }

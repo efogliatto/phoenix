@@ -158,18 +158,57 @@ pdfField::pdfField( const latticeMesh& m, timeOptions& t, const std::string& nm,
 	
     }
 
+
+    
+    // Resize mpi send buffers
+
+    const vector<vector<uint>>& sendGhosts = mesh.mpi().sendg();
+    
+    sbuf = (scalar**)malloc( mesh.wsize() * sizeof(scalar*) );
+    
+    for( int i = 0 ; i < mesh.wsize() ; i++ )
+    	sbuf[i] = (scalar*)malloc( sendGhosts[i].size() * mesh.lmodel()->q() * sizeof(scalar) );
+
+
+    
+
+    // Resize mpi recv buffers
+    
+    const vector<vector<uint>>& recvGhosts = mesh.mpi().recvg();
+
+    rbuf = (scalar**)malloc( mesh.wsize() * sizeof(scalar*) );
+    
+    for( int i = 0 ; i < mesh.wsize() ; i++ ) 
+    	rbuf[i] = (scalar*)malloc( recvGhosts[i].size() * mesh.lmodel()->q() * sizeof(scalar) );
+    
+
 }
 
 
 /** Default destructor */
 
-pdfField::~pdfField() {}
+pdfField::~pdfField() {
+
+    if( mesh.wsize() > 1 ) {
 
 
+	for( int i = 0 ; i < mesh.wsize() ; i++ ) {
+	    
+	    free(sbuf[i]);
 
-/** Synchronization across procceses */
+	    free(rbuf[i]);
 
-const void pdfField::sync() {}
+	}
+
+	free(sbuf);
+
+	free(rbuf);
+
+	
+    }
+
+}
+
 
 
 
@@ -288,5 +327,183 @@ const void pdfField::write() const {
 
     free(auxField);
     
+
+}
+
+
+
+
+
+
+
+/** Start sync */
+
+const void pdfField::startSync() {
+
+
+    if( mesh.wsize() > 1 ) {
+
+
+	// Reference to mpi info
+
+	const vector<vector<uint>>& sendGhosts = mesh.mpi().sendg();
+
+	const vector<vector<uint>>& recvGhosts = mesh.mpi().recvg();
+
+	const uint q = mesh.lmodel()->q();
+
+
+	
+	// Move over send ghosts. Copy data to buffer
+
+	for( int pid = 0 ; pid < mesh.wsize() ; pid++ ) {
+
+	    for( uint i = 0 ; i < sendGhosts[pid].size() ; i++) {
+
+		for( uint k = 0 ; k < q ; k++ ) {
+
+
+		    // Position in sbuf
+
+		    uint id = i*q + k;
+
+		    
+		    // Copy field info
+		    
+		    sbuf[pid][id] = field[ sendGhosts[pid][i] ][ k ];
+		    
+
+		}
+
+	    }
+	  
+
+	}
+
+
+
+	
+    	// Send information    	
+
+	_nreq = 0;
+
+	
+	// Move over send ghosts. Send data
+
+	for( int pid = 0 ; pid < mesh.wsize() ; pid++ ) {
+
+	    if( sendGhosts[pid].size() > 0 ) {
+
+		#ifdef DP
+		
+		MPI_Isend (&sbuf[pid][0], sendGhosts[pid].size() * q, MPI_DOUBLE, pid, mesh.pid(), MPI_COMM_WORLD, &_request[_nreq]);
+
+		#elif SP
+
+		MPI_Isend (&sbuf[pid][0], sendGhosts[pid].size() * q, MPI_FLOAT, pid, mesh.pid(), MPI_COMM_WORLD, &_request[_nreq]);
+
+		#endif
+
+		_nreq = _nreq + 1;
+
+	    }
+	}
+
+
+
+	// Move over recv ghosts. Receive data
+
+	for( int pid = 0 ; pid < mesh.wsize() ; pid++ ) {
+
+	    if( recvGhosts[pid].size() > 0 ) {
+
+		#ifdef DP
+		
+		MPI_Irecv (rbuf[pid], recvGhosts[pid].size() * q, MPI_DOUBLE, pid, pid, MPI_COMM_WORLD, &_request[_nreq]);
+
+		#elif SP
+
+		MPI_Irecv (rbuf[pid], recvGhosts[pid].size() * q, MPI_DOUBLE, pid, pid, MPI_COMM_WORLD, &_request[_nreq]);
+
+		#endif
+
+		_nreq = _nreq + 1;
+
+	    }
+	}
+
+
+	
+
+    }
+    
+
+}
+
+
+/** End sync */
+
+const void pdfField::endSync() {
+
+
+    if( mesh.wsize() > 1 ) {
+
+
+	// Mpi references
+	
+	const vector<vector<uint>>& recvGhosts = mesh.mpi().recvg();
+
+	const uint q = mesh.lmodel()->q();	
+
+	
+    	// Wait for everyone
+
+    	MPI_Waitall(_nreq, _request, _status);
+
+
+	
+
+    	// Copy new data back to ghost nodes
+	
+    	for( int pid = 0 ; pid < mesh.wsize() ; pid++ ) {
+	   
+
+    	    for( uint i = 0 ; i < recvGhosts[pid].size() ; i++) {
+
+    		for( uint k = 0 ; k < q ; k++ ) {
+
+
+    		    // Position in sbuf
+
+    		    uint id = i*q + k;
+
+		    
+    		    // Copy field info
+		    
+    		    field[ recvGhosts[pid][i] ][ k ] = rbuf[pid][id];
+		    
+
+    		}
+
+    	    }		
+
+	    
+    	}	
+
+
+    }
+    
+
+}
+
+
+
+/** Synchronization across procceses */
+
+const void pdfField::sync() {
+
+    pdfField::startSync();
+
+    pdfField::endSync();
 
 }

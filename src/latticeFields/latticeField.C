@@ -23,6 +23,17 @@ latticeField::~latticeField() {}
 const void latticeField::sync() {}
 
 
+/** Start sync */
+
+const void latticeField::startSync() {}
+
+
+/** End sync */
+
+const void latticeField::endSync() {}
+
+
+
 /** Write field using ensight format */
 
 const void latticeField::write() const {}
