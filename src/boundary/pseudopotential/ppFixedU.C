@@ -153,7 +153,8 @@ void ppFixedU::update( const latticeMesh& mesh, pdfField& pdf, const scalarField
 			
 			scalar Ft[3];
 
-			F->total(Ft,id);	
+			F->total(Ft,nbid);
+		
 
 
 			// Move over velocity components
@@ -194,13 +195,12 @@ void ppFixedU::update( const latticeMesh& mesh, pdfField& pdf, const scalarField
 		    auxEq( mesh, nbrho, lv, f_eq_nb );
 
 		    auxEq( mesh, nbrho, Uw, f_eq_bnd );
-
-			
+		    
 		    
 
 		    // Update distribution
 			
-		    pdf.set(id, k, f_eq_bnd[k] + (pdf[nbid][k] - f_eq_nb[k] ) );
+		    pdf.set(id, k, f_eq_bnd[k] + (pdf[nbid][k] - f_eq_nb[k] ) );		    
 
 		}
 		
