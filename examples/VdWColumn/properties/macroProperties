@@ -1,0 +1,58 @@
+Navier-Stokes
+{
+
+    LBModel
+    {
+
+	type LiMRT;
+
+	Tau (1.0 0.8 1.1 1.0 1.1 1.0 1.1 0.8 0.8);
+
+	sigma 0.125;
+
+    }
+
+    Forces
+    {
+
+        Interaction
+	{
+
+            type singleRange;
+
+            G -1;
+
+        }
+
+        EOS
+	{
+
+            type vanDerWaals;
+
+            a 0.5;
+
+            b 4;
+
+        }
+
+        Buoyancy
+	{
+
+            type fixedDensity;
+
+	    rhoRef 0;
+
+	    gravity (0 -1.234567e-07 0);
+
+        }
+
+	External
+	{
+
+	    value (0 0 0);
+
+        }
+
+    }
+
+}

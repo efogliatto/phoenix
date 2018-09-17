@@ -28,9 +28,9 @@ int main( int argc, char **argv ) {
     	cout << "                    " << endl;
     	cout << "     o-----o-----o  " << endl;
     	cout << "     | -   |   - |  " << endl;
-    	cout << "     |   - | -   |  Two Phases - Lattice-Boltzmann solver with heat transfer" << endl;
+    	cout << "     |   - | -   |  Two Phases - Lattice-Boltzmann solver" << endl;
     	cout << "     o<----o---->o  " << endl;
-    	cout << "     |   - | -   |                Pseudopotential model" << endl;
+    	cout << "     |   - | -   |          Pseudopotential model" << endl;
     	cout << "     | -   |   - |  " << endl;
     	cout << "     o-----o-----o  " << endl << endl;
     }
@@ -55,7 +55,7 @@ int main( int argc, char **argv ) {
 
     // Macroscopic temperature
 
-    scalarField T( mesh, Time, "T", IO::MUST_READ, IO::MUST_WRITE );
+    scalarField T( mesh, Time, "T", IO::MUST_READ, IO::NO_WRITE );
 
 
     // Macroscopic velocity

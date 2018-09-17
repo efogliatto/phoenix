@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# Compute lattice
+latticeBox2D
+
+# Lattice partitioning
+latticeMeshPartition
+
+# Field partitioning
+setInitialFields
