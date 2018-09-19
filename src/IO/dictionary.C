@@ -274,3 +274,72 @@ const void dictionary::extract( const std::vector<std::string>& elist, vector<sc
 
 
 }
+
+
+
+
+
+
+/** Braced entries names */
+
+const vector<string> dictionary::bracedEntriesNames( const string& ename ) const {
+
+    // Tokenize entry
+
+    vector<string> tokens;
+    
+    string token;
+
+    istringstream tokenStream(ename);
+    
+    while ( getline(tokenStream, token, '/') )    {
+	
+      tokens.push_back(token);
+      
+    }
+
+
+
+    // Look until last entry
+
+    vector<string> out( content );
+    
+    for(uint i = 0 ; i < tokens.size() ; i++ ) {
+
+	out = bracedEntry( tokens[i], out );
+
+    }
+
+
+
+    // Copy only names from first level
+
+    vector<string> res;
+
+    uint level(0);
+
+    for(uint i = 0 ; i < out.size() ; i++) {
+
+	if( out[i] == "{" )  {
+
+	    if( level == 0 )
+		res.push_back( out[i-1] );
+
+	    level++;
+
+	}
+
+	else {
+
+	    if( out[i] == "}" )
+		level--;
+
+	}
+
+    }
+
+    
+
+    return res;
+
+}

@@ -103,6 +103,12 @@ public:
 
     }
 
+
+
+    /** Braced entries names */
+
+    const std::vector<std::string> bracedEntriesNames( const std::string& ename ) const;
+
 };
 
 #endif // DICTIONARY_H

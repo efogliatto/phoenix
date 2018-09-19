@@ -9,26 +9,12 @@ int main() {
 
     dictionary dict("properties/macroProperties");
 
-    cout << dict.lookUp<string>("EOS/model") << endl;
+    vector<string> entry = dict.bracedEntriesNames("Navier-Stokes");
 
-    cout << dict.lookUp<scalar>("EOS/a_vdw") << endl;
-
-    cout << dict.lookUp<int>("EOS/G") << endl;
-
-
-    scalarVector V( dict.lookUp< vector<scalar> >("f/Lambda") );
-
-    cout << V << endl;
+    for(auto s : entry)
+	cout << s << endl;
 
 
-
-    scalarVector A( dict.lookUp< vector<scalar> >("g/Lambda") );
-
-    cout << A << endl;
-
-
-
-    timeOptions Time;
-
-
+    return 0;
+    
 }
