@@ -23,12 +23,24 @@ interactionForce* intForce::create (const string& dictName, const string& eqName
 
     else {
 
+	if( itype == "singleRangeMixed" ) {
 
-    	// Default
+	    return new singleRangeMixedIntForce(dictName, eqName, mesh, Time);
+
+	}
+
+
+	else {
+
+
+	    // Default
     
-    	cout << endl << " [ERROR]  Interaction type " << itype << " not available" << endl << endl;
+	    cout << endl << " [ERROR]  Interaction type " << itype << " not available" << endl << endl;
 
-    	exit(1);
+	    exit(1);
+
+
+	}
     
     }
 

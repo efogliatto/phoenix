@@ -7,6 +7,7 @@ add_library(forces SHARED
   EOSCreator.C
   interactionForce.C
   singleRangeIntForce.C
+  singleRangeMixedIntForce.C
   intForce.C
   buoyantForce.C
   fixedDensityBForce.C

@@ -1,7 +1,7 @@
 #ifndef INTFORCE_H
 #define INTFORCE_H
 
-#include <singleRangeIntForce.H>
+#include <singleRangeMixedIntForce.H>
 
 
 class intForce {

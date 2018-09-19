@@ -30,7 +30,7 @@ public:
 
     /** Update force field */
 
-    void update( scalarField& rho, scalarField& T );    
+    virtual void update( scalarField& rho, scalarField& T );    
     
 
 };
