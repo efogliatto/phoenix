@@ -66,11 +66,6 @@ protected:
 
 
 
-    /** Update ensight case file */
-
-    const void updateCaseFile() const;
-
-
     /** Simulation files */
 
     std::vector<std::string> scalarFields;
@@ -134,6 +129,12 @@ public:
 
     const uint timeToIndex( const uint& tid ) const;
 
+    
+    /** Update ensight case file */
+
+    const void updateCaseFile() const;
+
+    
 };
 
 

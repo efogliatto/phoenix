@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include <PPEquation.H>
+#include <fieldConstructor.H>
 
 
 using namespace std;
@@ -48,7 +48,7 @@ int main( int argc, char **argv ) {
 
     // Option dictionary
 
-    dictionary dict("start/initialFieldss");
+    dictionary dict("start/initialFields");
 
     
     // Set scalarFields
@@ -57,10 +57,32 @@ int main( int argc, char **argv ) {
 
     for(auto fname : scfields) {
 
+	// Field constructor
+	
+	fieldConstructor<scalarField, scalar> fconst();
+
 
 	// Field construction without reading
 
 	scalarField field( mesh, Time, fname, IO::NO_READ, IO::MUST_WRITE );
+
+	// Write field
+
+	field.write();
+
+    }
+
+
+    // Set vectorFields
+
+    vector<string> vfields = dict.bracedEntriesNames("vectorFields");
+
+    for(auto fname : vfields) {
+
+
+	// Field construction without reading
+
+	vectorField field( mesh, Time, fname, IO::NO_READ, IO::MUST_WRITE );
 
 
 	// Write field
@@ -68,6 +90,32 @@ int main( int argc, char **argv ) {
 	field.write();
 
     }
+
+
+    // Set pdfFields
+
+    vector<string> pfields = dict.bracedEntriesNames("pdfFields");
+
+    for(auto fname : pfields) {
+
+
+	// Field construction without reading
+
+	pdfField field( mesh, Time, fname, IO::NO_READ, IO::MUST_WRITE );
+
+
+	// Write field
+
+	field.write();
+
+    }    
+
+
+
+    // Update case file
+
+    Time.updateCaseFile();
+    
 
 
     // // Macroscopic density
