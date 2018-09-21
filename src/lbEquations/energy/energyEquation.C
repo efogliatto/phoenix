@@ -6,17 +6,25 @@ using namespace std;
 /** Constructor */
 
 energyEquation::energyEquation( const string& name,
-				      const latticeMesh& mesh_,
-				      timeOptions& Time_,
-				      pdfField& pdf_,
-				      const scalarField& rho_,
-				      const vectorField& U_,
-				      scalarField& T_)
+				const latticeMesh& mesh_,
+				timeOptions& Time_,
+				pdfField& pdf_,
+				const scalarField& rho_,
+				const vectorField& U_,
+				scalarField& T_)
     
     : lbEquation(name, mesh_, Time_, pdf_),
       rho(rho_),
       U(U_),
       T(T_) {
+
+
+
+    // Heat source creator
+
+    hsCreator HS;
+
+    _hs = HS.create("properties/macroProperties", name, mesh_, Time_);
     
 
 

@@ -3,6 +3,7 @@
 
 #include <lbEquation.H>
 
+#include <hsCreator.H>
 
 
 class energyEquation : public lbEquation {
@@ -26,16 +27,15 @@ protected:
     scalarField& T;
 
 
+    /** Heat sources for macro equation */
+
+    heatSource* _hs;
+
+
     // /** Boundary conditions */
 
     // std::vector< ppBndCond* > _boundaries;
-
-
-    
-
-    /** Compute local temperature */
-
-    scalar localTemperature( const uint& id );
+  
 
 
 
@@ -45,12 +45,12 @@ public:
     /** Default constructor */
 
     energyEquation( const std::string& name,
-		       const latticeMesh& mesh_,
-		       timeOptions& Time_,
-		       pdfField& pdf_,
-		       const scalarField& rho_,
-		       const vectorField& U_,
-		       scalarField& T_);
+		    const latticeMesh& mesh_,
+		    timeOptions& Time_,
+		    pdfField& pdf_,
+		    const scalarField& rho_,
+		    const vectorField& U_,
+		    scalarField& T_);
 
 
     /** Default destructor */
@@ -74,6 +74,11 @@ public:
     virtual const void setEquilibrium() = 0;
 
 
+    /** Compute local temperature */
+
+    scalar localTemperature( const uint& id );
+    
+    
     // /** Update boundaries */
 
     // void updateBoundaries();
