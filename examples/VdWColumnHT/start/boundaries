@@ -26,3 +26,33 @@ Navier-Stokes
     }
 
 }
+
+
+Energy
+{
+
+    X0
+    {
+        type periodic;
+    }
+
+    X1
+    {
+        type periodic;
+    }
+
+    Y0
+    {
+        type fixedT;
+
+	value 0.033333;
+    }
+
+    Y1
+    {
+        type fixedT;
+
+	value 0.0366667;
+    }
+
+}

@@ -22,7 +22,9 @@ protected:
 
     /** Matrix indices */
 
-    std::vector< std::vector<uint> > _idx;
+    std::vector<uint> _idx0;
+
+    std::vector<uint> _idx1;
 
     
     /** Cached matrix size */

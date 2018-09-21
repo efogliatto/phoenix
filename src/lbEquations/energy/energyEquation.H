@@ -76,7 +76,7 @@ public:
 
     /** Compute local temperature */
 
-    scalar localTemperature( const uint& id );
+    virtual scalar localTemperature( const uint& id );
     
     
     // /** Update boundaries */

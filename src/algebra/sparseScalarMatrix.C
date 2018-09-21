@@ -40,11 +40,11 @@ const void sparseScalarMatrix::matDotVec (const vector<scalar>& V, vector<scalar
        	
 	std::fill( res.begin(), res.end(), 0 );
 
-	for( uint k = 0 ; k < _idx.size() ; k++ ) {
+	for( uint k = 0 ; k < _idx0.size() ; k++ ) {
 
-	    uint i = _idx[k][0];
+	    uint i = _idx0[k];
 
-	    uint j = _idx[k][1];
+	    uint j = _idx1[k];
 
 	    res[i] += _values[k] * V[j];
 
@@ -63,24 +63,26 @@ const void sparseScalarMatrix::addElement( const scalar& val, const uint& i, con
 
     // Check if position is already set
 
-    vector<uint>::iterator i_it = std::find(_idx[0].begin(), _idx[0].end(), i);
+    vector<uint>::iterator i_it = std::find(_idx0.begin(), _idx0.end(), i);
 
-    vector<uint>::iterator j_it = std::find(_idx[1].begin(), _idx[1].end(), j);
+    vector<uint>::iterator j_it = std::find(_idx1.begin(), _idx1.end(), j);
 
-    if(  ( i_it != _idx[0].end() )    &&   ( j_it != _idx[1].end() )  ) {
+    if(  ( i_it == _idx0.end() )    &&   ( j_it == _idx1.end() )  ) {
 
-	_values.push_back(val);
+    	_values.push_back(val);
 
-	_idx.push_back({i,j});
+    	_idx0.push_back(i);
+
+    	_idx1.push_back(j);
 
     }
 
 
     else {
 
-	uint k = i_it - _idx[0].begin();
+    	uint k = i_it - _idx0.begin(); 
 
-	_values[k] = val;
+    	_values[k] = val;
 
     }
 
@@ -88,11 +90,10 @@ const void sparseScalarMatrix::addElement( const scalar& val, const uint& i, con
     
     // Update matrix size
 
-    uint max_i = *std::max_element( _idx[0].begin(), _idx[0].end() );
+    uint max_i = *std::max_element( _idx0.begin(), _idx0.end() );
 
-    uint max_j = *std::max_element( _idx[1].begin(), _idx[1].end() );
+    uint max_j = *std::max_element( _idx1.begin(), _idx1.end() );
 
     max_i >= max_j  ?  _size = max_i + 1  :  _size = max_j + 1;
     
-
 }

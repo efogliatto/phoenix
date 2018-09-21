@@ -8,4 +8,5 @@ add_library(lbequations SHARED
   pseudopotential/PPEquation.C
   energy/energyEquation.C
   energy/myMRTEq.C
+  energy/EEquation.C
   )

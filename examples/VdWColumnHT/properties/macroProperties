@@ -56,3 +56,36 @@ Navier-Stokes
     }
 
 }
+
+
+Energy
+{
+
+    LBModel
+    {
+
+	type myMRT;
+
+	Tau (1.0 0.8 1.1 1.0 1.1 1.0 1.1 0.8 0.8);
+
+    }
+
+    HeatSource
+    {
+
+	type Markus-Hazi;
+
+        Constants
+        {
+    
+            alpha_1 0.25;
+        
+            alpha_2 0.25;
+        
+            Cv 1;
+    
+        }
+
+    }
+
+}

@@ -4,6 +4,8 @@
 
 #include <PPEquation.H>
 
+#include <EEquation.H>
+
 
 using namespace std;
 
@@ -76,11 +78,19 @@ int main( int argc, char **argv ) {
    
     
     
-    // Li MRT equation
+    // Navier-Stokes MRT equation
 
     PPEquation NSEq;
 
     pseudoPotEquation* NS = NSEq.create("Navier-Stokes", mesh, Time, f, rho, U, T);
+
+
+    // Energy MRT equation
+
+    EEquation EEq;
+
+    energyEquation* energy = EEq.create("Energy", mesh, Time, g, rho, U, T);
+    
 
 
 
@@ -102,10 +112,22 @@ int main( int argc, char **argv ) {
 	f.sync();
 
 
+	// Solve Energy equation
+
+	energy->collision();
+
+	// energy->streaming();
+
+	// energy->updateBoundaries();
+
+	g.sync();	
+
 	
 	// Update macroscopic fields
 
 	NS->updateMacroDensity();
+
+	energy->updateMacroTemperature();
 
 	NS->updateMacroVelocity();
 

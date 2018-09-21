@@ -17,6 +17,16 @@ protected:
     scalar _a1;
 
     scalar _a2;
+
+
+    /** Equilibrium in moment space */
+
+    const void eqMS( std::vector<scalar>& m, const uint& id ) const;
+
+
+    /** Equilibrium in population space */
+
+    const void eqPS( std::vector<scalar>& n, const uint& id ) const;    
   
 
 
@@ -49,6 +59,11 @@ public:
     /** Set pdf to equilibrium values */
 
     const void setEquilibrium();
+
+
+    /** Compute local temperature */
+
+    scalar localTemperature( const uint& id ) { return energyEquation::localTemperature(id) + 0.5*_hs->source(id); }
 
     
 };
