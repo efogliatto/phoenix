@@ -54,6 +54,7 @@ set ( PROJECT_LINK_LIBS
   liblbequations.so
   libforces.so
   libboundary.so
+  libheatsources.so
   m
   # ${MPI_LIBRARIES}
   )

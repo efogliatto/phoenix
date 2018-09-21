@@ -42,6 +42,11 @@ public:
 
     const scalar at(const uint& i, const uint& j) const{ return field[i][j]; }
 
+
+    /** Vector divergence at node */
+
+    const scalar div( const uint& id ) const;
+
     
     /** Synchronization across procceses */
 

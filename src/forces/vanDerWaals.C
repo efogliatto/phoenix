@@ -37,3 +37,13 @@ const scalar vanDerWaals::p_eos(const scalar& rho, const scalar& T) const {
     return  rho * T / (1 - rho * b)  -  a * rho * rho;
 
 }
+
+
+
+/** Pressure derivative */
+
+const scalar vanDerWaals::dp_dT(const scalar& rho, const scalar& T) const {
+
+    return rho / (1 - rho * b);
+
+}

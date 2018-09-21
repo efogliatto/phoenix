@@ -38,6 +38,11 @@ add_subdirectory (lbEquations)
 add_subdirectory (forces)
 
 
+# Heat sources
+
+add_subdirectory (heatSources)
+
+
 # Boundary conditions
 
 add_subdirectory (boundary)

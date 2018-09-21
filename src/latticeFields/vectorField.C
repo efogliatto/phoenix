@@ -102,6 +102,33 @@ vectorField::vectorField( const latticeMesh& m, timeOptions& t, const std::strin
 
 
 
+/** Default destructor */
+
+vectorField::~vectorField() {
+
+
+    if( mesh.wsize() > 1 ) {
+
+
+	for( int i = 0 ; i < mesh.wsize() ; i++ ) {
+	    
+	    free(sbuf[i]);
+
+	    free(rbuf[i]);
+
+	}
+
+	free(sbuf);
+
+	free(rbuf);
+
+    }
+    
+
+}
+
+
+
 
 
 /** Read field using ensight format */
@@ -190,32 +217,6 @@ const void vectorField::read() {
 
 
 
-
-
-/** Default destructor */
-
-vectorField::~vectorField() {
-
-
-    if( mesh.wsize() > 1 ) {
-
-
-	for( int i = 0 ; i < mesh.wsize() ; i++ ) {
-	    
-	    free(sbuf[i]);
-
-	    free(rbuf[i]);
-
-	}
-
-	free(sbuf);
-
-	free(rbuf);
-
-    }
-    
-
-}
 
 
 
@@ -496,3 +497,223 @@ const void vectorField::startSync() {}
 /** End sync */
 
 const void vectorField::endSync() {}
+
+
+
+/** Vector divergence at node */
+
+const scalar vectorField::div( const uint& id ) const {
+
+
+    // Constants
+
+    int a, b;
+
+    scalar d(0);
+
+    const vector< vector<int> >& nb = mesh.nbArray();
+        
+
+    // D2Q9 model
+
+    if( mesh.lmodel()->name() == "D2Q9" ) {
+
+    
+    	// X - derivative
+
+    	a = nb[id][3];
+	
+    	b = nb[id][1];
+
+	
+    	if(  (a != -1)  &&  (b != -1)  ) {
+    
+    	    d += 0.5 * (field[a][0] - field[b][0]);
+
+    	}
+
+    	else {
+
+    	    if(  (a == -1)  &&  (b != -1)  ) {
+    
+    		d += (field[id][0] - field[b][0]);
+
+    	    }
+
+    	    else {
+
+    		if(  (a != -1)  &&  (b == -1)  ) {
+    
+    		    d += (field[a][0] - field[id][0]);
+
+    		}
+
+    	    }
+
+    	}
+
+
+
+
+    	// Y - derivative
+
+    	a = nb[id][4];
+	
+    	b = nb[id][2];
+
+	
+    	if(  (a != -1)  &&  (b != -1)  ) {
+    
+    	    d += 0.5 * (field[a][1] - field[b][1]);
+
+    	}
+
+    	else {
+
+    	    if(  (a == -1)  &&  (b != -1)  ) {
+    
+    		d += (field[id][1] - field[b][1]);
+
+    	    }
+
+    	    else {
+
+    		if(  (a != -1)  &&  (b == -1)  ) {
+    
+    		    d += (field[a][1] - field[id][1]);
+
+    		}
+
+    	    }
+
+    	} 
+	
+
+	
+
+    }
+
+    
+
+    else {
+
+	if( mesh.lmodel()->name() == "D3Q15") {
+
+
+	    // X - derivative
+
+	    a = nb[id][2];
+	
+	    b = nb[id][1];
+
+	
+	    if(  (a != -1)  &&  (b != -1)  ) {
+    
+		d += 0.5 * (field[a][0] - field[b][0]);
+
+	    }
+
+	    else {
+
+		if(  (a == -1)  &&  (b != -1)  ) {
+    
+		    d += (field[id][0] - field[b][0]);
+
+		}
+
+		else {
+
+		    if(  (a != -1)  &&  (b == -1)  ) {
+    
+			d += (field[a][0] - field[id][0]);
+
+		    }
+
+		}
+
+	    }
+
+
+
+
+	    // Y - derivative
+
+	    a = nb[id][4];
+	
+	    b = nb[id][3];
+
+	
+	    if(  (a != -1)  &&  (b != -1)  ) {
+    
+		d += 0.5 * (field[a][1] - field[b][1]);
+
+	    }
+
+	    else {
+
+		if(  (a == -1)  &&  (b != -1)  ) {
+    
+		    d += (field[id][1] - field[b][1]);
+
+		}
+
+		else {
+
+		    if(  (a != -1)  &&  (b == -1)  ) {
+    
+			d += (field[a][1] - field[id][1]);
+
+		    }
+
+		}
+
+	    }   
+
+
+
+
+	    // Z - derivative
+
+	    a = nb[id][6];
+	
+	    b = nb[id][5];
+
+	
+	    if(  (a != -1)  &&  (b != -1)  ) {
+    
+		d += 0.5 * (field[a][2] - field[b][2]);
+
+	    }
+
+	    else {
+
+		if(  (a == -1)  &&  (b != -1)  ) {
+    
+		    d += (field[id][2] - field[b][2]);
+
+		}
+
+		else {
+
+		    if(  (a != -1)  &&  (b == -1)  ) {
+    
+			d += (field[a][2] - field[id][2]);
+
+		    }
+
+		}
+
+	    }   
+
+
+	}
+
+    }
+
+
+	
+       
+
+    return d;
+
+}

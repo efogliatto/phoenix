@@ -5,6 +5,120 @@
 using namespace std;
 
 
+
+/** Default constructor */
+
+scalarField::scalarField( const latticeMesh& m, timeOptions& t, const string& nm, const IO iopt, const IO oopt ) : latticeField(m,t,nm) {
+
+
+    switch(iopt) {
+	
+
+    case IO::MUST_READ:
+
+	
+	// Read values from file
+
+	scalarField::read();
+
+	break;
+
+
+    case IO::NO_READ:
+
+	
+	// Only allocate space
+        
+	field.resize( mesh.npoints() );
+
+	break;
+
+
+	
+    default:
+
+	break;
+
+    }
+
+
+    
+
+    switch (oopt) {
+
+
+    case IO::MUST_WRITE:
+	
+	// Add to time list
+
+	Time.addScalarField(name);
+
+	break;
+
+	
+    default:
+
+	break;
+
+    }
+    
+
+
+    if( mesh.wsize() > 1 ) {
+	
+
+	// Resize mpi send buffers
+
+	const vector<vector<uint>>& sendGhosts = mesh.mpi().sendg();
+    
+	sbuf = new scalar* [mesh.wsize()];
+    
+	for( int i = 0 ; i < mesh.wsize() ; i++ )
+	    sbuf[i] = new scalar [sendGhosts[i].size()];
+
+
+    
+
+	// Resize mpi recv buffers
+    
+	const vector<vector<uint>>& recvGhosts = mesh.mpi().recvg();
+
+	rbuf = new scalar* [mesh.wsize()];
+    
+	for( int i = 0 ; i < mesh.wsize() ; i++ ) 
+    	rbuf[i] = new scalar [recvGhosts[i].size()];
+
+	
+    }
+    
+}
+
+
+/** Default destructor */
+
+scalarField::~scalarField() {
+
+    if( mesh.wsize() > 1 ) {
+
+	for( int i = 0 ; i < mesh.wsize() ; i++ ) {
+	    
+	    delete [] sbuf[i];
+
+	    delete [] rbuf[i];
+
+	}
+
+	delete [] sbuf;
+
+	delete [] rbuf;
+
+    }
+
+}
+
+
+
+
 /** Read field using ensight format */
 
 const void scalarField::read() {
@@ -78,77 +192,6 @@ const void scalarField::read() {
 
 
 
-
-
-
-
-
-/** Default constructor */
-
-scalarField::scalarField( const latticeMesh& m, timeOptions& t, const string& nm, const IO iopt, const IO oopt ) : latticeField(m,t,nm) {
-
-
-    switch(iopt) {
-	
-
-    case IO::MUST_READ:
-
-	
-	// Read values from file
-
-	scalarField::read();
-
-	break;
-
-
-    case IO::NO_READ:
-
-	
-	// Only allocate space
-        
-	field.resize( mesh.npoints() );
-
-	break;
-
-
-	
-    default:
-
-	break;
-
-    }
-
-
-    
-
-    switch (oopt) {
-
-
-    case IO::MUST_WRITE:
-	
-	// Add to time list
-
-	Time.addScalarField(name);
-
-	break;
-
-	
-    default:
-
-	break;
-
-    }
-    
-
-}
-
-
-/** Default destructor */
-
-scalarField::~scalarField() {}
-
-
-
 // Acces members. Forced interface
 
 /** Synchronization across procceses */
@@ -162,14 +205,138 @@ const void scalarField::sync() {
 }
 
 
+
+
 /** Start sync */
 
-const void scalarField::startSync() {}
+const void scalarField::startSync() {
+
+
+    if( mesh.wsize() > 1 ) {
+
+
+	// Reference to mpi info
+
+	const vector<vector<uint>>& sendGhosts = mesh.mpi().sendg();
+
+	const vector<vector<uint>>& recvGhosts = mesh.mpi().recvg();	
+
+
+	// Move over send ghosts. Copy data to buffer
+
+	for( int pid = 0 ; pid < mesh.wsize() ; pid++ ) {
+
+
+	    for( uint i = 0 ; i < sendGhosts[pid].size() ; i++) {
+
+		    
+		// Copy field info
+		    
+		sbuf[pid][i] = field[ sendGhosts[pid][i] ];
+
+
+	    }
+	  
+
+	}
+
+
+
+    	// Send information    	
+
+	_nreq = 0;
+
+	
+	// Move over send ghosts. Send data
+
+	for( int pid = 0 ; pid < mesh.wsize() ; pid++ ) {
+
+	    if( sendGhosts[pid].size() > 0 ) {
+
+		#ifdef DP
+		
+		MPI_Isend (&sbuf[pid][0], sendGhosts[pid].size(), MPI_DOUBLE, pid, mesh.pid(), MPI_COMM_WORLD, &_request[_nreq]);
+
+		#elif SP
+
+		MPI_Isend (&sbuf[pid][0], sendGhosts[pid].size(), MPI_FLOAT, pid, mesh.pid(), MPI_COMM_WORLD, &_request[_nreq]);
+
+		#endif
+
+		_nreq = _nreq + 1;
+
+	    }
+	}
+
+
+
+	// Move over recv ghosts. Receive data
+
+	for( int pid = 0 ; pid < mesh.wsize() ; pid++ ) {
+
+	    if( recvGhosts[pid].size() > 0 ) {
+
+		#ifdef DP
+		
+		MPI_Irecv (rbuf[pid], recvGhosts[pid].size(), MPI_DOUBLE, pid, pid, MPI_COMM_WORLD, &_request[_nreq]);
+
+		#elif SP
+
+		MPI_Irecv (rbuf[pid], recvGhosts[pid].size(), MPI_DOUBLE, pid, pid, MPI_COMM_WORLD, &_request[_nreq]);
+
+		#endif
+
+		_nreq = _nreq + 1;
+
+	    }
+	}
+	
+	
+
+    }
+    
+
+}
+
+
 
 
 /** End sync */
 
-const void scalarField::endSync() {}
+const void scalarField::endSync() {
+
+    
+    if( mesh.wsize() > 1 ) {
+
+
+	// Mpi references
+	
+	const vector<vector<uint>>& recvGhosts = mesh.mpi().recvg();
+
+	
+    	// Wait for everyone
+
+    	MPI_Waitall(_nreq, _request, _status);
+
+	
+
+    	// Copy new data back to ghost nodes
+	
+    	for( int pid = 0 ; pid < mesh.wsize() ; pid++ ) {	   
+
+    	    for( uint i = 0 ; i < recvGhosts[pid].size() ; i++)	   		    
+		field[ recvGhosts[pid][i] ] = rbuf[pid][i];
+		    
+	    
+    	}	
+
+
+    }
+    
+
+}
+
+
 
 
 
@@ -279,3 +446,61 @@ const void scalarField::write() const {
 
 }
 
+
+
+
+
+/** Gradient at node */
+
+const void scalarField::grad(scalar g[3], const uint& id) const {
+
+
+    // Lattice constants
+
+    const vector< vector<int> >& nb = mesh.nbArray();
+
+    const vector< vector<int> >& vel = mesh.lmodel()->lvel();
+
+    const vector<uint>& reverse = mesh.lmodel()->reverse();
+
+    const vector<scalar>& omega = mesh.lmodel()->omega();
+
+    const scalar cs2 = mesh.lmodel()->cs2();
+
+    const scalar q = mesh.lmodel()->q();
+
+
+    
+    // Initialize gradient
+
+    for( uint j = 0 ; j < 3 ; j++ )
+	g[j] = 0;
+
+
+
+    // Move over velocities
+    
+    for( uint k = 1 ; k < q ; k++ ) {
+
+	int nbid = nb[id][k];
+
+	if( nbid != -1 ) {
+
+	    for( uint j = 0 ; j < 3 ; j++ )
+		g[j] += omega[k] * vel[reverse[k]][j] * field[nbid] / cs2;
+
+	}
+
+	else {
+
+	    for( uint j = 0 ; j < 3 ; j++ )
+		g[j] += omega[k] * vel[reverse[k]][j] * field[id] / cs2;
+
+	}
+
+	
+
+    }
+    
+
+}

@@ -38,6 +38,12 @@ public:
 
     virtual const scalar p_eos(const scalar& rho, const scalar& T) const = 0;
 
+    
+    /** Pressure derivative */
+
+    virtual const scalar dp_dT(const scalar& rho, const scalar& T) const = 0;
+    
+
 };
 
 #endif // EOS_H

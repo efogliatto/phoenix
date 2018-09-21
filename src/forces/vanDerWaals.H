@@ -32,6 +32,11 @@ public:
     /** EOS pressure */
 
     const scalar p_eos(const scalar& rho, const scalar& T) const;
+
+
+    /** Pressure derivative */
+
+    const scalar dp_dT(const scalar& rho, const scalar& T) const;    
     
 
 };

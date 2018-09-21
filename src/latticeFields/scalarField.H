@@ -43,6 +43,10 @@ public:
     const scalar& at(uint i) const {  return field[i];  }
 
 
+    /** Gradient at node */
+
+    const void grad(scalar g[3], const uint& id) const;
+
     
     /** Synchronization across procceses */
 
@@ -57,8 +61,6 @@ public:
     /** End sync */
 
     const void endSync();
-
-
     
 
     /** Write field using ensight format */
