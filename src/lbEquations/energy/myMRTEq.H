@@ -63,8 +63,13 @@ public:
 
     /** Compute local temperature */
 
-    scalar localTemperature( const uint& id ) { return energyEquation::localTemperature(id) + 0.5*_hs->source(id); }
+    const scalar localTemperature( const uint& id ) const { return energyEquation::localTemperature(id) + 0.5*_hs->source(id); }
 
+    
+    /** Update macroscopic temperature */
+
+    const void updateMacroTemperature();
+    
     
 };
 

@@ -66,7 +66,7 @@ public:
 
     /** Update macroscopic temperature */
 
-    const void updateMacroTemperature();
+    virtual const void updateMacroTemperature();
 
 
     /** Set pdf to equilibrium values */
@@ -76,7 +76,7 @@ public:
 
     /** Compute local temperature */
 
-    virtual scalar localTemperature( const uint& id );
+    virtual const scalar localTemperature( const uint& id ) const;
     
     
     // /** Update boundaries */

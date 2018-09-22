@@ -109,23 +109,27 @@ int main( int argc, char **argv ) {
 
 	NS->updateBoundaries();
 
-	f.sync();
+	f.startSync();
 
 
 	// Solve Energy equation
 
 	energy->collision();
 
-	// energy->streaming();
+	energy->streaming();
 
 	// energy->updateBoundaries();
 
-	g.sync();	
+	g.startSync();
+
+	f.endSync();
 
 	
 	// Update macroscopic fields
 
 	NS->updateMacroDensity();
+
+	g.endSync();
 
 	energy->updateMacroTemperature();
 

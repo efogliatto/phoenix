@@ -61,13 +61,26 @@ const void sparseScalarMatrix::matDotVec (const vector<scalar>& V, vector<scalar
 const void sparseScalarMatrix::addElement( const scalar& val, const uint& i, const uint& j ) {
 
 
-    // Check if position is already set
+    // Move over positions and check if exists
 
-    vector<uint>::iterator i_it = std::find(_idx0.begin(), _idx0.end(), i);
+    bool find(false);
 
-    vector<uint>::iterator j_it = std::find(_idx1.begin(), _idx1.end(), j);
+    for( uint k = 0 ; k < _idx0.size() ; k++ ) {
 
-    if(  ( i_it == _idx0.end() )    &&   ( j_it == _idx1.end() )  ) {
+	if(  (_idx0[k] == i)  &&  (_idx1[k] == j)  ) {
+
+	    find = true;
+
+	    _values[k] = val;
+	    
+	    k = _idx0.size();
+
+	}
+
+    }
+
+
+    if(!find) {
 
     	_values.push_back(val);
 
@@ -76,16 +89,7 @@ const void sparseScalarMatrix::addElement( const scalar& val, const uint& i, con
     	_idx1.push_back(j);
 
     }
-
-
-    else {
-
-    	uint k = i_it - _idx0.begin(); 
-
-    	_values[k] = val;
-
-    }
-
+    
 
     
     // Update matrix size

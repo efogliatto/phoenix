@@ -25,6 +25,8 @@ energyEquation::energyEquation( const string& name,
     hsCreator HS;
 
     _hs = HS.create("properties/macroProperties", name, mesh_, Time_);
+
+    _hs->update(rho,T,U);
     
 
 
@@ -62,7 +64,7 @@ energyEquation::~energyEquation() {}
 
 /** Compute local density */
 
-scalar energyEquation::localTemperature( const uint& id ) {
+const scalar energyEquation::localTemperature( const uint& id ) const {
 
     scalar t(0);
 
@@ -86,12 +88,17 @@ const void energyEquation::collision() {}
 
 
 
-/** Update macroscopic density */
+/** Update macroscopic temperature */
 
 const void energyEquation::updateMacroTemperature() {
 
+    // Update heat sources first
+
+    _hs->update(rho,T,U);
+
+    
     for( uint i = 0 ; i < mesh.npoints() ; i++ )
-	T[i] = localTemperature(i);
+	T[i] = energyEquation::localTemperature(i);
 
 }
 

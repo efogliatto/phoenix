@@ -27,7 +27,22 @@ int main() {
 
     M.matDotVec(V, res);
 
-    cout << res ;
+    cout << res << endl << endl;
+
+
+
+    vector<scalar> c = {0,0,0};
+
+    sparseScalarMatrix S( {1,2,3} );
+
+    S.addElement(4,1,2);
+
+    S.matDotVec( {1,1,1} ,c);
+
+    for (auto i : c)
+	cout << i << endl;
+
+    
 
 
 }

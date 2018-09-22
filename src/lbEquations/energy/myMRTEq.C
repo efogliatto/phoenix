@@ -309,3 +309,17 @@ const void myMRTEq::collision() {
 
 
 
+
+/** Update macroscopic temperature */
+
+const void myMRTEq::updateMacroTemperature() {
+
+    // Update heat sources first
+
+    _hs->update(rho,T,U);
+
+    
+    for( uint i = 0 ; i < mesh.npoints() ; i++ )
+	T[i] = myMRTEq::localTemperature(i);
+
+}

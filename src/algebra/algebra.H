@@ -5,4 +5,6 @@
 
 #include <scalarVector.H>
 
+#include <sparseScalarMatrix.H>
+
 #endif // ALGEBRA_H
