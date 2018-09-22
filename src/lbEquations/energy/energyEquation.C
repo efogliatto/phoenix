@@ -30,21 +30,21 @@ energyEquation::energyEquation( const string& name,
     
 
 
-    // Read Boundary conditions
+    // // Read Boundary conditions
 
-    dictionary dict("start/boundaries");
+    // dictionary dict("start/boundaries");
 
-    const map< string, vector<uint> >& bnd = mesh.boundaries();
+    // const map< string, vector<uint> >& bnd = mesh.boundaries();
 
-    energyBndCreator BndCreator;
+    // energyBndCreator BndCreator;
 
-    for(map< string, vector<uint> >::const_iterator iter = bnd.begin(); iter != bnd.end(); ++iter)  {
+    // for(map< string, vector<uint> >::const_iterator iter = bnd.begin(); iter != bnd.end(); ++iter)  {
 	
-    	string bdname = iter->first;
+    // 	string bdname = iter->first;
 
-    	_boundaries.push_back(   BndCreator.create(name, bdname, mesh.boundaryNodes(bdname), rho_, T_, U_, pdf_)   );
+    // 	_boundaries.push_back(   BndCreator.create(name, bdname, mesh, rho_, T_, U_, pdf_)   );
 
-    }
+    // }
     
 
 }

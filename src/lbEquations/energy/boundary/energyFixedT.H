@@ -12,11 +12,6 @@ protected:
     std::vector<scalar> _bndVal;
 
 
-    /** Temporary constants */
-
-    scalar _a1;
-    scalar _a2;
-
 
 public:
 
@@ -25,7 +20,7 @@ public:
 
     energyFixedT( const std::string& eqName,
 		  const std::string& bdName,
-		  const std::vector<uint>& nodes,
+		  const latticeMesh& mesh,
 		  const scalarField& rho,
 		  const scalarField& T,
 		  const vectorField& U,
@@ -39,7 +34,7 @@ public:
 
     /** Update pdf field */
 
-    virtual void update( const latticeMesh& mesh );
+    virtual void update( const energyEquation* eeq );
 
 };
 

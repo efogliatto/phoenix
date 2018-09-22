@@ -6,8 +6,4 @@ add_library(boundary SHARED
   pseudopotential/ppFixedU.C
   pseudopotential/ppPeriodic.C
   pseudopotential/ppBndCreator.C
-  energy/energyBndCond.C
-  energy/energyFixedT.C
-  energy/energyPeriodic.C
-  energy/energyBndCreator.C
   )

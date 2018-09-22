@@ -42,6 +42,8 @@ public:
 
     const scalar at(const uint& i, const uint& j) const{ return field[i][j]; }
 
+    const std::vector<scalar>& at(const uint& i) const{ return field[i]; }
+
 
     /** Vector divergence at node */
 

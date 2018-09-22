@@ -1,1 +1,1 @@
-../src/boundary/energy/energyPeriodic.H
+../src/lbEquations/energy/boundary/energyPeriodic.H

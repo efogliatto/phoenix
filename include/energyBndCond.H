@@ -1,1 +1,1 @@
-../src/boundary/energy/energyBndCond.H
+../src/lbEquations/energy/boundary/energyBndCond.H

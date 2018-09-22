@@ -4,7 +4,7 @@
 
 #include <PPEquation.H>
 
-#include <EEquation.H>
+#include <energyEqHandler.H>
 
 
 using namespace std;
@@ -87,9 +87,7 @@ int main( int argc, char **argv ) {
 
     // Energy MRT equation
 
-    EEquation EEq;
-
-    energyEquation* energy = EEq.create("Energy", mesh, Time, g, rho, U, T);
+    energyEqHandler energy("Energy", mesh, Time, g, rho, U, T);
     
 
 
@@ -115,11 +113,11 @@ int main( int argc, char **argv ) {
 	
 	// Solve Energy equation
 
-	energy->collision();
+	energy.collision();
 
-	energy->streaming();
+	energy.streaming();
 
-	energy->updateBoundaries();
+	energy.updateBoundaries();
 
 	g.startSync();
 
@@ -133,7 +131,7 @@ int main( int argc, char **argv ) {
 
 	g.endSync();
 
-	energy->updateMacroTemperature();
+	energy.updateMacroTemperature();
 
 	NS->updateMacroVelocity();
 

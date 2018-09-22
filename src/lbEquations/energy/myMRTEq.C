@@ -45,95 +45,14 @@ myMRTEq::~myMRTEq() {}
 /** Equilibrium in moment space */
 
 const void myMRTEq::eqMS( vector<scalar>& m, const uint& id ) const {
-
-    
-    const uint q = mesh.lmodel()->q();
-
-    const scalar _T = T.at(id);
-
-    const scalar _U[3] = { U.at(id,0), U.at(id,1), U.at(id,2) };
-    
-
-    switch(q) {
-
-    case 9:
-
-	m[0] = _T;
-	
-    	m[1] = _a1 * _T;
-	
-    	m[2] = _a2 * _T;
-	
-    	m[3] = _T * _U[0];
-	
-    	m[4] = _T * (-_U[0]);
-	
-    	m[5] = _T * _U[1];
-	
-    	m[6] = _T * (-_U[1]);
-	
-    	m[7] = 0;
-	
-    	m[8] = 0;
-
-
-    	break;
-
-
-    case 15:
-
-	m[0]  = _T;
-	
-	m[1]  = _a1 * _T;
-
-	m[2]  = _a2 * _T;
-
-	m[3]  =   _T * _U[0];
-
-	m[4]  = -(_T * _U[0]);
-
-	m[5]  =   _T * _U[1];
-
-	m[6]  = -(_T * _U[1]);
-
-	m[7]  =   _T * _U[2];
-
-	m[8]  = -(_T * _U[2]);
-
-	m[9]  = 0;
-
-	m[10] = 0;
-
-	m[11] = 0;
-
-	m[12] = 0;
-
-	m[13] = 0;
-
-	m[14] = 0;
-	
-    	break;
-
-
-
-    default:
-
-    	cout << " [ERROR]  Equilibrium model not implemented" << endl;
-
-    	exit(1);
-
-	break;
-
-    }
+  
+    myMRTEq::eqMS( m, T.at(id), U.at(id) );
 
 }
 
 
 
-
-
-
-
+/** Equilibrium in moment space */
 
 const void myMRTEq::eqMS( vector<scalar>& m, const scalar& T_, const vector<scalar>& U_ ) const {
 
@@ -226,27 +145,8 @@ const void myMRTEq::eqMS( vector<scalar>& m, const scalar& T_, const vector<scal
 
 const void myMRTEq::eqPS( vector<scalar>& n, const uint& id ) const {
 
-
-    // First compute in moment space
-
-    myMRTEq::eqMS(n,id);
-
-
+    myMRTEq::eqPS( n, T.at(id), U.at(id) );
     
-    // Back to population space
-
-    const uint q = mesh.lmodel()->q();
-    
-    const scalarMatrix& invM = mesh.lmodel()->MRTInvMatrix();
-
-    vector<scalar> res(q);
-
-    invM.matDotVec(n,res);
-
-
-    std::copy(res.begin(), res.end(), n.begin());
-
-
 }
 
 
@@ -257,26 +157,21 @@ const void myMRTEq::eqPS( vector<scalar>& n, const scalar& T_, const std::vector
 
 
     // First compute in moment space
+   
+    vector<scalar> n_eq( mesh.lmodel()->q() );
 
-    myMRTEq::eqMS(n,T_,U_);
+    myMRTEq::eqMS(n_eq,T_,U_);
 
 
     
     // Back to population space
-
-    const uint q = mesh.lmodel()->q();
     
     const scalarMatrix& invM = mesh.lmodel()->MRTInvMatrix();
 
-    vector<scalar> res(q);
-
-    invM.matDotVec(n,res);
-
-
-    std::copy(res.begin(), res.end(), n.begin());
-
+    invM.matDotVec(n_eq,n);
 
 }
+
 
 
 /** Set pdf to equilibrium values */
@@ -442,20 +337,5 @@ const void myMRTEq::updateMacroTemperature() {
     
     for( uint i = 0 ; i < mesh.npoints() ; i++ )
 	T[i] = myMRTEq::localTemperature(i);
-
-}
-
-
-
-
-/** Update boundaries */
-
-void myMRTEq::updateBoundaries() {
-
-    for(uint i = 0 ; i < _boundaries.size() ; i++) {
-
-    	_boundaries[i]->update( mesh );
-
-    }
 
 }

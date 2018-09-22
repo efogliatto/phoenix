@@ -4,13 +4,13 @@
 
 energyPeriodic::energyPeriodic( const std::string& eqName,
 				const std::string& bdName,
-				const std::vector<uint>& nodes,
+				const latticeMesh& mesh,
 				const scalarField& rho,
 				const scalarField& T,
 				const vectorField& U,
 				pdfField& pdf )
     
-    : energyBndCond(nodes, rho, T, U, pdf) {}
+    : energyBndCond(mesh, rho, T, U, pdf, bdName) {}
 
 
 /** Destructor */
@@ -20,4 +20,4 @@ energyPeriodic::~energyPeriodic() {}
 
 /** Update pdf field */
 
-void energyPeriodic::update( const latticeMesh& mesh ) {}
+void energyPeriodic::update( const energyEquation* eeq ) {}

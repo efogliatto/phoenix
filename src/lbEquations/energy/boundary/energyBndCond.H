@@ -1,26 +1,19 @@
 #ifndef ENERGYBNDCOND_H
 #define ENERGYBNDCOND_H
 
-#include <pdfField.H>
-
-#include <scalarField.H>
-
-#include <vectorField.H>
-
-#include <functional>
+#include <EEquation.H>
 
 
 class energyBndCond {
 
-protected:
-
-    
-    /** Reference to node ids */
-
-    const std::vector<uint> _nodes;
+protected: 
 
     
     /** Reference to external fields */
+
+    const std::vector<uint>& _nodes;
+
+    const latticeMesh& _mesh;
 
     const scalarField& _rho;
 
@@ -36,11 +29,12 @@ public:
 
     /** Constructor */
 
-    energyBndCond( const std::vector<uint>& nodes,
+    energyBndCond( const latticeMesh& mesh,
 		   const scalarField& rho,
 		   const scalarField& T,
 		   const vectorField& U,
-		   pdfField& pdf);
+		   pdfField& pdf,
+		   const std::string& bdName);
 
 
     /** Destructor */
@@ -50,7 +44,8 @@ public:
 
     /** Update pdf field */
 
-    virtual void update( const latticeMesh& mesh ) = 0;
+    virtual void update( const energyEquation* eeq ) = 0;
+    
 
 };
 

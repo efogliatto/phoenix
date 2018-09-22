@@ -19,7 +19,7 @@ public:
 
     energyPeriodic( const std::string& eqName,
 		    const std::string& bdName,
-		    const std::vector<uint>& nodes,
+		    const latticeMesh& mesh,		    
 		    const scalarField& rho,
 		    const scalarField& T,
 		    const vectorField& U,
@@ -33,7 +33,7 @@ public:
 
     /** Update pdf field */
 
-    virtual void update( const latticeMesh& mesh );
+    virtual void update( const energyEquation* eeq );
 
 };
 

@@ -5,7 +5,7 @@ using namespace std;
 
 energyBndCond* energyBndCreator::create(const std::string& eqName,
 					const std::string& bdName,
-					const std::vector<uint>& nodes,
+					const latticeMesh& mesh,
 					const scalarField& rho,
 					const scalarField& T,
 					const vectorField& U,
@@ -21,7 +21,7 @@ energyBndCond* energyBndCreator::create(const std::string& eqName,
     
     if( btype == "fixedT" ) {
 
-    	return new energyFixedT( eqName, bdName, nodes, rho, T, U, pdf );
+    	return new energyFixedT( eqName, bdName, mesh, rho, T, U, pdf );
 
     }
 
@@ -32,7 +32,7 @@ energyBndCond* energyBndCreator::create(const std::string& eqName,
 
 	if( btype == "periodic" ) {
 
-	    return new energyPeriodic( eqName, bdName, nodes, rho, T, U, pdf );
+	    return new energyPeriodic( eqName, bdName, mesh, rho, T, U, pdf );
 
 	}
 

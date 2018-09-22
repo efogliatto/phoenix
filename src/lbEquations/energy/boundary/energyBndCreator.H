@@ -12,7 +12,7 @@ public:
 
     energyBndCond* create(const std::string& eqName,
 			  const std::string& bdName,
-			  const std::vector<uint>& nodes,
+			  const latticeMesh& mesh,
 			  const scalarField& rho,
 			  const scalarField& T,
 			  const vectorField& U,

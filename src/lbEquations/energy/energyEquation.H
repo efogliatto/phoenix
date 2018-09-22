@@ -5,8 +5,6 @@
 
 #include <hsCreator.H>
 
-#include <energyBndCreator.H>
-
 
 
 class energyEquation : public lbEquation {
@@ -33,16 +31,6 @@ protected:
     /** Heat sources for macro equation */
 
     heatSource* _hs;
-
-
-    /** Boundary conditions */
-
-    std::vector< energyBndCond* > _boundaries;
-
-
-    /** Forced interface for equilibrium distribution */
-
-    virtual const void eqPS( std::vector<scalar>& n, const scalar& T_, const std::vector<scalar>& U_ ) const = 0;
   
 
 
@@ -85,12 +73,12 @@ public:
     /** Compute local temperature */
 
     virtual const scalar localTemperature( const uint& id ) const;
-    
-    
-    /** Update boundaries */
 
-    virtual void updateBoundaries() = 0;
+    
+    /** Forced interface for equilibrium distribution */
 
+    virtual const void eqPS( std::vector<scalar>& n, const scalar& T_, const std::vector<scalar>& U_ ) const = 0;    
+    
     
 };
 

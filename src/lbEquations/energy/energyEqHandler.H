@@ -53,6 +53,11 @@ public:
     /** Update macroscopic temperature */
 
     const void updateMacroTemperature() { _equation->updateMacroTemperature(); }
+
+
+    /** Update boundaries */
+
+    const void updateBoundaries();
     
 
 };

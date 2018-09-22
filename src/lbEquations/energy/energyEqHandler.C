@@ -34,7 +34,7 @@ energyEqHandler::energyEqHandler(const std::string& name,
 	
     	string bdname = iter->first;
 
-    	_boundaries.push_back(   BndCreator.create(name, bdname, mesh_.boundaryNodes(bdname), rho_, T_, U_, pdf_)   );
+    	_boundaries.push_back(   BndCreator.create(name, bdname, mesh_, rho_, T_, U_, pdf_)   );
 
     }
     
@@ -46,3 +46,16 @@ energyEqHandler::energyEqHandler(const std::string& name,
 /** Destructor */
 
 energyEqHandler::~energyEqHandler() {}
+
+
+/** Update boundaries */
+
+const void energyEqHandler::updateBoundaries() {
+
+    for(uint i = 0 ; i < _boundaries.size() ; i++) {
+
+    	_boundaries[i]->update( _equation );
+
+    }
+
+}

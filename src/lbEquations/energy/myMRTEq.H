@@ -29,8 +29,6 @@ protected:
     /** Equilibrium in population space */
 
     const void eqPS( std::vector<scalar>& n, const uint& id ) const;
-
-    const void eqPS( std::vector<scalar>& n, const scalar& T_, const std::vector<scalar>& U_ ) const;
   
 
 
@@ -75,9 +73,9 @@ public:
     const void updateMacroTemperature();
 
 
-    /** Update boundary conditions */
+    /** Equilibrium in population space */
 
-    void updateBoundaries();
+    const void eqPS( std::vector<scalar>& n, const scalar& T_, const std::vector<scalar>& U_ ) const;    
     
     
 };

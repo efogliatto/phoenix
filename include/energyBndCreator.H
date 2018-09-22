@@ -1,1 +1,1 @@
-../src/boundary/energy/energyBndCreator.H
+../src/lbEquations/energy/boundary/energyBndCreator.H

@@ -10,4 +10,9 @@ add_library(lbequations SHARED
   energy/myMRTEq.C
   energy/EEquation.C
   energy/energyEqHandler.C
+  energy/boundary/energyBndCond.C
+  energy/boundary/energyFixedT.C
+  energy/boundary/energyPeriodic.C
+  energy/boundary/energyBndCreator.C
+  
   )
