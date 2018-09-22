@@ -1,6 +1,6 @@
 #include <myMRTEq.H>
 
-#include <sparseScalarMatrix.H>
+#include <algebra.H>
 
 using namespace std;
 
@@ -130,6 +130,94 @@ const void myMRTEq::eqMS( vector<scalar>& m, const uint& id ) const {
 
 
 
+
+
+
+const void myMRTEq::eqMS( vector<scalar>& m, const scalar& T_, const vector<scalar>& U_ ) const {
+
+    
+    const uint q = mesh.lmodel()->q();
+
+    const scalar _U[3] = { U_[0], U_[1], U_[2] };
+    
+
+    switch(q) {
+
+    case 9:
+
+	m[0] = T_;
+	
+    	m[1] = _a1 * T_;
+	
+    	m[2] = _a2 * T_;
+	
+    	m[3] = T_ * _U[0];
+	
+    	m[4] = T_ * (-_U[0]);
+	
+    	m[5] = T_ * _U[1];
+	
+    	m[6] = T_ * (-_U[1]);
+	
+    	m[7] = 0;
+	
+    	m[8] = 0;
+
+
+    	break;
+
+
+    case 15:
+
+	m[0]  = T_;
+	
+	m[1]  = _a1 * T_;
+
+	m[2]  = _a2 * T_;
+
+	m[3]  =   T_ * _U[0];
+
+	m[4]  = -(T_ * _U[0]);
+
+	m[5]  =   T_ * _U[1];
+
+	m[6]  = -(T_ * _U[1]);
+
+	m[7]  =   T_ * _U[2];
+
+	m[8]  = -(T_ * _U[2]);
+
+	m[9]  = 0;
+
+	m[10] = 0;
+
+	m[11] = 0;
+
+	m[12] = 0;
+
+	m[13] = 0;
+
+	m[14] = 0;
+	
+    	break;
+
+
+
+    default:
+
+    	cout << " [ERROR]  Equilibrium model not implemented" << endl;
+
+    	exit(1);
+
+    }
+
+}
+
+
+
+
+
+
 /** Equilibrium in population space */
 
 const void myMRTEq::eqPS( vector<scalar>& n, const uint& id ) const {
@@ -138,6 +226,35 @@ const void myMRTEq::eqPS( vector<scalar>& n, const uint& id ) const {
     // First compute in moment space
 
     myMRTEq::eqMS(n,id);
+
+
+    
+    // Back to population space
+
+    const uint q = mesh.lmodel()->q();
+    
+    const scalarMatrix& invM = mesh.lmodel()->MRTInvMatrix();
+
+    vector<scalar> res(q);
+
+    invM.matDotVec(n,res);
+
+
+    std::copy(res.begin(), res.end(), n.begin());
+
+
+}
+
+
+
+/** Equilibrium in population space */
+
+const void myMRTEq::eqPS( vector<scalar>& n, const scalar& T_, const std::vector<scalar>& U_ ) const {
+
+
+    // First compute in moment space
+
+    myMRTEq::eqMS(n,T_,U_);
 
 
     
@@ -170,8 +287,8 @@ const void myMRTEq::setEquilibrium() {
 
 	eqPS(n,i);
 
-	for(uint k = 0 ; k < q ; k++)
-	    _pdf.set(i,k,n[k]);
+	for(uint k = 0 ; k < q ; k++) 
+	    _pdf.set(i,k,n[k]);	    
 
     }
 

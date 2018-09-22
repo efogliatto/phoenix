@@ -112,6 +112,7 @@ int main( int argc, char **argv ) {
 	f.startSync();
 
 
+	
 	// Solve Energy equation
 
 	energy->collision();
@@ -124,6 +125,7 @@ int main( int argc, char **argv ) {
 
 	f.endSync();
 
+	
 	
 	// Update macroscopic fields
 

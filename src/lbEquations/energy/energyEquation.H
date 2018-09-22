@@ -35,6 +35,10 @@ protected:
     // /** Boundary conditions */
 
     // std::vector< ppBndCond* > _boundaries;
+
+
+
+    virtual const void eqPS( std::vector<scalar>& n, const scalar& T_, const std::vector<scalar>& U_ ) const = 0;
   
 
 
