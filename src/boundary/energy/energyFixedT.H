@@ -12,6 +12,12 @@ protected:
     std::vector<scalar> _bndVal;
 
 
+    /** Temporary constants */
+
+    scalar _a1;
+    scalar _a2;
+
+
 public:
 
 
@@ -33,7 +39,7 @@ public:
 
     /** Update pdf field */
 
-    virtual void update( const latticeMesh& mesh, std::function<void(std::vector<scalar>&, const scalar&, const std::vector<scalar>&)> eq );
+    virtual void update( const latticeMesh& mesh );
 
 };
 

@@ -20,4 +20,4 @@ energyPeriodic::~energyPeriodic() {}
 
 /** Update pdf field */
 
-void energyPeriodic::update( const latticeMesh& mesh, std::function<void(std::vector<scalar>&, const scalar&, const std::vector<scalar>&)> eq ) {}
+void energyPeriodic::update( const latticeMesh& mesh ) {}

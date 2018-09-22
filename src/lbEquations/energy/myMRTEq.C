@@ -122,6 +122,8 @@ const void myMRTEq::eqMS( vector<scalar>& m, const uint& id ) const {
 
     	exit(1);
 
+	break;
+
     }
 
 }
@@ -208,6 +210,8 @@ const void myMRTEq::eqMS( vector<scalar>& m, const scalar& T_, const vector<scal
     	cout << " [ERROR]  Equilibrium model not implemented" << endl;
 
     	exit(1);
+
+	break;
 
     }
 
@@ -438,5 +442,20 @@ const void myMRTEq::updateMacroTemperature() {
     
     for( uint i = 0 ; i < mesh.npoints() ; i++ )
 	T[i] = myMRTEq::localTemperature(i);
+
+}
+
+
+
+
+/** Update boundaries */
+
+void myMRTEq::updateBoundaries() {
+
+    for(uint i = 0 ; i < _boundaries.size() ; i++) {
+
+    	_boundaries[i]->update( mesh );
+
+    }
 
 }

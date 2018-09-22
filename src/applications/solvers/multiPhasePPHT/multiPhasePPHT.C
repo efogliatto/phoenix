@@ -119,7 +119,7 @@ int main( int argc, char **argv ) {
 
 	energy->streaming();
 
-	// energy->updateBoundaries();
+	energy->updateBoundaries();
 
 	g.startSync();
 

@@ -32,7 +32,13 @@ energyFixedT::energyFixedT( const std::string& eqName,
     for( uint i = 0 ; i < _bndVal.size() ; i++ )
 	    _bndVal[i] = val;
 
-    
+
+
+    dictionary prop("properties/macroProperties");
+
+    _a1 = prop.lookUp<scalar>( eqName + "/HeatSource/Constants/alpha_1");
+
+    _a2 = prop.lookUp<scalar>( eqName + "/HeatSource/Constants/alpha_2");
 
 }
 
@@ -44,11 +50,96 @@ energyFixedT::~energyFixedT() {}
 
 
 
-/** Update pdf field */
 
-void energyFixedT::update( const latticeMesh& mesh, std::function<void(std::vector<scalar>&, const scalar&, const vector<scalar>&)> eq ) {
+void eq( vector<scalar>& m, const scalar& T_, const vector<scalar>& U_, const latticeMesh& mesh, const scalar& a1, const scalar& a2 ) {
 
     
+    const scalar _U[3] = { U_[0], U_[1], U_[2] };
+
+    const uint q = mesh.lmodel()->q();
+
+    vector<scalar> n_eq(q);
+
+    const scalarMatrix& invM = mesh.lmodel()->MRTInvMatrix();
+    
+
+    
+    switch(q) {
+
+    case 9:
+
+	n_eq[0] = T_;
+	
+    	n_eq[1] = a1 * T_;
+	
+    	n_eq[2] = a2 * T_;
+	
+    	n_eq[3] = T_ * _U[0];
+	
+    	n_eq[4] = T_ * (-_U[0]);
+	
+    	n_eq[5] = T_ * _U[1];
+	
+    	n_eq[6] = T_ * (-_U[1]);
+	
+    	n_eq[7] = 0;
+	
+    	n_eq[8] = 0;
+
+
+    	break;
+
+
+    case 15:
+
+	n_eq[0]  = T_;
+	
+	n_eq[1]  = a1 * T_;
+
+	n_eq[2]  = a2 * T_;
+
+	n_eq[3]  =   T_ * _U[0];
+
+	n_eq[4]  = -(T_ * _U[0]);
+
+	n_eq[5]  =   T_ * _U[1];
+
+	n_eq[6]  = -(T_ * _U[1]);
+
+	n_eq[7]  =   T_ * _U[2];
+
+	n_eq[8]  = -(T_ * _U[2]);
+
+	n_eq[9]  = 0;
+
+	n_eq[10] = 0;
+
+	n_eq[11] = 0;
+
+	n_eq[12] = 0;
+
+	n_eq[13] = 0;
+
+	n_eq[14] = 0;
+	
+    	break;
+
+    }
+
+
+
+    invM.matDotVec(n_eq,m);
+
+
+}
+
+
+
+/** Update pdf field */
+
+void energyFixedT::update( const latticeMesh& mesh ) {
+
+
     // Lattice constants
     
     const scalar q = mesh.lmodel()->q();
@@ -102,9 +193,9 @@ void energyFixedT::update( const latticeMesh& mesh, std::function<void(std::vect
 		    }
 		    
 
-		    eq( f_eq_nb, _T.at(nbid), Unbid );
+		    eq( f_eq_nb, _T.at(nbid), Unbid, mesh, _a1, _a2 );
 
-		    eq( f_eq_bnd, Tw, Uw );
+		    eq( f_eq_bnd, Tw, Uw, mesh, _a1, _a2 );
 	    
 
 		    

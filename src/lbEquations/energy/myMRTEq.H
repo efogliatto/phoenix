@@ -73,6 +73,11 @@ public:
     /** Update macroscopic temperature */
 
     const void updateMacroTemperature();
+
+
+    /** Update boundary conditions */
+
+    void updateBoundaries();
     
     
 };
