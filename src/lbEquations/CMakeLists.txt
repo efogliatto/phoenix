@@ -9,4 +9,5 @@ add_library(lbequations SHARED
   energy/energyEquation.C
   energy/myMRTEq.C
   energy/EEquation.C
+  energy/energyEqHandler.C
   )
