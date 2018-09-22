@@ -12,6 +12,11 @@ protected:
     std::vector<scalar> _bndVal;
 
 
+    /** Perturbation (percentage) */
+
+    scalar _pert;
+
+
 
 public:
 

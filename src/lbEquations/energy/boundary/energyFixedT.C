@@ -1,5 +1,7 @@
 #include <energyFixedT.H>
 
+#include <random>
+
 using namespace std;
 
 
@@ -31,6 +33,12 @@ energyFixedT::energyFixedT( const std::string& eqName,
 
     for( uint i = 0 ; i < _bndVal.size() ; i++ )
 	    _bndVal[i] = val;
+
+
+
+    // Perturbation
+
+    _pert = dict.lookUpOrDefault<scalar>( eqName + "/" + bdName + "/perturbation", 0 );    
 
 }
 
@@ -65,8 +73,16 @@ void energyFixedT::update( const energyEquation* eeq ) {
 
     vector<scalar> Uw = {0,0,0};
 
-    
 
+
+    // Random seeds
+    
+    uniform_real_distribution<scalar> unif( (100.0-_pert)/100.0, (100.0+_pert)/100.0);
+
+    default_random_engine re;
+
+    re.seed( time(NULL) );
+    
 
     // Move over boundary elements
 
@@ -74,9 +90,9 @@ void energyFixedT::update( const energyEquation* eeq ) {
 
 	uint id = _nodes[i];
 
-	scalar Tw = _bndVal[i];
+	scalar Tw = unif(re) * _bndVal[i];	
 
-
+	
 	for( uint k = 0 ; k < q ; k++ ) {
 
 

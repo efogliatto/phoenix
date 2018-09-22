@@ -105,6 +105,33 @@ public:
 
 
 
+    // Look up or set default value
+    
+    template<typename T>    
+    const T lookUpOrDefault(const std::string& entry, const T& df) const {
+
+	T out;
+
+	std::vector<std::string> elist = tkEntry(entry);
+
+	if( elist.size() == 0 ) {
+
+	    out = df;
+
+	}
+
+	else {
+
+	    extract( elist, out );
+
+	}
+	
+	return out;
+
+    }    
+
+
+
     /** Braced entries names */
 
     const std::vector<std::string> bracedEntriesNames( const std::string& ename ) const;

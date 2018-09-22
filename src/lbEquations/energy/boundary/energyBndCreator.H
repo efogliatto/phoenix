@@ -3,6 +3,8 @@
 
 #include <energyFixedT.H>
 
+#include <energyFixedGradT.H>
+
 #include <energyPeriodic.H>
 
 

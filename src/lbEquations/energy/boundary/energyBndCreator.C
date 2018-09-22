@@ -38,12 +38,21 @@ energyBndCond* energyBndCreator::create(const std::string& eqName,
 
 	else {
 
+	    if( btype == "fixedGradT" ) {
 
-	    // Default
+		return new energyFixedGradT( eqName, bdName, mesh, rho, T, U, pdf );
+
+	    }
+
+	    else {
+
+		// Default
     
-	    cout << endl << " [ERROR]  Boundary condition " << btype << " not available for energy model" << endl << endl;
+		cout << endl << " [ERROR]  Boundary condition " << btype << " not available for energy model" << endl << endl;
 
-	    exit(1);
+		exit(1);
+
+	    }
 
 	}
     
