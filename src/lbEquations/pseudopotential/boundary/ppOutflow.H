@@ -1,9 +1,9 @@
 #ifndef PPOUTFLOW_H
 #define PPOUTFLOW_H
 
-#include <ppFixedU.H>
+#include <ppBndCond.H>
 
-class ppOutflow : public ppFixedU {
+class ppOutflow : public ppBndCond {
 
 
 protected:

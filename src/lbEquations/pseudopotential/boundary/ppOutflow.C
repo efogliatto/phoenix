@@ -13,13 +13,12 @@ ppOutflow::ppOutflow( const string& eqName,
 		      const vectorField& U,
 		      pdfField& pdf )
 
-    : ppFixedU( eqName, bdName, mesh, rho, T, U, pdf ) {
-
+    : ppBndCond(mesh, rho, T, U, pdf, bdName) {
 
 
     // Resize neighbour indices, compute normals and check indexing
 
-    _nbid.resize( _bndVal.size() );
+    _nbid.resize( _nodes.size() );
 
     const vector< vector<int> >& nb = mesh.nbArray();
 
@@ -129,23 +128,92 @@ ppOutflow::~ppOutflow() {}
 
 void ppOutflow::update( const pseudoPotEquation* ppeq ) {
 
+
+    // Lattice constants
     
-    // First compute value over boundary according to _grad
+    const uint q = _mesh.lmodel()->q();
+
+    vector<scalar> f_eq_nb(q);
+
+    vector<scalar> f_eq_bnd(q);
+
+    const vector< vector<int> >& nb = _mesh.nbArray();
+
+    const vector<uint> reverse = _mesh.lmodel()->reverse();
+
+    const vector< vector<int> > vel = _mesh.lmodel()->lvel();
+
+    vector<scalar> nvel = { 0,0,0 };
+
+
+    // Move over boundary elements
 
     for( uint i = 0 ; i < _nodes.size() ; i++ ) {
-
-	for( uint j = 0 ; j < 3 ; j++ ) {
 	
-	    _bndVal[i][j] = _U.at(_nodes[i],j);
 
-	}
+    	uint id = _nodes[i];
 
+	
+
+	
+	// Velocity at neighbour node		    
+
+	ppeq->localVelocity(nvel, _nbid[i], true);
+
+	scalar uAdv(0);
+
+	// for(uint j = 0 ; j < 3 ; j++)
+	//     uAdv += 
+
+
+    	// for( uint k = 0 ; k < q ; k++ ) {
+
+
+    	//     if ( nb[id][k] == -1 ) {
+
+		
+    	// 	// Need density and velocity at neighbour (reverse) node
+		    
+    	// 	int nbid = nb[id][ reverse[k] ];
+
+
+    	// 	if( nbid != -1 ) {
+
+
+
+		    
+
+    	// 	    // Update distribution
+			
+    	// 	    _pdf.set(id, k, f_eq_bnd[k] + (_pdf[nbid][k] - f_eq_nb[k] ) );
+
+    	// 	}
+		
+
+    	//     }
+	    
+
+    	// }
+	
+
+
+
+
+	// Hay que hacer esto
+
+	// // Update unknowun distributions for f
+	    
+	// for( k = 0 ; k < mesh->mesh.Q ; k++ ) {
+
+	//     if( mesh->mesh.nb[id][k] == -1 ) {
+		
+	// 	field[id][k] = (  field[id][k] + uAdv*field[neigh][k]  ) / (1+uAdv);
+
+	//     }
+
+	// }	
     }
 
-
-    // Compute base version
     
-    ppFixedU::update(ppeq);
-
 
 }
