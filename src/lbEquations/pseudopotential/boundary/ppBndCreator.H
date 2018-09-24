@@ -5,6 +5,8 @@
 
 #include <ppPeriodic.H>
 
+#include <ppOutflow.H>
+
 class ppBndCreator {
 
 public:

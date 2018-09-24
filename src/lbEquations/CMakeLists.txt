@@ -10,6 +10,7 @@ add_library(lbequations SHARED
   pseudopotential/boundary/ppBndCond.C
   pseudopotential/boundary/ppFixedU.C
   pseudopotential/boundary/ppPeriodic.C
+  pseudopotential/boundary/ppOutflow.C
   pseudopotential/boundary/ppBndCreator.C
   energy/energyEquation.C
   energy/myMRTEq.C
