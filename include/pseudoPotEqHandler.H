@@ -1,0 +1,1 @@
+../src/lbEquations/pseudopotential/pseudoPotEqHandler.H

@@ -2,8 +2,7 @@
 
 #include <iomanip>
 
-#include <PPEquation.H>
-
+#include <pseudoPotEqHandler.H>
 
 using namespace std;
 
@@ -74,9 +73,7 @@ int main( int argc, char **argv ) {
     
     // Li MRT equation
 
-    PPEquation NSEq;
-
-    pseudoPotEquation* NS = NSEq.create("Navier-Stokes", mesh, Time, f, rho, U, T);
+    pseudoPotEqHandler NS("Navier-Stokes", mesh, Time, f, rho, U, T);
 
 
 
@@ -89,11 +86,11 @@ int main( int argc, char **argv ) {
 	
 	// Solve Navier-Stokes equation
 
-	NS->collision();
+	NS.collision();
 
-	NS->streaming();
+	NS.streaming();
 
-	NS->updateBoundaries();
+	NS.updateBoundaries();
 
 	f.sync();
 
@@ -101,9 +98,9 @@ int main( int argc, char **argv ) {
 	
 	// Update macroscopic fields
 
-	NS->updateMacroDensity();
+	NS.updateMacroDensity();
 
-	NS->updateMacroVelocity();
+	NS.updateMacroVelocity();
 
 	
 

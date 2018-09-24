@@ -1,1 +1,1 @@
-../src/boundary/pseudopotential/ppBndCond.H
+../src/lbEquations/pseudopotential/boundary/ppBndCond.H

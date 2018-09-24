@@ -17,7 +17,7 @@ pseudoPotEquation::pseudoPotEquation( const string& name,
       rho(rho_),
       U(U_),
       T(T_),
-      F("properties/macroProperties", name, mesh_, Time_, rho_){
+      F("properties/macroProperties", name, mesh_, Time_, rho_) {
 
 
     
@@ -27,21 +27,21 @@ pseudoPotEquation::pseudoPotEquation( const string& name,
 
 
 
-    // Read Boundary conditions
+    // // Read Boundary conditions
 
-    dictionary dict("start/boundaries");
+    // dictionary dict("start/boundaries");
 
-    const map< string, vector<uint> >& bnd = mesh.boundaries();
+    // const map< string, vector<uint> >& bnd = mesh.boundaries();
 
-    ppBndCreator BndCreator;
+    // ppBndCreator BndCreator;
 
-    for(map< string, vector<uint> >::const_iterator iter = bnd.begin(); iter != bnd.end(); ++iter)  {
+    // for(map< string, vector<uint> >::const_iterator iter = bnd.begin(); iter != bnd.end(); ++iter)  {
 	
-	string bdname = iter->first;
+    // 	string bdname = iter->first;
 
-	_boundaries.push_back( BndCreator.create(name, bdname, mesh.boundaryNodes(bdname) ) );
+    // 	_boundaries.push_back( BndCreator.create(name, bdname, mesh.boundaryNodes(bdname) ) );
 
-    }
+    // }
 
 }
 
@@ -61,7 +61,7 @@ pseudoPotEquation::~pseudoPotEquation() {}
 
 /** Compute local density */
 
-scalar pseudoPotEquation::localDensity( const uint& id ) {
+const scalar pseudoPotEquation::localDensity( const uint& id ) const {
 
     scalar r(0);
 
@@ -77,9 +77,8 @@ scalar pseudoPotEquation::localDensity( const uint& id ) {
 
 
 /** Compute local velocity */
-/** Density MUST be already updated */
 
-const void pseudoPotEquation::localVelocity( vector<scalar>& v, const uint& id ) {
+const void pseudoPotEquation::localVelocity( vector<scalar>& v, const uint& id, const bool updDens ) const {
     
 
     // Local velocity
@@ -87,11 +86,28 @@ const void pseudoPotEquation::localVelocity( vector<scalar>& v, const uint& id )
     vector<scalar> lv = {0,0,0};
 
 
+    // Local density
+
+    scalar localRho(0);
+
+    if(updDens) {
+
+	localRho = localDensity(id);
+
+    }
+
+    else {
+
+	localRho = rho.at(id);
+
+    }
+
+
     // Lattice constants
 
     const vector< vector<int> >& vel = mesh.lmodel()->lvel();
 
-    const scalar q = mesh.lmodel()->q();
+    const uint q = mesh.lmodel()->q();
 
 
     // Compute first moment
@@ -114,7 +130,7 @@ const void pseudoPotEquation::localVelocity( vector<scalar>& v, const uint& id )
     F.total(Ft, id);
     
     for( uint j = 0 ; j < 3 ; j++ )
-    	lv[j] = ( lv[j]   +   0.5 * Ft[j]   ) / rho.at(id);
+    	lv[j] = ( lv[j]   +   0.5 * Ft[j]   ) / localRho;
 	
 
 
@@ -217,14 +233,57 @@ const void pseudoPotEquation::updateMacroVelocity() {
 
 
 
-/** Update boundaries */
 
-void pseudoPotEquation::updateBoundaries() {
+/** Forced interface for equilibrium distribution */
 
-    for(uint i = 0 ; i < _boundaries.size() ; i++) {
+const void pseudoPotEquation::eqPS( std::vector<scalar>& n, const scalar& rho_, const std::vector<scalar>& U_ ) const {
 
-	_boundaries[i]->update( mesh, _pdf, rho, T, U, &F );
+    
+    // Lattice constants
+    
+    const uint q = mesh.lmodel()->q();
+
+    const scalar cs2 = mesh.lmodel()->cs2();
+
+    const vector<scalar>& omega = mesh.lmodel()->omega();
+
+    const vector< vector<int> >& vel = mesh.lmodel()->lvel();
+
+
+    scalar umag(0);
+
+    for( uint j = 0 ; j < 3 ; j++ )
+	umag += U_[j] * U_[j];
+    
+    
+    for( uint k = 0 ; k < q ; k++ ) {
+
+	// Dot product
+
+	scalar alpha(0);
+	
+	for( uint j = 0 ; j < 3 ; j++ )
+	    alpha += vel[k][j] * U_[j];
+
+	    
+	n[k] = rho_ * omega[k] * ( 1 + alpha/cs2   +   0.5 * alpha * alpha / (cs2*cs2)  -  0.5 * umag / cs2 );
 
     }
 
 }
+
+
+
+
+
+// /** Update boundaries */
+
+// void pseudoPotEquation::updateBoundaries() {
+
+//     for(uint i = 0 ; i < _boundaries.size() ; i++) {
+
+// 	_boundaries[i]->update( mesh, _pdf, rho, T, U, &F );
+
+//     }
+
+// }

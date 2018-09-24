@@ -7,7 +7,7 @@
 
 #include <pseudoPotForce.H>
 
-#include <ppBndCreator.H>
+// #include <ppBndCreator.H>
 
 
 
@@ -37,23 +37,12 @@ protected:
     pseudoPotForce F;
 
 
-    /** Boundary conditions */
+    // /** Boundary conditions */
 
-    std::vector< ppBndCond* > _boundaries;
-
-
-    
-
-    /** Compute local density */
-
-    scalar localDensity( const uint& id );
+    // std::vector< ppBndCond* > _boundaries;
 
 
-    /** Compute local velocity */
-    /** Density MUST be already updated */
-
-    const void localVelocity( std::vector<scalar>& v, const uint& id );
-
+  
     
 
 
@@ -100,10 +89,28 @@ public:
     virtual const void setEquilibrium() = 0;
 
 
-    /** Update boundaries */
+    /** Forced interface for equilibrium distribution */
 
-    void updateBoundaries();
+    virtual const void eqPS( std::vector<scalar>& n, const scalar& rho_, const std::vector<scalar>& U_ ) const;
 
+
+    // /** Update boundaries */
+
+    // void updateBoundaries();
+
+
+
+
+    /** Compute local density */
+
+    const scalar localDensity( const uint& id ) const;
+
+
+    /** Compute local velocity */
+
+    const void localVelocity( std::vector<scalar>& v, const uint& id, const bool updDens = false ) const;
+
+    
     
 };
 

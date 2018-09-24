@@ -2,7 +2,7 @@
 
 #include <iomanip>
 
-#include <PPEquation.H>
+#include <pseudoPotEqHandler.H>
 
 #include <energyEqHandler.H>
 
@@ -80,9 +80,7 @@ int main( int argc, char **argv ) {
     
     // Navier-Stokes MRT equation
 
-    PPEquation NSEq;
-
-    pseudoPotEquation* NS = NSEq.create("Navier-Stokes", mesh, Time, f, rho, U, T);
+    pseudoPotEqHandler NS("Navier-Stokes", mesh, Time, f, rho, U, T);
 
 
     // Energy MRT equation
@@ -101,11 +99,11 @@ int main( int argc, char **argv ) {
 	
 	// Solve Navier-Stokes equation
 
-	NS->collision();
+	NS.collision();
 
-	NS->streaming();
+	NS.streaming();
 
-	NS->updateBoundaries();
+	NS.updateBoundaries();
 
 	f.startSync();
 
@@ -127,13 +125,13 @@ int main( int argc, char **argv ) {
 	
 	// Update macroscopic fields
 
-	NS->updateMacroDensity();
+	NS.updateMacroDensity();
 
 	g.endSync();
 
 	energy.updateMacroTemperature();
 
-	NS->updateMacroVelocity();
+	NS.updateMacroVelocity();
 
 	
 

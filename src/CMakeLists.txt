@@ -43,12 +43,6 @@ add_subdirectory (forces)
 add_subdirectory (heatSources)
 
 
-# Boundary conditions
-
-add_subdirectory (boundary)
-
-
-
 
 # Specific applications
 

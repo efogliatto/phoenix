@@ -59,7 +59,7 @@ void energyFixedT::update( const energyEquation* eeq ) {
 
     // Lattice constants
     
-    const scalar q = _mesh.lmodel()->q();
+    const uint q = _mesh.lmodel()->q();
 
     vector<scalar> f_eq_nb(q);
 

@@ -3,7 +3,13 @@
 using namespace std;
 
 
-ppBndCond* ppBndCreator::create( const string& eqName, const string& bdName, const vector<uint>& nodes ) {
+ppBndCond* ppBndCreator::create( const string& eqName,
+				 const string& bdName,
+				 const latticeMesh& mesh,
+				 const scalarField& rho,
+				 const scalarField& T,
+				 const vectorField& U,
+				 pdfField& pdf) {
 
     
     // Load model name from dictionary
@@ -15,7 +21,7 @@ ppBndCond* ppBndCreator::create( const string& eqName, const string& bdName, con
     
     if( btype == "fixedU" ) {
 
-    	return new ppFixedU( eqName, bdName, nodes );
+    	return new ppFixedU( eqName, bdName, mesh, rho, T, U, pdf );
 
     }
 
@@ -26,7 +32,7 @@ ppBndCond* ppBndCreator::create( const string& eqName, const string& bdName, con
 
 	if( btype == "periodic" ) {
 
-	    return new ppPeriodic( nodes );
+	    return new ppPeriodic( eqName, bdName, mesh, rho, T, U, pdf );
 
 	}
 

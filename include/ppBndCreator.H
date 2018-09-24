@@ -1,1 +1,1 @@
-../src/boundary/pseudopotential/ppBndCreator.H
+../src/lbEquations/pseudopotential/boundary/ppBndCreator.H

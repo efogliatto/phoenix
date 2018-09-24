@@ -1,1 +1,1 @@
-../src/boundary/pseudopotential/ppFixedU.H
+../src/lbEquations/pseudopotential/boundary/ppFixedU.H

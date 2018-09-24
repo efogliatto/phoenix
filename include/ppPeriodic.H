@@ -1,1 +1,1 @@
-../src/boundary/pseudopotential/ppPeriodic.H
+../src/lbEquations/pseudopotential/boundary/ppPeriodic.H

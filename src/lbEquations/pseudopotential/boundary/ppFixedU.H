@@ -17,17 +17,23 @@ public:
 
     /** Constructor */
 
-    ppFixedU( const std::string& eqName, const std::string& bdName, const std::vector<uint>& nodes );
+    ppFixedU( const std::string& eqName,
+	      const std::string& bdName,
+	      const latticeMesh& mesh,
+	      const scalarField& rho,
+	      const scalarField& T,
+	      const vectorField& U,
+	      pdfField& pdf );
 
 
     /** Destructor */
 
-    ppFixedU();
+    ~ppFixedU();
 
 
     /** Update pdf field */
 
-    void update( const latticeMesh& mesh, pdfField& pdf, const scalarField& rho, const scalarField& T, const vectorField& U, const pseudoPotForce* F );
+    void update( const pseudoPotEquation* ppeq );
 
 };
 
