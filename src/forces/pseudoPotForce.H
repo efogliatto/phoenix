@@ -61,6 +61,11 @@ public:
     void total( scalar Ft[3], const uint& id ) const;
 
 
+    /** Set interaction force at node */
+
+    const void setInteraction( const uint& i, const std::vector<scalar>& Fint ) { _Fi->set(i, Fint); }
+
+
     /** Interaction force at node */
 
     const std::vector<scalar> buoyant( const uint& id ) const;

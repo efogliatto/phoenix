@@ -62,3 +62,27 @@ const void pseudoPotEqHandler::updateBoundaries() {
 }
 
 
+
+/** Update macroscopic velocity */
+
+const void pseudoPotEqHandler::updateMacroVelocity() {
+
+    
+    // Update forces
+
+    _equation->updateForces();
+    
+
+
+    // Update forces at boundaries
+    
+    for(uint i = 0 ; i < _boundaries.size() ; i++) 
+    	_boundaries[i]->updateIntForce( _equation );
+
+    
+
+    // Update macroscopic velocity
+    
+    _equation->updateMacroVelocity();
+
+}

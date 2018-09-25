@@ -11,9 +11,9 @@ ppPeriodic::ppPeriodic( const std::string& eqName,
 			const scalarField& rho,
 			const scalarField& T,
 			const vectorField& U,
-			pdfField& pdf)
+			pdfField& pdf )
 
-    : ppBndCond(mesh, rho, T, U, pdf, bdName) {}
+    : ppBndCond(mesh, rho, T, U, pdf, bdName, "periodic") {}
 
 
 /** Destructor */

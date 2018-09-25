@@ -94,10 +94,16 @@ public:
     virtual const void eqPS( std::vector<scalar>& n, const scalar& rho_, const std::vector<scalar>& U_ ) const;
 
 
-    // /** Update boundaries */
+    /** Access to interaction force */
 
-    // void updateBoundaries();
+    const scalar intForce(const uint& i, const uint& j) const { return F.interaction(i,j); }
 
+    const void setIntForce(const uint& i, const std::vector<scalar>& Fint)  { F.setInteraction(i, Fint); }
+
+
+    /** Update forces */
+
+    const void updateForces() {  F.update(rho,T);  }
 
 
 

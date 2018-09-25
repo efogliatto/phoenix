@@ -48,3 +48,13 @@ const scalar interactionForce::potential( const scalar& rho, const scalar& T, co
     return sqrt( 2 * (eos->p_eos(rho,T) - rho * cs2)  /  _G );
 
 }
+
+
+/** Set force at specific node */
+
+const void interactionForce::set( const uint& i, const vector<scalar>& Fint ) {
+
+    for( uint j = 0 ; j < 3 ; j++ )
+	_force[i][j] = Fint[j];
+
+}

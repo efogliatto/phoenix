@@ -13,7 +13,7 @@ ppOutflow::ppOutflow( const string& eqName,
 		      const vectorField& U,
 		      pdfField& pdf )
 
-    : ppBndCond(mesh, rho, T, U, pdf, bdName) {
+    : ppBndCond(mesh, rho, T, U, pdf, bdName, "outflow") {
 
 
     // Resize neighbour indices, compute normals and check indexing
@@ -69,6 +69,8 @@ ppOutflow::ppOutflow( const string& eqName,
 		normal[j] = normal[j] / nmag;
 
 	    }
+
+	    _normal.push_back( {(int)normal[0], (int)normal[1], (int)normal[2]} );
 	    
 	}
 
@@ -133,15 +135,7 @@ void ppOutflow::update( const pseudoPotEquation* ppeq ) {
     
     const uint q = _mesh.lmodel()->q();
 
-    vector<scalar> f_eq_nb(q);
-
-    vector<scalar> f_eq_bnd(q);
-
     const vector< vector<int> >& nb = _mesh.nbArray();
-
-    const vector<uint> reverse = _mesh.lmodel()->reverse();
-
-    const vector< vector<int> > vel = _mesh.lmodel()->lvel();
 
     vector<scalar> nvel = { 0,0,0 };
 
@@ -149,69 +143,93 @@ void ppOutflow::update( const pseudoPotEquation* ppeq ) {
     // Move over boundary elements
 
     for( uint i = 0 ; i < _nodes.size() ; i++ ) {
-	
-
-    	uint id = _nodes[i];
 
 	
+	uint id = _nodes[i];
 
+	uint nid = _nbid[i];
+		
 	
 	// Velocity at neighbour node		    
 
-	ppeq->localVelocity(nvel, _nbid[i], true);
+	ppeq->localVelocity(nvel, nid, true);
 
 	scalar uAdv(0);
-
-	// for(uint j = 0 ; j < 3 ; j++)
-	//     uAdv += 
-
-
-    	// for( uint k = 0 ; k < q ; k++ ) {
-
-
-    	//     if ( nb[id][k] == -1 ) {
-
-		
-    	// 	// Need density and velocity at neighbour (reverse) node
-		    
-    	// 	int nbid = nb[id][ reverse[k] ];
-
-
-    	// 	if( nbid != -1 ) {
-
-
-
-		    
-
-    	// 	    // Update distribution
-			
-    	// 	    _pdf.set(id, k, f_eq_bnd[k] + (_pdf[nbid][k] - f_eq_nb[k] ) );
-
-    	// 	}
-		
-
-    	//     }
-	    
-
-    	// }
 	
+	for(uint j = 0 ; j < 3 ; j++)
+	    uAdv += _normal[i][j] * nvel[j];
 
 
 
-
-	// Hay que hacer esto
-
-	// // Update unknowun distributions for f
+	// Update unknowun distributions for f
 	    
-	// for( k = 0 ; k < mesh->mesh.Q ; k++ ) {
+	for( uint k = 0 ; k < q ; k++ ) {
 
-	//     if( mesh->mesh.nb[id][k] == -1 ) {
+	    if( nb[id][k] == -1 ) {
 		
-	// 	field[id][k] = (  field[id][k] + uAdv*field[neigh][k]  ) / (1+uAdv);
+		_pdf.set( id,
+			  k,
+			  ( _pdf[id][k] + uAdv*_pdf[nid][k] ) / (1+uAdv)
+		    );
 
-	//     }
+	    }
 
-	// }	
+	}
+
+	
+    }
+
+    
+
+}
+
+
+
+
+
+/** Update interaction force */
+    
+const void ppOutflow::updateIntForce( pseudoPotEquation* ppeq ) const {
+
+
+    // Lattice constants    
+
+    vector<scalar> nvel = { 0,0,0 };
+
+    vector<scalar> Fint = {0,0,0};
+
+
+    // Move over boundary elements
+
+    for( uint i = 0 ; i < _nodes.size() ; i++ ) {
+
+	
+	uint id = _nodes[i];
+
+	uint nid = _nbid[i];
+		
+	
+	// Velocity at neighbour node		    
+
+	ppeq->localVelocity(nvel, nid, true);
+
+	scalar uAdv(0);
+	
+	for(uint j = 0 ; j < 3 ; j++)
+	    uAdv += _normal[i][j] * nvel[j];
+
+
+
+	// Update 
+	    
+	for( uint j = 0 ; j < 3 ; j++ )
+	    Fint[j] = ppeq->intForce(id,j)   +   uAdv * ppeq->intForce(nid,j) / (1+uAdv);
+
+	
+	ppeq->setIntForce( id, Fint );
+	
+	    
+	
     }
 
     

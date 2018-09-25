@@ -9,6 +9,7 @@ class ppBndCond {
 protected:
 
     
+    
     /** Reference to external fields */
 
     const std::vector<uint>& _nodes;
@@ -22,6 +23,11 @@ protected:
     const vectorField& _U;
 
     pdfField& _pdf;
+
+
+    /** Boundary type */
+
+    const std::string _bdtype;    
    
 
 
@@ -34,7 +40,8 @@ public:
 	       const scalarField& T,
 	       const vectorField& U,
 	       pdfField& pdf,
-	       const std::string& bdName);
+	       const std::string& bdName,
+	       const std::string& bdType);
 
 
     /** Destructor */
@@ -42,9 +49,19 @@ public:
     ~ppBndCond();
 
 
+    /** Boundary type */
+
+    const std::string& type() const { return _bdtype; }
+    
+
     /** Update pdf field */
 
     virtual void update( const pseudoPotEquation* ppeq ) = 0;
+
+
+    /** Update interaction force */
+
+    virtual const void updateIntForce( pseudoPotEquation* ppeq ) const {}
 
 };
 

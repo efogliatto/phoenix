@@ -7,14 +7,14 @@ using namespace std;
 /** Constructor */
 
 ppFixedU::ppFixedU( const std::string& eqName,
-			    const std::string& bdName,
-			    const latticeMesh& mesh,	  
-			    const scalarField& rho,
-			    const scalarField& T,
-			    const vectorField& U,
-			    pdfField& pdf )
+		    const std::string& bdName,
+		    const latticeMesh& mesh,	  
+		    const scalarField& rho,
+		    const scalarField& T,
+		    const vectorField& U,
+		    pdfField& pdf )
     
-    : ppBndCond(mesh, rho, T, U, pdf, bdName) {
+    : ppBndCond(mesh, rho, T, U, pdf, bdName, "fixedU") {
 
     
     // Load boundary value

@@ -179,9 +179,9 @@ const void pseudoPotEquation::updateMacroDensity(const uint& first, const uint& 
 const void pseudoPotEquation::updateMacroVelocity() {
 
     
-    // Update forces first
+    // // Update forces first
 
-    F.update(rho,T);
+    // F.update(rho,T);
 
 
 

@@ -14,6 +14,11 @@ protected:
     std::vector<uint> _nbid;
 
 
+    /** Boundary normal */
+
+    std::vector< std::vector<int> > _normal;
+
+
 public:
 
     
@@ -25,7 +30,7 @@ public:
 	       const scalarField& rho,
 	       const scalarField& T,
 	       const vectorField& U,
-	       pdfField& pdf );
+	       pdfField& pdf);
 
 
     /** Destructor */
@@ -36,6 +41,12 @@ public:
     /** Update pdf field */
 
     virtual void update( const pseudoPotEquation* ppeq );
+
+
+    /** Update interaction force */
+    
+    const void updateIntForce( pseudoPotEquation* ppeq ) const;
+
 
 
 };

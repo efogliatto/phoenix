@@ -57,7 +57,7 @@ public:
     
     /** Update macroscopic velocity */
 
-    const void updateMacroVelocity() { _equation->updateMacroVelocity(); }
+    const void updateMacroVelocity();
     
 
     /** Update boundaries */

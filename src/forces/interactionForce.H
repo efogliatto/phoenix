@@ -54,7 +54,11 @@ public:
     const std::vector<scalar>& force( const uint& i ) { return _force[i]; }
 
     const scalar force( const uint& i, const uint& j ) { return _force[i][j]; }
-    
+
+
+    /** Set force at specific node */
+
+    const void set( const uint& i, const std::vector<scalar>& Fint );
 
 
     /** Update force field */
