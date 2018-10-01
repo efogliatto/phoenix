@@ -71,6 +71,11 @@ protected:
 
 public:
 
+
+    /** Lattice model type */
+
+    enum class latticeType { D2Q9, D3Q15 };
+
   
     // Constructors and destructors
 
@@ -92,6 +97,11 @@ public:
     /** Dimension */
   
     virtual const uint& d() const = 0;
+
+
+    /** Lattice type */
+
+    virtual const latticeType type() const = 0;
 
   
     /** Number of lattice velocities */

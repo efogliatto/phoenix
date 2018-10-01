@@ -1,9 +1,9 @@
-#ifndef FIXEDDENSITYBFORCE_H
-#define FIXEDDENSITYBFORCE_H
+#ifndef AVGDENSITYBFORCE_H
+#define AVGDENSITYBFORCE_H
 
 #include <buoyantForce.H>
 
-class fixedDensityBForce : public buoyantForce {
+class avgDensityBForce : public buoyantForce {
 
 protected:
 
@@ -17,12 +17,12 @@ public:
     
     /** Constructor */
 
-    fixedDensityBForce( const std::string& dictName, const std::string& eqName );
+    avgDensityBForce( const std::string& dictName, const std::string& eqName );
 
 
     /** Destructor */
 
-    ~fixedDensityBForce();
+    ~avgDensityBForce();
 
 
     /** Force */
@@ -34,8 +34,8 @@ public:
 
     /** Update coefficients */
 
-    const void update(const scalarField& rho) {}
+    const void update(const scalarField& rho);
 
 };
 
-#endif // FIXEDDENSITYBFORCE_H
+#endif // AVGDENSITYBFORCE_H

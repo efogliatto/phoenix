@@ -12,24 +12,29 @@ class D2Q9 : public latticeModel {
 public:
 
   
-  // Constructors and destructors
+    // Constructors and destructors
 
   
-  /** Default constructor */
+    /** Default constructor */
   
-  D2Q9();
+    D2Q9();
 
   
-  /** Default destructor */
+    /** Default destructor */
   
-  ~D2Q9();
+    ~D2Q9();
 
 
-  // Acces members
+    // Acces members
 
-  /** Dimension */
+    /** Dimension */
   
-  const uint& d() const;
+    const uint& d() const;
+
+
+    /** Lattice type */
+
+    const latticeType type() const { return latticeType::D2Q9; }
     
 };
 

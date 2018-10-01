@@ -3,6 +3,8 @@
 
 #include <fixedDensityBForce.H>
 
+#include <avgDensityBForce.H>
+
 class bForces {
 
 public:

@@ -65,7 +65,12 @@ public:
 
     /** Write field using ensight format */
 
-    const void write() const;    
+    const void write() const;
+
+
+    /** Field average */
+
+    const scalar average() const;
     
     
 

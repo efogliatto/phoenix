@@ -22,13 +22,25 @@ buoyantForce* bForces::create( const string& dictName, const string& eqName ) {
     else {
 
 
-    	// Default
-    
-    	cout << endl << " [ERROR]  Interaction type " << ftype << " not available" << endl << endl;
+	if( ftype == "averageDensity" ) {
 
-    	exit(1);
+	    return new avgDensityBForce(dictName, eqName);
+
+	}
+
+	else {
+
+	    // Default
+    
+	    cout << endl << " [ERROR]  Interaction type " << ftype << " not available" << endl << endl;
+
+	    exit(1);
+
+	}
     
     }
+
+    
 
     
     return 0;

@@ -94,6 +94,8 @@ scalarField::scalarField( const latticeMesh& m, timeOptions& t, const string& nm
 }
 
 
+
+
 /** Default destructor */
 
 scalarField::~scalarField() {
@@ -115,6 +117,8 @@ scalarField::~scalarField() {
     }
 
 }
+
+
 
 
 
@@ -301,6 +305,8 @@ const void scalarField::startSync() {
 
 
 
+
+
 /** End sync */
 
 const void scalarField::endSync() {
@@ -335,6 +341,7 @@ const void scalarField::endSync() {
     
 
 }
+
 
 
 
@@ -450,6 +457,65 @@ const void scalarField::write() const {
 
 
 
+// /** Gradient at node */
+
+// const void scalarField::grad(scalar g[3], const uint& id) const {
+
+
+//     // Lattice constants
+
+//     const vector< vector<int> >& nb = mesh.nbArray();
+
+//     const vector< vector<int> >& vel = mesh.lmodel()->lvel();
+
+//     const vector<uint>& reverse = mesh.lmodel()->reverse();
+
+//     const vector<scalar>& omega = mesh.lmodel()->omega();
+
+//     const scalar cs2 = mesh.lmodel()->cs2();
+
+//     const scalar q = mesh.lmodel()->q();
+
+
+    
+//     // Initialize gradient
+
+//     for( uint j = 0 ; j < 3 ; j++ )
+// 	g[j] = 0;
+
+
+
+//     // Move over velocities
+    
+//     for( uint k = 1 ; k < q ; k++ ) {
+
+// 	int nbid = nb[id][k];
+
+// 	if( nbid != -1 ) {
+
+// 	    for( uint j = 0 ; j < 3 ; j++ )
+// 		g[j] += omega[k] * vel[reverse[k]][j] * field[nbid] / cs2;
+
+// 	}
+
+// 	else {
+
+// 	    for( uint j = 0 ; j < 3 ; j++ )
+// 		g[j] += omega[k] * vel[reverse[k]][j] * field[id] / cs2;
+
+// 	}
+
+	
+
+//     }
+    
+
+// }
+
+
+
+
+
 /** Gradient at node */
 
 const void scalarField::grad(scalar g[3], const uint& id) const {
@@ -459,16 +525,7 @@ const void scalarField::grad(scalar g[3], const uint& id) const {
 
     const vector< vector<int> >& nb = mesh.nbArray();
 
-    const vector< vector<int> >& vel = mesh.lmodel()->lvel();
-
-    const vector<uint>& reverse = mesh.lmodel()->reverse();
-
-    const vector<scalar>& omega = mesh.lmodel()->omega();
-
-    const scalar cs2 = mesh.lmodel()->cs2();
-
-    const scalar q = mesh.lmodel()->q();
-
+    int a(-1), b(-1);
 
     
     // Initialize gradient
@@ -478,29 +535,306 @@ const void scalarField::grad(scalar g[3], const uint& id) const {
 
 
 
-    // Move over velocities
+    // D2Q9 model
+
+    switch( mesh.lmodel()->type() )  {
+
+	
+    case latticeModel::latticeType::D2Q9:
+
+
+	// X - derivative
+
+	a = nb[id][3];
     
-    for( uint k = 1 ; k < q ; k++ ) {
-
-	int nbid = nb[id][k];
-
-	if( nbid != -1 ) {
-
-	    for( uint j = 0 ; j < 3 ; j++ )
-		g[j] += omega[k] * vel[reverse[k]][j] * field[nbid] / cs2;
+	b = nb[id][1];
+    
+	if(  (a != -1)  &&  (b != -1)  ) {
+    
+	    g[0] = 0.5 * (field[a] - field[b]);
 
 	}
 
 	else {
 
-	    for( uint j = 0 ; j < 3 ; j++ )
-		g[j] += omega[k] * vel[reverse[k]][j] * field[id] / cs2;
+	    if(  (a == -1)  &&  (b != -1)  ) {
+    
+		g[0] = (field[id] - field[b]);
+
+	    }
+
+	    else {
+
+		if(  (a != -1)  &&  (b == -1)  ) {
+    
+		    g[0] = (field[a] - field[id]);
+
+		}
+
+		else {
+
+		    g[0] = 0;
+
+		}
+
+	    }
 
 	}
 
+
+
+
+	// Y - derivative
+
+	a = nb[id][4];
+	b = nb[id][2];
+    
+	if(  (a != -1)  &&  (b != -1)  ) {
+    
+	    g[1] = 0.5 * (field[a] - field[b]);
+
+	}
+
+	else {
+
+	    if(  (a == -1)  &&  (b != -1)  ) {
+    
+		g[1] = (field[id] - field[b]);
+
+	    }
+
+	    else {
+
+		if(  (a != -1)  &&  (b == -1)  ) {
+    
+		    g[1] = (field[a] - field[id]);
+
+		}
+
+		else {
+
+		    g[1] = 0;
+
+		}
+
+	    }
+
+	}
+    
+
+	g[2] = 0.0;
+
+
+	break;
+
+
 	
+
+    case latticeModel::latticeType::D3Q15:
+
+
+	// X - derivative
+
+	a = nb[id][2];
+	b = nb[id][1];
+    
+	if(  (a != -1)  &&  (b != -1)  ) {
+    
+	    g[0] = 0.5 * (field[a] - field[b]);
+
+	}
+
+	else {
+
+	    if(  (a == -1)  &&  (b != -1)  ) {
+    
+		g[0] = (field[id] - field[b]);
+
+	    }
+
+	    else {
+
+		if(  (a != -1)  &&  (b == -1)  ) {
+    
+		    g[0] = (field[a] - field[id]);
+
+		}
+
+		else {
+
+		    g[0] = 0;
+
+		}
+
+	    }
+
+	}
+
+
+
+
+	// Y - derivative
+
+	a = nb[id][4];
+	b = nb[id][3];
+    
+	if(  (a != -1)  &&  (b != -1)  ) {
+    
+	    g[1] = 0.5 * (field[a] - field[b]);
+
+	}
+
+	else {
+
+	    if(  (a == -1)  &&  (b != -1)  ) {
+    
+		g[1] = (field[id] - field[b]);
+
+	    }
+
+	    else {
+
+		if(  (a != -1)  &&  (b == -1)  ) {
+    
+		    g[1] = (field[a] - field[id]);
+
+		}
+
+		else {
+
+		    g[1] = 0;
+
+		}
+
+	    }
+
+	}
+
+
+
+
+	
+	// Z - derivative
+
+	a = nb[id][6];
+	b = nb[id][5];
+    
+	if(  (a != -1)  &&  (b != -1)  ) {
+    
+	    g[2] = 0.5 * (field[a] - field[b]);
+
+	}
+
+	else {
+
+	    if(  (a == -1)  &&  (b != -1)  ) {
+    
+		g[2] = (field[id] - field[b]);
+
+	    }
+
+	    else {
+
+		if(  (a != -1)  &&  (b == -1)  ) {
+    
+		    g[2] = (field[a] - field[id]);
+
+		}
+
+		else {
+
+		    g[2] = 0;
+
+		}
+
+	    }
+
+	}
+
+
+	    
+	break;
+
+
+
+    default:
+
+	cout << " [ERROR]  Scalar field gradient not defined for this lattice type" << endl << endl;
+
+	exit(1);
+	
+	break;
+
 
     }
     
+
+}
+
+
+
+
+/** Field average */
+
+const scalar scalarField::average() const {
+
+    
+    scalar avg(0);
+
+   
+    // Sum local nodes locally
+
+    scalar localSum = 0;
+
+    const uint np = mesh.local();
+
+    for( uint i = 0 ; i < np ; i++ )
+	localSum += field[i];
+
+    
+
+
+    // Apply collective reduction
+
+    scalar globalSum = 0;
+
+    int nelem = 0;
+
+    int nlocal = mesh.local();
+    
+    if( mesh.wsize() > 1 ) {
+
+	#ifdef DP
+	    
+	MPI_Allreduce(&localSum, &globalSum, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+
+	#elif SP
+
+	MPI_Allreduce(&localSum, &globalSum, 1, MPI_FLOAT, MPI_SUM, MPI_COMM_WORLD);
+
+	#endif
+
+	    
+
+	MPI_Allreduce(&nlocal, &nelem, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);	
+	    
+    }
+
+    else {
+	    
+	globalSum = localSum;
+
+	nelem = mesh.local();
+
+    }
+
+
+
+    avg = globalSum / nelem;
+
+
+
+    return avg;
+
 
 }

@@ -98,6 +98,8 @@ void pseudoPotForce::update( scalarField& rho, scalarField& T ) {
 
     _Fi->update(rho,T);
 
+    _Fb->update(rho);
+
 }
 
 
