@@ -23,19 +23,6 @@ set(LIBRARY_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/lib)
 find_package(MPI REQUIRED)
 
 
-# External libraries: Boost
-
-find_package( Boost 1.55 COMPONENTS system program_options REQUIRED )
-
-
-
-
-
-# Bring the headers
-
-include_directories(include ${MPI_INCLUDE_PATH})
-
-
 
 # Compiler options for CXX
 
@@ -71,6 +58,28 @@ link_directories( ${CMAKE_SOURCE_DIR}/lib )
 # endif()
 
 
+
+# Optional external libraries: Boost
+
+option(EXT_BOOST "Compile with external BOOST" OFF)
+
+if(EXT_BOOST)
+
+  set(BOOST_ROOT "/home/fogliate/Programas/boost_1_67_0")
+
+  set(BOOST_INCLUDEDIR "/home/fogliate/Programas/boost_1_67_0")
+
+else()
+
+  find_package( Boost 1.55 COMPONENTS system program_options REQUIRED )
+  
+endif()
+
+
+
+# Bring the headers
+
+include_directories(include ${MPI_INCLUDE_PATH} ${BOOST_INCLUDEDIR})
 
 
 

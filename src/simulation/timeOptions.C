@@ -160,7 +160,7 @@ const void timeOptions::updateCaseFile() const {
 
     	    bool find(false);
 
-	    uint ns;
+	    uint ns(0);
 
 
 	    
@@ -365,7 +365,7 @@ const uint timeOptions::timeToIndex( const uint& tid ) const {
 
 	bool find(false);
 
-	uint ns;
+	uint ns(0);
 
 
 	    
