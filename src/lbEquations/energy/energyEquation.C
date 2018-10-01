@@ -26,26 +26,7 @@ energyEquation::energyEquation( const string& name,
 
     _hs = HS.create("properties/macroProperties", name, mesh_, Time_);
 
-    _hs->update(rho,T,U);
-    
-
-
-    // // Read Boundary conditions
-
-    // dictionary dict("start/boundaries");
-
-    // const map< string, vector<uint> >& bnd = mesh.boundaries();
-
-    // energyBndCreator BndCreator;
-
-    // for(map< string, vector<uint> >::const_iterator iter = bnd.begin(); iter != bnd.end(); ++iter)  {
-	
-    // 	string bdname = iter->first;
-
-    // 	_boundaries.push_back(   BndCreator.create(name, bdname, mesh, rho_, T_, U_, pdf_)   );
-
-    // }
-    
+    _hs->update(rho,T,U);        
 
 }
 

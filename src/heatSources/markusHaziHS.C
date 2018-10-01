@@ -50,7 +50,7 @@ void markusHaziHS::update( const scalarField& rho, const scalarField& T, const v
 
     scalar gradRho[3] = {0,0,0};
 
-    const uint np = _mesh.npoints();
+    const uint np = _mesh.local();
 
 
 
