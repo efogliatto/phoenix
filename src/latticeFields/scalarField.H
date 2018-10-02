@@ -45,7 +45,7 @@ public:
 
     /** Gradient at node */
 
-    const void grad(scalar g[3], const uint& id) const;
+    const void grad(scalar g[3], const uint& id, const bool inverse = false) const;
 
     
     /** Synchronization across procceses */

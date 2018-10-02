@@ -459,7 +459,7 @@ const void scalarField::write() const {
 
 /** Gradient at node */
 
-const void scalarField::grad(scalar g[3], const uint& id) const {
+const void scalarField::grad(scalar g[3], const uint& id, const bool inverse) const {
 
 
     // Lattice constants
@@ -494,14 +494,14 @@ const void scalarField::grad(scalar g[3], const uint& id) const {
 	if( nbid != -1 ) {
 
 	    for( uint j = 0 ; j < 3 ; j++ )
-		g[j] += omega[k] * vel[reverse[k]][j] * field[nbid] / cs2;
+		inverse  ?  g[j] += omega[k] * vel[reverse[k]][j] / (field[nbid] * cs2 )  :  g[j] += omega[k] * vel[reverse[k]][j] * field[nbid] / cs2;
 
 	}
 
 	else {
 
 	    for( uint j = 0 ; j < 3 ; j++ )
-		g[j] += omega[k] * vel[reverse[k]][j] * field[id] / cs2;
+		inverse  ?  g[j] += omega[k] * vel[reverse[k]][j] / (field[id] * cs2 )  :  g[j] += omega[k] * vel[reverse[k]][j] * field[id] / cs2;
 
 	}
 

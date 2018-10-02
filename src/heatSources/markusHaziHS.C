@@ -101,7 +101,7 @@ void markusHaziHS::update( const scalarField& rho, const scalarField& T, const v
 
 	first = first * lambda / (_rho * _rho * _Cv);
 
-
+	
 	
 	// Velocity divergence term
 
