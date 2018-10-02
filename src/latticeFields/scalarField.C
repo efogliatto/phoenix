@@ -457,65 +457,6 @@ const void scalarField::write() const {
 
 
 
-// /** Gradient at node */
-
-// const void scalarField::grad(scalar g[3], const uint& id) const {
-
-
-//     // Lattice constants
-
-//     const vector< vector<int> >& nb = mesh.nbArray();
-
-//     const vector< vector<int> >& vel = mesh.lmodel()->lvel();
-
-//     const vector<uint>& reverse = mesh.lmodel()->reverse();
-
-//     const vector<scalar>& omega = mesh.lmodel()->omega();
-
-//     const scalar cs2 = mesh.lmodel()->cs2();
-
-//     const scalar q = mesh.lmodel()->q();
-
-
-    
-//     // Initialize gradient
-
-//     for( uint j = 0 ; j < 3 ; j++ )
-// 	g[j] = 0;
-
-
-
-//     // Move over velocities
-    
-//     for( uint k = 1 ; k < q ; k++ ) {
-
-// 	int nbid = nb[id][k];
-
-// 	if( nbid != -1 ) {
-
-// 	    for( uint j = 0 ; j < 3 ; j++ )
-// 		g[j] += omega[k] * vel[reverse[k]][j] * field[nbid] / cs2;
-
-// 	}
-
-// 	else {
-
-// 	    for( uint j = 0 ; j < 3 ; j++ )
-// 		g[j] += omega[k] * vel[reverse[k]][j] * field[id] / cs2;
-
-// 	}
-
-	
-
-//     }
-    
-
-// }
-
-
-
-
-
 /** Gradient at node */
 
 const void scalarField::grad(scalar g[3], const uint& id) const {
@@ -525,7 +466,16 @@ const void scalarField::grad(scalar g[3], const uint& id) const {
 
     const vector< vector<int> >& nb = mesh.nbArray();
 
-    int a(-1), b(-1);
+    const vector< vector<int> >& vel = mesh.lmodel()->lvel();
+
+    const vector<uint>& reverse = mesh.lmodel()->reverse();
+
+    const vector<scalar>& omega = mesh.lmodel()->omega();
+
+    const scalar cs2 = mesh.lmodel()->cs2();
+
+    const scalar q = mesh.lmodel()->q();
+
 
     
     // Initialize gradient
@@ -535,241 +485,291 @@ const void scalarField::grad(scalar g[3], const uint& id) const {
 
 
 
-    // D2Q9 model
+    // Move over velocities
+    
+    for( uint k = 1 ; k < q ; k++ ) {
 
-    switch( mesh.lmodel()->type() )  {
+	int nbid = nb[id][k];
+
+	if( nbid != -1 ) {
+
+	    for( uint j = 0 ; j < 3 ; j++ )
+		g[j] += omega[k] * vel[reverse[k]][j] * field[nbid] / cs2;
+
+	}
+
+	else {
+
+	    for( uint j = 0 ; j < 3 ; j++ )
+		g[j] += omega[k] * vel[reverse[k]][j] * field[id] / cs2;
+
+	}
 
 	
-    case latticeModel::latticeType::D2Q9:
-
-
-	// X - derivative
-
-	a = nb[id][3];
-    
-	b = nb[id][1];
-    
-	if(  (a != -1)  &&  (b != -1)  ) {
-    
-	    g[0] = 0.5 * (field[a] - field[b]);
-
-	}
-
-	else {
-
-	    if(  (a == -1)  &&  (b != -1)  ) {
-    
-		g[0] = (field[id] - field[b]);
-
-	    }
-
-	    else {
-
-		if(  (a != -1)  &&  (b == -1)  ) {
-    
-		    g[0] = (field[a] - field[id]);
-
-		}
-
-		else {
-
-		    g[0] = 0;
-
-		}
-
-	    }
-
-	}
-
-
-
-
-	// Y - derivative
-
-	a = nb[id][4];
-	b = nb[id][2];
-    
-	if(  (a != -1)  &&  (b != -1)  ) {
-    
-	    g[1] = 0.5 * (field[a] - field[b]);
-
-	}
-
-	else {
-
-	    if(  (a == -1)  &&  (b != -1)  ) {
-    
-		g[1] = (field[id] - field[b]);
-
-	    }
-
-	    else {
-
-		if(  (a != -1)  &&  (b == -1)  ) {
-    
-		    g[1] = (field[a] - field[id]);
-
-		}
-
-		else {
-
-		    g[1] = 0;
-
-		}
-
-	    }
-
-	}
-    
-
-	g[2] = 0.0;
-
-
-	break;
-
-
-	
-
-    case latticeModel::latticeType::D3Q15:
-
-
-	// X - derivative
-
-	a = nb[id][2];
-	b = nb[id][1];
-    
-	if(  (a != -1)  &&  (b != -1)  ) {
-    
-	    g[0] = 0.5 * (field[a] - field[b]);
-
-	}
-
-	else {
-
-	    if(  (a == -1)  &&  (b != -1)  ) {
-    
-		g[0] = (field[id] - field[b]);
-
-	    }
-
-	    else {
-
-		if(  (a != -1)  &&  (b == -1)  ) {
-    
-		    g[0] = (field[a] - field[id]);
-
-		}
-
-		else {
-
-		    g[0] = 0;
-
-		}
-
-	    }
-
-	}
-
-
-
-
-	// Y - derivative
-
-	a = nb[id][4];
-	b = nb[id][3];
-    
-	if(  (a != -1)  &&  (b != -1)  ) {
-    
-	    g[1] = 0.5 * (field[a] - field[b]);
-
-	}
-
-	else {
-
-	    if(  (a == -1)  &&  (b != -1)  ) {
-    
-		g[1] = (field[id] - field[b]);
-
-	    }
-
-	    else {
-
-		if(  (a != -1)  &&  (b == -1)  ) {
-    
-		    g[1] = (field[a] - field[id]);
-
-		}
-
-		else {
-
-		    g[1] = 0;
-
-		}
-
-	    }
-
-	}
-
-
-
-
-	
-	// Z - derivative
-
-	a = nb[id][6];
-	b = nb[id][5];
-    
-	if(  (a != -1)  &&  (b != -1)  ) {
-    
-	    g[2] = 0.5 * (field[a] - field[b]);
-
-	}
-
-	else {
-
-	    if(  (a == -1)  &&  (b != -1)  ) {
-    
-		g[2] = (field[id] - field[b]);
-
-	    }
-
-	    else {
-
-		if(  (a != -1)  &&  (b == -1)  ) {
-    
-		    g[2] = (field[a] - field[id]);
-
-		}
-
-		else {
-
-		    g[2] = 0;
-
-		}
-
-	    }
-
-	}
-
-
-	    
-	break;
-
-
-
-    default:
-
-	cout << " [ERROR]  Scalar field gradient not defined for this lattice type" << endl << endl;
-
-	exit(1);
-	
-	break;
-
 
     }
     
 
 }
+
+
+
+
+
+// /** Gradient at node */
+
+// const void scalarField::grad(scalar g[3], const uint& id) const {
+
+
+//     // Lattice constants
+
+//     const vector< vector<int> >& nb = mesh.nbArray();
+
+//     int a(-1), b(-1);
+
+    
+//     // Initialize gradient
+
+//     for( uint j = 0 ; j < 3 ; j++ )
+// 	g[j] = 0;
+
+
+
+//     // D2Q9 model
+
+//     switch( mesh.lmodel()->type() )  {
+
+	
+//     case latticeModel::latticeType::D2Q9:
+
+
+// 	// X - derivative
+
+// 	a = nb[id][3];
+    
+// 	b = nb[id][1];
+    
+// 	if(  (a != -1)  &&  (b != -1)  ) {
+    
+// 	    g[0] = 0.5 * (field[a] - field[b]);
+
+// 	}
+
+// 	else {
+
+// 	    if(  (a == -1)  &&  (b != -1)  ) {
+    
+// 		g[0] = (field[id] - field[b]);
+
+// 	    }
+
+// 	    else {
+
+// 		if(  (a != -1)  &&  (b == -1)  ) {
+    
+// 		    g[0] = (field[a] - field[id]);
+
+// 		}
+
+// 		else {
+
+// 		    g[0] = 0;
+
+// 		}
+
+// 	    }
+
+// 	}
+
+
+
+
+// 	// Y - derivative
+
+// 	a = nb[id][4];
+// 	b = nb[id][2];
+    
+// 	if(  (a != -1)  &&  (b != -1)  ) {
+    
+// 	    g[1] = 0.5 * (field[a] - field[b]);
+
+// 	}
+
+// 	else {
+
+// 	    if(  (a == -1)  &&  (b != -1)  ) {
+    
+// 		g[1] = (field[id] - field[b]);
+
+// 	    }
+
+// 	    else {
+
+// 		if(  (a != -1)  &&  (b == -1)  ) {
+    
+// 		    g[1] = (field[a] - field[id]);
+
+// 		}
+
+// 		else {
+
+// 		    g[1] = 0;
+
+// 		}
+
+// 	    }
+
+// 	}
+    
+
+// 	g[2] = 0.0;
+
+
+// 	break;
+
+
+	
+
+//     case latticeModel::latticeType::D3Q15:
+
+
+// 	// X - derivative
+
+// 	a = nb[id][2];
+// 	b = nb[id][1];
+    
+// 	if(  (a != -1)  &&  (b != -1)  ) {
+    
+// 	    g[0] = 0.5 * (field[a] - field[b]);
+
+// 	}
+
+// 	else {
+
+// 	    if(  (a == -1)  &&  (b != -1)  ) {
+    
+// 		g[0] = (field[id] - field[b]);
+
+// 	    }
+
+// 	    else {
+
+// 		if(  (a != -1)  &&  (b == -1)  ) {
+    
+// 		    g[0] = (field[a] - field[id]);
+
+// 		}
+
+// 		else {
+
+// 		    g[0] = 0;
+
+// 		}
+
+// 	    }
+
+// 	}
+
+
+
+
+// 	// Y - derivative
+
+// 	a = nb[id][4];
+// 	b = nb[id][3];
+    
+// 	if(  (a != -1)  &&  (b != -1)  ) {
+    
+// 	    g[1] = 0.5 * (field[a] - field[b]);
+
+// 	}
+
+// 	else {
+
+// 	    if(  (a == -1)  &&  (b != -1)  ) {
+    
+// 		g[1] = (field[id] - field[b]);
+
+// 	    }
+
+// 	    else {
+
+// 		if(  (a != -1)  &&  (b == -1)  ) {
+    
+// 		    g[1] = (field[a] - field[id]);
+
+// 		}
+
+// 		else {
+
+// 		    g[1] = 0;
+
+// 		}
+
+// 	    }
+
+// 	}
+
+
+
+
+	
+// 	// Z - derivative
+
+// 	a = nb[id][6];
+// 	b = nb[id][5];
+    
+// 	if(  (a != -1)  &&  (b != -1)  ) {
+    
+// 	    g[2] = 0.5 * (field[a] - field[b]);
+
+// 	}
+
+// 	else {
+
+// 	    if(  (a == -1)  &&  (b != -1)  ) {
+    
+// 		g[2] = (field[id] - field[b]);
+
+// 	    }
+
+// 	    else {
+
+// 		if(  (a != -1)  &&  (b == -1)  ) {
+    
+// 		    g[2] = (field[a] - field[id]);
+
+// 		}
+
+// 		else {
+
+// 		    g[2] = 0;
+
+// 		}
+
+// 	    }
+
+// 	}
+
+
+	    
+// 	break;
+
+
+
+//     default:
+
+// 	cout << " [ERROR]  Scalar field gradient not defined for this lattice type" << endl << endl;
+
+// 	exit(1);
+	
+// 	break;
+
+
+//     }
+    
+
+// }
 
 
 
