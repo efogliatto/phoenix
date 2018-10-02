@@ -121,6 +121,51 @@ void ppFixedU::update( const pseudoPotEquation* ppeq ) {
 		
 
     	    }
+
+
+
+            // Correction for velocities lying on face
+	    
+	    else {
+
+		if( nb[id][reverse[k]] != -1 ) {
+		
+		    if( q == 9 ) {
+
+			if( ( k == 1 )  ||  ( k == 2 )  ||  ( k == 3 )  ||  ( k == 4 )  ) {
+
+			    _pdf[id][k] = 0.5 * _pdf[id][k]  +  0.5 * _pdf[id][reverse[k]];
+		
+			    _pdf[id][reverse[k]] = _pdf[id][k];
+
+			}
+
+		    }
+
+
+
+		    else {
+
+		    	if( q == 15 ) {
+
+		    	    if( ( k == 1 )  ||  ( k == 2 )  ||  ( k == 3 )  ||  ( k == 4 )   ||  ( k == 5 )   ||  ( k == 6 ) ) {
+
+		    		_pdf[id][k] = 0.5 * _pdf[id][k]  +  0.5 * _pdf[id][reverse[k]];
+		
+		    		_pdf[id][reverse[k]] = _pdf[id][k];
+
+		    	    }
+
+		    	}
+
+		    }
+
+		    
+
+		}
+
+	    }
+	    
 	    
 
     	}
