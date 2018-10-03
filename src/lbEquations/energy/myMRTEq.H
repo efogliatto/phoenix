@@ -18,6 +18,8 @@ protected:
 
     scalar _a2;
 
+    scalar _Cv;
+
 
     /** Equilibrium in moment space */
 
@@ -76,7 +78,11 @@ public:
     /** Equilibrium in population space */
 
     const void eqPS( std::vector<scalar>& n, const scalar& T_, const std::vector<scalar>& U_ ) const;    
+
     
+    /** Thermal conductivity at node */
+
+    virtual const scalar thermalCond( const uint& id ) const;
     
 };
 

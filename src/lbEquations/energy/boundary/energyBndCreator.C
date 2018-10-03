@@ -11,6 +11,16 @@ energyBndCond* energyBndCreator::create(const std::string& eqName,
 					const vectorField& U,
 					pdfField& pdf) {
 
+
+
+    // Initialize types
+
+    _bdMapType["fixedT"]         = bdType::fixedT;
+    _bdMapType["fixedGradT"]     = bdType::fixedGradT;
+    _bdMapType["periodic"]       = bdType::periodic;
+    _bdMapType["normalHeatFlux"] = bdType::normalHeatFlux;    
+	
+    
     
     // Load model name from dictionary
 
@@ -18,45 +28,58 @@ energyBndCond* energyBndCreator::create(const std::string& eqName,
 
     string btype = dict.lookUp<string>( eqName + "/" + bdName + "/type" );
 
+
+
+    // Assign boundary condition
     
-    if( btype == "fixedT" ) {
+    if( _bdMapType.find(btype) != _bdMapType.end() ) {
+	
 
-    	return new energyFixedT( eqName, bdName, mesh, rho, T, U, pdf );
+	switch( _bdMapType[btype] ) {
+	
 
-    }
+	case bdType::fixedT:
 
-    
+	    return new energyFixedT( eqName, bdName, mesh, rho, T, U, pdf );
 
-    else {
+	    break;
 
 
-	if( btype == "periodic" ) {
+	case bdType::periodic:
 
 	    return new energyPeriodic( eqName, bdName, mesh, rho, T, U, pdf );
 
-	}
+	    break;
 
-	else {
 
-	    if( btype == "fixedGradT" ) {
+	case bdType::fixedGradT:
 
-		return new energyFixedGradT( eqName, bdName, mesh, rho, T, U, pdf );
+	    return new energyFixedGradT( eqName, bdName, mesh, rho, T, U, pdf ); 
 
-	    }
+	    break;
 
-	    else {
 
-		// Default
-    
-		cout << endl << " [ERROR]  Boundary condition " << btype << " not available for energy model" << endl << endl;
+	case bdType::normalHeatFlux:
 
-		exit(1);
+	    return new energyNormalHeatFlux( eqName, bdName, mesh, rho, T, U, pdf );
 
-	    }
+	    break;	
 
 	}
+
     
     }
+
+    
+    else {
+    
+	cout << endl << " [ERROR]  Boundary condition " << btype << " not available for energy model" << endl << endl;
+
+	exit(1);
+
+    }    
+    
+    
 
     
     return 0;

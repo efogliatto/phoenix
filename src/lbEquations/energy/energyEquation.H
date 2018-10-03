@@ -77,7 +77,12 @@ public:
     
     /** Forced interface for equilibrium distribution */
 
-    virtual const void eqPS( std::vector<scalar>& n, const scalar& T_, const std::vector<scalar>& U_ ) const = 0;    
+    virtual const void eqPS( std::vector<scalar>& n, const scalar& T_, const std::vector<scalar>& U_ ) const = 0;
+
+
+    /** Thermal conductivity at node */
+
+    virtual const scalar thermalCond( const uint& id ) const = 0;
     
     
 };

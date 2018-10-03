@@ -25,6 +25,8 @@ myMRTEq::myMRTEq( const std::string& name,
     _a1 = dict.lookUp<scalar>( name + "/HeatSource/Constants/alpha_1");
 
     _a2 = dict.lookUp<scalar>( name + "/HeatSource/Constants/alpha_2");
+
+    _Cv = dict.lookUp<scalar>( name + "/HeatSource/Constants/Cv");
     
 
 
@@ -337,5 +339,38 @@ const void myMRTEq::updateMacroTemperature() {
     
     for( uint i = 0 ; i < mesh.npoints() ; i++ )
 	T[i] = myMRTEq::localTemperature(i);
+
+}
+
+
+
+
+/** Thermal conductivity at node */
+
+const scalar myMRTEq::thermalCond( const uint& id ) const {
+
+    scalar k(0);
+    
+    
+    switch( mesh.lmodel()->q()) {
+
+    case 9:
+
+	k = rho.at(id) * _Cv * (1/_Tau[3] - 0.5) * (4.0 + 3.0 * _a1  + 2.0 * _a2) / 6.0;
+	
+	break;
+
+
+    case 15:
+
+	k = rho.at(id) * _Cv * (1/_Tau[3] - 0.5) * (6.0 + 11.0 * _a1  + _a2) / 9.0;
+	    	
+	break;
+
+
+    }
+
+
+    return k;
 
 }

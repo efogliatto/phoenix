@@ -3,13 +3,23 @@
 
 #include <energyFixedT.H>
 
-#include <energyFixedGradT.H>
+#include <energyNormalHeatFlux.H>
 
 #include <energyPeriodic.H>
 
 
 class energyBndCreator {
 
+protected:
+
+    
+    // Boundary types
+
+    enum class bdType{ fixedT, periodic, fixedGradT, normalHeatFlux };
+
+    std::map<std::string, bdType> _bdMapType;
+    
+    
 public:
 
     energyBndCond* create(const std::string& eqName,
