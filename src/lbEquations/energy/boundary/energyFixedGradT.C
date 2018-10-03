@@ -16,107 +16,114 @@ energyFixedGradT::energyFixedGradT( const std::string& eqName,
     : energyFixedT( eqName, bdName, mesh, rho, T, U, pdf ) {
 
 
-    // Initialize gradient
 
-    _grad = _bndVal[0];
+    if( _nodes.size() > 0 ) {
+	
 
+	// Initialize gradient
 
-    
-    // Resize neighbour indices, compute normals and check indexing
-
-    _nbid.resize( _bndVal.size() );
-
-    const vector< vector<int> >& nb = mesh.nbArray();
-
-    const vector<uint>& reverse = mesh.lmodel()->reverse();
-
-    const vector< vector<int> >& vel = mesh.lmodel()->lvel();
-
-    const uint q = mesh.lmodel()->q();
+	_grad = _bndVal[0];
 
 
     
-    for( uint i = 0 ; i < _nodes.size() ; i++ ) {
+	// Resize neighbour indices, compute normals and check indexing
 
-	uint nid = _nodes[i];
+	_nbid.resize( _bndVal.size() );
+
+	const vector< vector<int> >& nb = mesh.nbArray();
+
+	const vector<uint>& reverse = mesh.lmodel()->reverse();
+
+	const vector< vector<int> >& vel = mesh.lmodel()->lvel();
+
+	const uint q = mesh.lmodel()->q();
 
 
-	// Check which is the normal direction, using unknown neighbours
+    
+	for( uint i = 0 ; i < _nodes.size() ; i++ ) {
 
-	scalar normal[3] = {0,0,0};
+	    uint nid = _nodes[i];
 
-	for( uint k = 0 ; k < q ; k++ ) {
 
-	    if( nb[nid][ reverse[k] ] == -1 ) {
+	    // Check which is the normal direction, using unknown neighbours
 
-		for( uint j = 0 ; j < 3 ; j++ ) {
+	    scalar normal[3] = {0,0,0};
 
-		    normal[j] += (scalar)vel[k][j];
+	    for( uint k = 0 ; k < q ; k++ ) {
+
+		if( nb[nid][ reverse[k] ] == -1 ) {
+
+		    for( uint j = 0 ; j < 3 ; j++ ) {
+
+			normal[j] += (scalar)vel[k][j];
+
+		    }
 
 		}
 
 	    }
 
-	}
+	    scalar nmag(0);
 
-	scalar nmag(0);
-
-	for( uint j = 0 ; j < 3 ; j++ )
-	    nmag += normal[j] * normal[j];
+	    for( uint j = 0 ; j < 3 ; j++ )
+		nmag += normal[j] * normal[j];
 	    
 
 
-	if( nmag!=0 ) {
+	    if( nmag!=0 ) {
 
-	    nmag = sqrt(nmag);
+		nmag = sqrt(nmag);
 
-	    for( uint j = 0 ; j < 3 ; j++ ) {
+		for( uint j = 0 ; j < 3 ; j++ ) {
 
-		normal[j] = normal[j] / nmag;
+		    normal[j] = normal[j] / nmag;
+
+		}
+	    
+	    }
+
+	    else {
+
+		cout << " [ERROR]  Unable to detect normal on node " << i << " over boundary " << bdName;
+
+		exit(1);
 
 	    }
-	    
-	}
-
-	else {
-
-	    cout << " [ERROR]  Unable to detect normal on node " << i << " over boundary " << bdName;
-
-	    exit(1);
-
-	}
              
 
-	// Detect correspondence with lattice velocities
+	    // Detect correspondence with lattice velocities
 
-	int ln = -1;
+	    int ln = -1;
 
-	for( uint k = 0 ; k < q ; k++ ) {
+	    for( uint k = 0 ; k < q ; k++ ) {
 	    
-	    if(      ( vel[k][0] == (int)normal[0] )
-		 &&  ( vel[k][1] == (int)normal[1] )
-		 &&  ( vel[k][2] == (int)normal[2] )  ) {
+		if(      ( vel[k][0] == (int)normal[0] )
+			 &&  ( vel[k][1] == (int)normal[1] )
+			 &&  ( vel[k][2] == (int)normal[2] )  ) {
 		
-	    	ln = k;
+		    ln = k;
+
+		}
 
 	    }
 
-	}
+	    if(ln == -1) {
 
-	if(ln == -1) {
+		cout << " [ERROR]  Unable to detect normal on node " << _nodes[i] << " over boundary " << bdName;
 
-	    cout << " [ERROR]  Unable to detect normal on node " << _nodes[i] << " over boundary " << bdName;
+		exit(1);
 
-	    exit(1);
+	    }
 
-	}
+	    else {
 
-	else {
+		_nbid[i] = nb[nid][ln];
 
-	    _nbid[i] = nb[nid][ln];
-
-	}
+	    }
 	
+
+	}
+
 
     }
     
