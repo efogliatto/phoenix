@@ -52,6 +52,12 @@ const scalar CarnahanStarling::p_eos(const scalar& rho, const scalar& T) const {
 
 const scalar CarnahanStarling::dp_dT(const scalar& rho, const scalar& T) const {
 
-    return rho / (1 - rho * b);
+    scalar alpha = b * rho / 4.0;
+
+    scalar beta  = 1 - alpha;
+
+    scalar p = rho * ( (1 + alpha + alpha*alpha - alpha*alpha*alpha) / ( beta*beta*beta )  );
+    
+    return p;
 
 }

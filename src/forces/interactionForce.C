@@ -45,7 +45,13 @@ interactionForce::~interactionForce() {}
 
 const scalar interactionForce::potential( const scalar& rho, const scalar& T, const scalar& cs2 ) const {
 
-    return sqrt( 2 * (eos->p_eos(rho,T) - rho * cs2)  /  _G );
+    scalar a = 2 * (eos->p_eos(rho,T) - rho * cs2)  /  _G;
+
+    scalar b(0);
+
+    (a >= 0)  ?	 b = sqrt(a)  :  b = sqrt(-a);
+    
+    return b;
 
 }
 
