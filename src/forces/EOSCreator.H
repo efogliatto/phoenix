@@ -3,9 +3,24 @@
 
 #include <vanDerWaals.H>
 
+#include <CarnahanStarling.H>
+
+#include <map>
+
+
 
 class EOSCreator {
 
+protected:
+
+
+    // EOS types
+
+    enum class eosType{ VdW, CS };
+
+    std::map<std::string, eosType> _eosMapType;
+
+    
 
 public:
 
