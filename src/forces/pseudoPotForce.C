@@ -48,9 +48,9 @@ const vector<scalar> pseudoPotForce::total( const uint& id ) const {
 
     const scalar Fb[3] = { _Fb->force( _rho.at(id), 0 ), _Fb->force( _rho.at(id), 1 ), _Fb->force( _rho.at(id), 2 ) }; 
     
-    return { Fi[0] + Fb[0] + _Fe[0],
-	     Fi[1] + Fb[1] + _Fe[1],
-	     Fi[2] + Fb[2] + _Fe[2] };
+    return { Fi[0] + Fb[0] + _Fe[0] / _rho.at(id),
+	     Fi[1] + Fb[1] + _Fe[1] / _rho.at(id),
+	     Fi[2] + Fb[2] + _Fe[2] / _rho.at(id) };
 
 }
 
@@ -64,9 +64,9 @@ void pseudoPotForce::total( scalar Ft[3], const uint& id ) const {
 
     const scalar Fb[3] = { _Fb->force( _rho.at(id), 0 ), _Fb->force( _rho.at(id), 1 ), _Fb->force( _rho.at(id), 2 ) }; 
     
-    Ft[0] = Fi[0] + Fb[0] + _Fe[0];
-    Ft[1] = Fi[1] + Fb[1] + _Fe[1];
-    Ft[2] = Fi[2] + Fb[2] + _Fe[2];
+    Ft[0] = Fi[0] + Fb[0] + _Fe[0] / _rho.at(id);
+    Ft[1] = Fi[1] + Fb[1] + _Fe[1] / _rho.at(id);
+    Ft[2] = Fi[2] + Fb[2] + _Fe[2] / _rho.at(id);
 
 }
 
