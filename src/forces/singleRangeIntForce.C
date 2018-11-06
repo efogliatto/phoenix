@@ -35,6 +35,14 @@ singleRangeIntForce::singleRangeIntForce( const string& dictName,
 
 	if( model == "D3Q15" ) {
 
+	    _weights.push_back( 0 );
+
+	    for( uint i = 1 ; i <= 6 ; i++ )
+		_weights.push_back( 1.0 / 3.0 );
+
+	    for( uint i = 7 ; i < 15 ; i++ )
+		_weights.push_back( 1.0 / 24.0 );
+	    
 
 
 	}
