@@ -26,12 +26,22 @@ pseudoPotEquation* PPEquation::create( const std::string& name,
 
     else {
 
+	if( etype == "XuMRT" ) {
 
-    	// Default
+	    return new XuMRTEq(name, mesh_, Time_, pdf_, rho_, U_, T_);
+
+	}
+
+	else {
+	
+
+	    // Default
     
-    	cout << endl << " [ERROR]  LB equation type " << etype << " not available as pseudopotential model" << endl << endl;
+	    cout << endl << " [ERROR]  LB equation type " << etype << " not available as pseudopotential model" << endl << endl;
 
-    	exit(1);
+	    exit(1);
+
+	}
     
     }
 

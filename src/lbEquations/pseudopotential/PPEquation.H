@@ -3,6 +3,8 @@
 
 #include <LiMRTEq.H>
 
+#include <XuMRTEq.H>
+
 class PPEquation {
 
 public:

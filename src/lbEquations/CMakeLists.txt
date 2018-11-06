@@ -5,6 +5,7 @@ add_library(lbequations SHARED
   lbEquation.C
   pseudopotential/pseudoPotEquation.C
   pseudopotential/LiMRTEq.C
+  pseudopotential/XuMRTEq.C
   pseudopotential/PPEquation.C
   pseudopotential/pseudoPotEqHandler.C
   pseudopotential/boundary/ppBndCond.C
