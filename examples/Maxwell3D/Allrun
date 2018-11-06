@@ -1,0 +1,4 @@
+#!/bin/bash
+
+# Compute Column with heat transfer
+mpiexec -n 4 multiPhasePP > log.lb

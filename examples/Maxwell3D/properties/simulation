@@ -1,0 +1,4 @@
+startTime 0;
+endTime 10000;
+writeInterval 100;
+dataFormat ensight;

@@ -1,0 +1,34 @@
+Navier-Stokes
+{
+
+    X0
+    {
+        type periodic;
+    }
+
+    X1
+    {
+        type periodic;
+    }
+
+    Y0
+    {
+        type periodic;
+    }
+
+    Y1
+    {
+        type periodic;
+    }
+
+    Z0
+    {
+        type periodic;
+    }
+
+    Z1
+    {
+        type periodic;
+    }
+
+}
