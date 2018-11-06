@@ -3,6 +3,8 @@
 
 #include <D2Q9.H>
 
+#include <D3Q15.H>
+
 
 class latticeModelCreator {
 

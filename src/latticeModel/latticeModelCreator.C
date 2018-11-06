@@ -14,11 +14,21 @@ latticeModel* latticeModelCreator::create( const std::string& modelName ) {
     else {
 
 
-	// Default
-    
-	cout << endl << "LBModel " << modelName << " does not exist" << endl << endl;
+	if( modelName.compare("D3Q15") == 0 ) {
+	    
+	    return new D3Q15();
 
-	exit(1);
+	}
+
+	else {
+
+	    // Default
+    
+	    cout << endl << "LBModel " << modelName << " does not exist" << endl << endl;
+
+	    exit(1);
+
+	}
     
     }
 
@@ -40,11 +50,21 @@ latticeModel* latticeModelCreator::create( const uint& d, const uint& q ) {
     else {
 
 
-	// Default
-    
-	cout << endl << "LBModel D" << d << "Q" << q << " does not exist" << endl << endl;
+	if( (d == 3)  &&  (q == 15) ) {
 
-	exit(1);
+	    return new D3Q15();
+
+	}
+
+	else {
+
+	    // Default
+    
+	    cout << endl << "LBModel D" << d << "Q" << q << " does not exist" << endl << endl;
+
+	    exit(1);
+
+	}
     
     }
 
