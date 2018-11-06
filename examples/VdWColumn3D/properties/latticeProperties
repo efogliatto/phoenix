@@ -1,0 +1,9 @@
+Nx 3;
+
+Ny 3;
+
+Nz 301;
+
+LBModel D3Q15;
+
+boundaryType periodicXY;
