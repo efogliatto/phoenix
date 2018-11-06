@@ -53,6 +53,10 @@ void markusHaziHS::update( const scalarField& rho, const scalarField& T, const v
     const uint np = _mesh.local();
 
 
+    // Lattice type
+
+    latticeModel::latticeType ltype = _mesh.lmodel()->type();
+    
 
     // Move over points
 
@@ -62,21 +66,51 @@ void markusHaziHS::update( const scalarField& rho, const scalarField& T, const v
     
 	// Thermal difusivity
     
-	scalar lambda;
+	scalar lambda(0);
 
-	if( _mesh.lmodel()->name() == "D2Q9" ) {
+	switch( ltype ) {
 
-	    lambda = rho.at(id) * _Cv * (1/_Tau[3] - 0.5) * (4.0 + 3.0 * _a1  + 2.0 * _a2) / 6.0;	
+
+	case latticeModel::latticeType::D2Q9:
+
+	    lambda = rho.at(id) * _Cv * (1/_Tau[3] - 0.5) * (4.0 + 3.0 * _a1  + 2.0 * _a2) / 6.0;
+
+	    break;
+
+
+	case latticeModel::latticeType::D3Q15:
+
+	    lambda = rho.at(id) * _Cv * (1/_Tau[3] - 0.5) * (6.0 + 11.0 * _a1  + _a2) / 9.0;
+
+	    break;
 
 	}
 
-	else {
+	
+	
+	// if( _mesh.lmodel()->name() == "D2Q9" ) {
 
-	    cout << " [ERROR]  Heat source model not implemented" << endl << endl;
+	//     lambda = rho.at(id) * _Cv * (1/_Tau[3] - 0.5) * (4.0 + 3.0 * _a1  + 2.0 * _a2) / 6.0;	
 
-	    exit(1);
+	// }
 
-	}
+	// else {
+
+	//     if( _mesh.lmodel()->name() == "D2Q9" ) {
+
+	// 	lambda = rho.at(id) * _Cv * (1/_Tau[3] - 0.5) * (6.0 + 11.0 * _a1  + _a2) / 9.0;	
+
+	//     }
+
+	//     else {
+
+	// 	cout << " [ERROR]  Heat source model not implemented" << endl << endl;
+
+	// 	exit(1);
+
+	//     }
+
+	// }
 
 
 	// Cached scalar values
