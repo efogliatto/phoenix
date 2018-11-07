@@ -234,7 +234,7 @@ const void vectorField::write() const {
 
 	for( uint j = 0 ; j < 3 ; j++) {
 
-	    if( isnan(field[i][j]) ) {
+	    if( std::isnan(field[i][j]) ) {
 
 		cout << " [ERROR] Floating point exception. NaN solution" << endl;
 

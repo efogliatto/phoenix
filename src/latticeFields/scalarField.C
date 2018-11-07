@@ -360,7 +360,7 @@ const void scalarField::write() const {
 
     for( uint i = 0 ; i < mesh.npoints() ; i++) {
 
-	if( isnan(field[i]) ) {
+	if( std::isnan(field[i]) ) {
 
 	    cout << " [ERROR] Floating point exception. NaN solution" << endl;
 
