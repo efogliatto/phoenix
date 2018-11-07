@@ -27,9 +27,16 @@ avgDensityBForce::~avgDensityBForce() {}
 
 const vector<scalar> avgDensityBForce::force(const scalar& rho) {
 
-    return { (rho-_rhoRef)*_gravity[0],
-	     (rho-_rhoRef)*_gravity[1],
-	     (rho-_rhoRef)*_gravity[2] };
+    // return { (rho-_rhoRef)*_gravity[0],
+    // 	     (rho-_rhoRef)*_gravity[1],
+    // 	     (rho-_rhoRef)*_gravity[2] };
+
+    
+    const scalar a( rho*(1-_rhoRef/rho) );
+    
+    return { a*_gravity[0],
+	     a*_gravity[1],
+	     a*_gravity[2] };    
 
 }
 
