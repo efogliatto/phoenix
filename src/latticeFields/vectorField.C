@@ -2,6 +2,8 @@
 
 #include <stdio.h>
 
+#include <cmath>
+
 
 using namespace std;
 
@@ -224,6 +226,25 @@ const void vectorField::read() {
 /** Write field using ensight format */
 
 const void vectorField::write() const {
+
+
+    // First check for array sanity   
+
+    for( uint i = 0 ; i < mesh.npoints() ; i++) {
+
+	for( uint j = 0 ; j < 3 ; j++) {
+
+	    if( isnan(field[i][j]) ) {
+
+		cout << " [ERROR] Floating point exception. NaN solution" << endl;
+
+		exit(1);
+
+	    }
+
+	}
+
+    }
 
 
     // Open file

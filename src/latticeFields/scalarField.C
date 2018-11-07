@@ -2,6 +2,9 @@
 
 #include <stdio.h>
 
+#include <cmath>
+
+
 using namespace std;
 
 
@@ -351,6 +354,23 @@ const void scalarField::endSync() {
 
 const void scalarField::write() const {
 
+
+
+    // First check for array sanity   
+
+    for( uint i = 0 ; i < mesh.npoints() ; i++) {
+
+	if( isnan(field[i]) ) {
+
+	    cout << " [ERROR] Floating point exception. NaN solution" << endl;
+
+	    exit(1);
+
+	}
+
+
+    }
+    
 	
     MPI_Barrier(MPI_COMM_WORLD);
 	
