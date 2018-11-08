@@ -133,47 +133,83 @@ energyOutflow::~energyOutflow() {}
 void energyOutflow::update( const energyEquation* eeq ) {
 
 
-    // Lattice constants
+    // // Lattice constants
+    
+    // const uint q = _mesh.lmodel()->q();
+
+    // // const vector< vector<int> >& nb = _mesh.nbArray();
+
+    // vector<scalar> nvel = { 0,0,0 };
+
+
+    // // Move over boundary elements
+
+    // for( uint i = 0 ; i < _nodes.size() ; i++ ) {
+
+	
+    // 	uint id = _nodes[i];
+
+    // 	uint nid = _nbid[i];
+		
+	
+    // 	// Velocity at neighbour node		    
+
+    // 	scalar uAdv(0);
+	
+    // 	for(uint j = 0 ; j < 3 ; j++)
+    // 	    uAdv += _normal[i][j] * _U.at(nid)[j];
+
+
+    // 	// Update unknowun distributions for f
+	    
+    // 	for( uint k = 0 ; k < q ; k++ ) {
+		
+    // 	    _pdf.set( id,
+    // 	    	      k,
+    // 	    	      ( _pdf[id][k] + uAdv*_pdf[nid][k] ) / (1+uAdv)
+    // 	    	);	    
+
+    // 	}
+
+	
+    // }
+
+
+
+
+
+    // BounceBack
     
     const uint q = _mesh.lmodel()->q();
 
-    // const vector< vector<int> >& nb = _mesh.nbArray();
+    const vector< vector<int> >& nb = _mesh.nbArray();
 
-    vector<scalar> nvel = { 0,0,0 };
-
+    const vector<uint>& reverse = _mesh.lmodel()->reverse();
+    
 
     // Move over boundary elements
 
     for( uint i = 0 ; i < _nodes.size() ; i++ ) {
-
 	
-	uint id = _nodes[i];
-
-	uint nid = _nbid[i];
-		
-	
-	// Velocity at neighbour node		    
-
-	scalar uAdv(0);
-	
-	for(uint j = 0 ; j < 3 ; j++)
-	    uAdv += _normal[i][j] * _U.at(nid)[j];
+    	uint id = _nodes[i];
 
 
-	// Update unknowun distributions for f
+    	// Update unknowun distributions for f
 	    
-	for( uint k = 0 ; k < q ; k++ ) {
-		
-	    _pdf.set( id,
-	    	      k,
-	    	      ( _pdf[id][k] + uAdv*_pdf[nid][k] ) / (1+uAdv)
-	    	);	    
+    	for( uint k = 0 ; k < q ; k++ ) {
 
-	}
+	    if(nb[id][k] == -1) {
+	    
+		_pdf.set( id, k, _pdf[id][ reverse[k] ]  );
+
+	    }
+
+    	}
 
 	
     }
 
+    
     
 
 }
