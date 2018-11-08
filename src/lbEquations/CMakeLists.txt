@@ -22,6 +22,6 @@ add_library(lbequations SHARED
   energy/boundary/energyFixedGradT.C
   energy/boundary/energyPeriodic.C
   energy/boundary/energyNormalHeatFlux.C
+  energy/boundary/energyOutflow.C    
   energy/boundary/energyBndCreator.C
-  
   )

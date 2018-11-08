@@ -18,7 +18,8 @@ energyBndCond* energyBndCreator::create(const std::string& eqName,
     _bdMapType["fixedT"]         = bdType::fixedT;
     _bdMapType["fixedGradT"]     = bdType::fixedGradT;
     _bdMapType["periodic"]       = bdType::periodic;
-    _bdMapType["normalHeatFlux"] = bdType::normalHeatFlux;    
+    _bdMapType["normalHeatFlux"] = bdType::normalHeatFlux;
+    _bdMapType["outflow"]        = bdType::outflow;    
 	
     
     
@@ -63,7 +64,14 @@ energyBndCond* energyBndCreator::create(const std::string& eqName,
 
 	    return new energyNormalHeatFlux( eqName, bdName, mesh, rho, T, U, pdf );
 
-	    break;	
+	    break;
+
+
+	case bdType::outflow:
+
+	    return new energyOutflow( eqName, bdName, mesh, rho, T, U, pdf );
+
+	    break;		    
 
 	}
 

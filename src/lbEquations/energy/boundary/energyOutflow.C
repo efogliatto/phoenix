@@ -1,11 +1,11 @@
-#include <ppOutflow.H>
+#include <energyOutflow.H>
 
 using namespace std;
 
 
 /** Constructor */
 
-ppOutflow::ppOutflow( const string& eqName,
+energyOutflow::energyOutflow( const string& eqName,
 		      const string& bdName,
 		      const latticeMesh& mesh,
 		      const scalarField& rho,
@@ -13,7 +13,7 @@ ppOutflow::ppOutflow( const string& eqName,
 		      const vectorField& U,
 		      pdfField& pdf )
 
-    : ppBndCond(mesh, rho, T, U, pdf, bdName, "outflow") {
+    : energyBndCond(mesh, rho, T, U, pdf, bdName) {
 
 
     // Resize neighbour indices, compute normals and check indexing
@@ -123,12 +123,14 @@ ppOutflow::ppOutflow( const string& eqName,
 
 /** Destructor */
 
-ppOutflow::~ppOutflow() {}
+energyOutflow::~energyOutflow() {}
+
+
 
 
 /** Update pdf field */
 
-void ppOutflow::update( const pseudoPotEquation* ppeq ) {
+void energyOutflow::update( const energyEquation* eeq ) {
 
 
     // Lattice constants
@@ -152,83 +154,23 @@ void ppOutflow::update( const pseudoPotEquation* ppeq ) {
 	
 	// Velocity at neighbour node		    
 
-	ppeq->localVelocity(nvel, nid, true);
-
 	scalar uAdv(0);
 	
 	for(uint j = 0 ; j < 3 ; j++)
-	    uAdv += _normal[i][j] * nvel[j];
-
+	    uAdv += _normal[i][j] * _U.at(nid)[j];
 
 
 	// Update unknowun distributions for f
 	    
 	for( uint k = 0 ; k < q ; k++ ) {
-
-	    // if( nb[id][k] == -1 ) {
 		
-		_pdf.set( id,
-			  k,
-			  ( _pdf[id][k] + uAdv*_pdf[nid][k] ) / (1+uAdv)
-		    );
-
-	    // }
+	    _pdf.set( id,
+	    	      k,
+	    	      ( _pdf[id][k] + uAdv*_pdf[nid][k] ) / (1+uAdv)
+	    	);	    
 
 	}
 
-	
-    }
-
-    
-
-}
-
-
-
-
-
-/** Update interaction force */
-    
-const void ppOutflow::updateIntForce( pseudoPotEquation* ppeq ) const {
-
-
-    // Lattice constants    
-
-    vector<scalar> nvel = { 0,0,0 };
-
-    vector<scalar> Fint = {0,0,0};
-
-
-    // Move over boundary elements
-
-    for( uint i = 0 ; i < _nodes.size() ; i++ ) {
-
-	
-	uint id = _nodes[i];
-
-	uint nid = _nbid[i];
-		
-	
-	// Velocity at neighbour node		    
-
-	ppeq->localVelocity(nvel, nid, true);
-
-	scalar uAdv(0);
-	
-	for(uint j = 0 ; j < 3 ; j++)
-	    uAdv += _normal[i][j] * nvel[j];
-
-
-
-	// Update 
-	    
-	for( uint j = 0 ; j < 3 ; j++ )
-	    Fint[j] = ppeq->intForce(id,j)   +   uAdv * ppeq->intForce(nid,j) / (1+uAdv);
-
-	
-	ppeq->setIntForce( id, Fint );
-	
-	    
 	
     }
 
