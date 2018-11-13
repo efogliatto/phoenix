@@ -127,6 +127,11 @@ public:
     const std::vector<uint>& boundaryNodes( const std::string& bdname ) const;
 
     const std::map< std::string, std::vector<uint> >& boundaries() const { return boundary; }
+
+
+    /** Lattice point coordinates */
+
+    const std::vector<int>& latticePoint( const uint& id ) const { return points[id]; }
     
     
 };

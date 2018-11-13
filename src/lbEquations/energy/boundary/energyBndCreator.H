@@ -19,7 +19,7 @@ protected:
     
     // Boundary types
 
-    enum class bdType{ fixedT, periodic, fixedGradT, normalHeatFlux, outflow, fixedTSpot };
+    enum class bdType{ fixedT, periodic, fixedGradT, normalHeatFlux, outflow, fixedTSpots };
 
     std::map<std::string, bdType> _bdMapType;
     

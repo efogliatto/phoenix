@@ -50,7 +50,7 @@ void sphere::readFromEntry(const string& dname, const string& ename ) {
 
 // Check if point is inside
 
-const bool sphere::isInside(const scalar point[3]) const {
+const bool sphere::isInside(const vector<int>& point) const {
 
     scalar r0(0);
 

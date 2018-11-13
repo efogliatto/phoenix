@@ -35,6 +35,7 @@ set ( PROJECT_LINK_LIBS
   liblatticemodel.so
   libalgebra.so
   libio.so
+  libgeometry.so
   libsimulation.so
   libmesh.so
   liblatticefields.so

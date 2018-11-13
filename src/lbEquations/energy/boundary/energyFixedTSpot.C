@@ -26,22 +26,30 @@ energyFixedTSpot::energyFixedTSpot( const std::string& eqName,
     // Move over spots and assign condition
 
     for( auto spot : spotList ) {
-
+       
 	
 	// Load type
 
-	const string sptype = dict.lookUp<string>( eqName + "/" + bdName + "/Spots/" + spot + "/type" );
+	string entry = eqName + "/" + bdName + "/Spots/" + spot;
+
+	const string sptype = dict.lookUp<string>( entry + "/type" );
 
 
 	if( sptype == "sphere" ) {
 
-	    sphere sph( "start/boundaries", eqName + "/" + bdName + "/Spots/" + spot );
+	    sphere sph( "start/boundaries", entry );
 
-	    
+	    scalar lval = dict.lookUp<scalar>( entry + "/value" );
 
 	    for( uint i = 0 ; i < _nodes.size() ; i++ ) {
 
-		uint id = _nodes[i];	    
+		uint id = _nodes[i];
+
+		if(  sph.isInside( _mesh.latticePoint(id) )  ) {
+
+		    _bndVal[i] = lval;
+
+		}
 		
 
 	    }
@@ -50,7 +58,7 @@ energyFixedTSpot::energyFixedTSpot( const std::string& eqName,
 
 	else {
 
-	    cout << " [ERROR] Unrecognized shape type" << endl << endl;
+	    cout << " [ERROR] Unrecognized shape type " << sptype << " for fixedTSpots" << endl << endl;
 
 	    exit(1);
 

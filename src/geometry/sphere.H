@@ -43,7 +43,7 @@ public:
 
     // Check if point is inside
 
-    const bool isInside(const scalar point[3]) const;
+    const bool isInside(const std::vector<int>& point) const;
 
 
     // Bounding box
