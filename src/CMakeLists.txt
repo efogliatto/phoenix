@@ -8,6 +8,11 @@ add_subdirectory (latticeModel)
 add_subdirectory (algebra)
 
 
+# basic geometry library
+
+add_subdirectory (geometry)
+
+
 # basic input/output library
 
 add_subdirectory (IO)

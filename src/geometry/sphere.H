@@ -1,0 +1,55 @@
+#ifndef SPHERE_H
+#define SPHERE_H
+
+#include <basicShape.H>
+
+class sphere : public basicShape {
+
+    
+protected:
+
+    // Sphere centre
+
+    std::vector<scalar> _centre;
+
+
+    // Radius
+
+    scalar _radius;
+
+
+public:
+
+    
+    // Default constructor
+
+    sphere();
+
+
+    // Construct from entry
+
+    sphere( const std::string& dname, const std::string& ename );
+    
+
+    // Default destructor
+
+    ~sphere();
+
+
+    // Read from entry
+
+    void readFromEntry( const std::string& dname, const std::string& ename );
+
+
+    // Check if point is inside
+
+    const bool isInside(const scalar point[3]) const;
+
+
+    // Bounding box
+
+    void boundingBox( scalar min[3], scalar max[3] ) const;    
+
+};
+
+#endif // SPHERE_H

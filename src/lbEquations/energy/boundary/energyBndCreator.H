@@ -9,6 +9,8 @@
 
 #include <energyOutflow.H>
 
+#include <energyFixedTSpot.H>
+
 
 class energyBndCreator {
 
@@ -17,7 +19,7 @@ protected:
     
     // Boundary types
 
-    enum class bdType{ fixedT, periodic, fixedGradT, normalHeatFlux, outflow };
+    enum class bdType{ fixedT, periodic, fixedGradT, normalHeatFlux, outflow, fixedTSpot };
 
     std::map<std::string, bdType> _bdMapType;
     
