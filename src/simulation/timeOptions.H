@@ -134,6 +134,11 @@ public:
 
     const void updateCaseFile() const;
 
+
+    /** Time-index tuple vector */
+
+    const std::vector<uint> timeList() const;
+
     
 };
 

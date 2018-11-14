@@ -6,4 +6,4 @@ add_subdirectory (solvers)
 
 # Fields
 
-add_subdirectory (fields)
+add_subdirectory (utilities)

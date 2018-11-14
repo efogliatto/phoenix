@@ -71,8 +71,11 @@ public:
     /** Field average */
 
     const scalar average() const;
+
+
+    /** Update field values from time index (not time value) */
     
-    
+    const void update( const uint& t );
 
 };
 

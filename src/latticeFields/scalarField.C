@@ -604,3 +604,67 @@ const scalar scalarField::average() const {
 
 
 }
+
+
+
+
+
+
+
+
+/** Update field values from time index (not time value) */
+
+const void scalarField::update( const uint& t ) {
+
+
+
+    // MPI file pointer
+
+    MPI_File file;
+
+    MPI_File_open( MPI_COMM_WORLD,
+		   ( "lattice." + name + "_" + to_string(t) ).c_str(),
+		   MPI_MODE_RDONLY,
+		   MPI_INFO_NULL,
+		   &file );
+
+
+    // Set Offset
+
+    MPI_Offset offset = 240*sizeof(char) + sizeof(int);
+
+    for( int i = 0 ; i < mesh.pid() ; i++ ) {
+
+    	offset += mesh.npp(i) * sizeof(float);
+
+    	offset += 160*sizeof(char) + sizeof(int);
+
+    }
+
+    MPI_File_seek(file, offset, MPI_SEEK_SET);
+
+
+
+    
+    // Read Array
+
+    float* auxField = (float*)malloc( mesh.npoints() * sizeof(float) );
+	
+    MPI_Status st;
+
+    MPI_File_read(file, auxField, mesh.npoints(), MPI_FLOAT, &st);
+
+    for( uint i = 0 ; i < mesh.npoints() ; i++) {
+
+    	field[i] = (scalar)auxField[i];
+	    
+    }	
+    
+    MPI_Barrier(MPI_COMM_WORLD);
+    
+    MPI_File_close(&file);
+
+    free(auxField);
+    
+
+}

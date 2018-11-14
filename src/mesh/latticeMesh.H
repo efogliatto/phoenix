@@ -122,7 +122,7 @@ public:
     const std::vector< std::vector<int> >& nbArray() const { return nb; }
 
 
-    /** Reference to boundary indiced */
+    /** Reference to boundary indices */
 
     const std::vector<uint>& boundaryNodes( const std::string& bdname ) const;
 

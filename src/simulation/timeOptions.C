@@ -446,3 +446,103 @@ const uint timeOptions::timeToIndex( const uint& tid ) const {
     
 
 }
+
+
+
+/** Time-index tuple vector */
+
+const vector<uint> timeOptions::timeList() const {
+
+    
+    vector<uint> tlist;
+
+
+    // Try to open .case file to get time steps
+
+    ifstream cfile( "lbm.case" );
+
+    if( cfile.is_open() ) {	
+
+
+	// Read Number of steps
+
+	string word;
+
+	bool find(false);
+
+	uint ns(0);
+
+
+	    
+	while(  ( !cfile.eof() )   &&   ( find == false )   ) {
+
+	    cfile >> word;
+		
+	    if( word == "number" ) {
+
+		cfile >> word;
+
+		if (  ( !cfile.eof() )   &&   ( word == "of" )   ) {		    
+
+		    cfile >> word;
+
+		    if (  ( !cfile.eof() )   &&   ( word == "steps:" )   ) {		       
+			    
+			cfile >> word;
+
+			ns = stoi( word );
+
+			find = true;
+			
+		    }
+			
+		}
+
+	    }
+
+	}
+
+
+
+
+	// Read Time list
+
+	cfile.clear();
+	    
+	cfile.seekg(0);
+	    
+	while( !cfile.eof() ) {
+
+	    cfile >> word;
+
+	    if( word =="time" ) {
+
+		cfile >> word;		   
+
+		if(  (!cfile.eof())  &&  (word == "values:")  ) {
+
+		    for( uint k = 0 ; k < ns ; k++ ) {
+
+			cfile >> word;
+
+			tlist.push_back( stoi(word) );
+
+		    }
+			
+		}
+
+	    }
+
+	}
+
+
+
+	cfile.close();	    	    
+
+    }
+
+    
+
+    return tlist;
+
+}
