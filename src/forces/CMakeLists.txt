@@ -15,6 +15,9 @@ add_library(forces SHARED
   avgDensityBForce.C
   bForces.C
   externalForce.C
-  adsorptionForce.C
+  adhesive/adhesiveForce.C
+  adhesive/noAds.C
+  adhesive/liAdhesive.C
+  adhesive/adsForceCreator.C
   pseudoPotForce.C
   )

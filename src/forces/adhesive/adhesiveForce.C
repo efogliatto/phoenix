@@ -1,11 +1,11 @@
-#include <adsorptionForce.H>
+#include <adhesiveForce.H>
 
 using namespace std;
 
 
 /** Constructor */
 
-adsorptionForce::adsorptionForce( const string& dictName,
+adhesiveForce::adhesiveForce( const string& dictName,
 				  const string& eqName,
 				  const latticeMesh& mesh )
 
@@ -23,4 +23,4 @@ adsorptionForce::adsorptionForce( const string& dictName,
 
 /** Destructor */
 
-adsorptionForce::~adsorptionForce();
+adhesiveForce::~adhesiveForce() {}
