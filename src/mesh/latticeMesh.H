@@ -46,6 +46,16 @@ protected:
     std::map< std::string, std::vector<uint> > boundary;
 
 
+    /** Tell if node is on boundary. Performance */
+
+    std::vector<uint> isOnBnd;
+
+
+    /** Boundary to which node belongs */
+
+    std::map<uint, std::string> nodeToBnd;
+
+
 
     
 
@@ -132,6 +142,16 @@ public:
     /** Lattice point coordinates */
 
     const std::vector<int>& latticePoint( const uint& id ) const { return points[id]; }
+
+
+    /** Check if point is on boundary */
+
+    const uint isOnBoundary( const uint id ) const { return isOnBnd[id]; };
+
+
+    /** Boundary which node belongs */
+
+    const std::string& nodeToBoundary( const uint id ) const { return nodeToBnd.at(id); }
     
     
 };

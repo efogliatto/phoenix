@@ -284,6 +284,39 @@ const void latticeMesh::readBoundaryNodes() {
 	}
 
     }
+
+
+
+
+
+    // Check if node is on boundary
+
+    isOnBnd.resize(local(),0);
+
+    for(uint i = 0 ; i < local() ; i++) {
+
+	for(uint k = 0 ; k < lmodel()->q() ; k++) {
+
+	    if(nb[i][k] == -1)
+		isOnBnd[i] = 1;
+
+	}
+
+    }
+
+
+
+    // For nodes on boundary, create map with boundary name
+
+    for( const auto &bd : boundary ) {
+
+	for( auto id : bd.second ) {
+
+	    nodeToBnd[id] = bd.first;
+
+	}
+
+    }
     
 
 }
