@@ -287,25 +287,6 @@ const void latticeMesh::readBoundaryNodes() {
 
 
 
-
-
-    // Check if node is on boundary
-
-    isOnBnd.resize(local(),0);
-
-    for(uint i = 0 ; i < local() ; i++) {
-
-	for(uint k = 0 ; k < lmodel()->q() ; k++) {
-
-	    if(nb[i][k] == -1)
-		isOnBnd[i] = 1;
-
-	}
-
-    }
-
-
-
     // For nodes on boundary, create map with boundary name
 
     for( const auto &bd : boundary ) {
@@ -316,7 +297,32 @@ const void latticeMesh::readBoundaryNodes() {
 
 	}
 
+    }    
+
+
+
+    // Check if node is on boundary
+
+    isOnBnd.resize(local(),0);
+
+    for(uint i = 0 ; i < local() ; i++) {
+
+	if( nodeToBnd.find(i) != nodeToBnd.end() )
+	    isOnBnd[i] = 1;
+
+	
+	// for(uint k = 0 ; k < lmodel()->q() ; k++) {
+
+	//     if(nb[i][k] == -1)
+	// 	isOnBnd[i] = 1;
+
+	// }
+
     }
+
+
+
+
     
 
 }
@@ -349,5 +355,24 @@ const vector<uint>& latticeMesh::boundaryNodes( const std::string& bdname ) cons
 
     return boundary.at("");
 
+
+}
+
+
+
+
+/** Boundary which node belongs */
+
+const string latticeMesh::nodeToBoundary( const uint id ) const {
+
+    string bd("");
+	
+    if( nodeToBnd.find(id) != nodeToBnd.end() ) {
+	
+	bd = nodeToBnd.at(id);
+
+    }
+
+    return bd;
 
 }

@@ -5,6 +5,8 @@
 
 #include <intForce.H>
 
+#include <adsForceCreator.H>
+
 #include <externalForce.H>
 
 
@@ -24,6 +26,11 @@ protected:
     buoyantForce* _Fb;
 
 
+    /** Adhesive force */
+
+    adhesiveForce* _Fads;
+
+
     /** External force */
 
     externalForce _Fe;
@@ -34,12 +41,23 @@ protected:
     const scalarField& _rho;
 
 
+    /** Reference to external temperature */
+
+    const scalarField& _T;
+    
+
+
 public:
 
 
     /** Constructor */
 
-    pseudoPotForce( const std::string& dictName, const std::string& eqName, const latticeMesh& mesh, timeOptions& Time, const scalarField& rho );
+    pseudoPotForce( const std::string& dictName,
+		    const std::string& eqName,
+		    const latticeMesh& mesh,
+		    timeOptions& Time,
+		    const scalarField& rho,
+		    const scalarField& T );
 
 
     /** Destructor */

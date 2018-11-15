@@ -151,7 +151,7 @@ public:
 
     /** Boundary which node belongs */
 
-    const std::string& nodeToBoundary( const uint id ) const { return nodeToBnd.at(id); }
+    const std::string nodeToBoundary( const uint id ) const;
     
     
 };

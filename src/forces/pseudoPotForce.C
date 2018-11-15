@@ -9,10 +9,12 @@ pseudoPotForce::pseudoPotForce( const string& dictName,
 				const string& eqName,
 				const latticeMesh& mesh,
 				timeOptions& Time,
-				const scalarField& rho)
+				const scalarField& rho,
+				const scalarField& T)
 
     : _Fe(dictName, eqName),
-      _rho(rho) {
+      _rho(rho),
+      _T(T){
 
 
     // Create interaction force
@@ -28,6 +30,14 @@ pseudoPotForce::pseudoPotForce( const string& dictName,
     bForces bfcreator;
 
     _Fb = bfcreator.create(dictName, eqName);
+
+
+    
+    // Create adhesive force
+
+    adsForceCreator adcreator;
+
+    _Fads = adcreator.create(dictName, eqName, mesh);    
     
 
 }
@@ -44,13 +54,36 @@ pseudoPotForce::~pseudoPotForce() {}
 
 const vector<scalar> pseudoPotForce::total( const uint& id ) const {
 
-    const scalar Fi[3] = { _Fi->force(id,0), _Fi->force(id,1), _Fi->force(id,2) };
 
-    const scalar Fb[3] = { _Fb->force( _rho.at(id), 0 ), _Fb->force( _rho.at(id), 1 ), _Fb->force( _rho.at(id), 2 ) }; 
+    // // Interaction
     
-    return { Fi[0] + Fb[0] + _Fe[0] * _rho.at(id),
-	     Fi[1] + Fb[1] + _Fe[1] * _rho.at(id),
-	     Fi[2] + Fb[2] + _Fe[2] * _rho.at(id) };
+    // const scalar Fi[3] = { _Fi->force(id,0), _Fi->force(id,1), _Fi->force(id,2) };
+
+
+    // // Bouyant
+    
+    // const scalar Fb[3] = { _Fb->force( _rho.at(id), 0 ), _Fb->force( _rho.at(id), 1 ), _Fb->force( _rho.at(id), 2 ) };
+
+
+    // // Adhesion
+
+    // scalar Fads[3] = {0,0,0};
+
+    // _Fads->force(id, _rho.at(id), _T.at(id), Fads);
+
+    
+    
+    // return { Fi[0] + Fb[0] + Fads[0] + _Fe[0] * _rho.at(id),
+    // 	     Fi[1] + Fb[1] + Fads[1] + _Fe[1] * _rho.at(id),
+    // 	     Fi[2] + Fb[2] + Fads[2] + _Fe[2] * _rho.at(id) };
+
+
+    scalar F[3] = {0,0,0};
+
+    pseudoPotForce::total(F,id);
+
+    return {F[0], F[1], F[2]};
+    
 
 }
 
@@ -60,13 +93,28 @@ const vector<scalar> pseudoPotForce::total( const uint& id ) const {
 
 void pseudoPotForce::total( scalar Ft[3], const uint& id ) const {
 
+
+    // Interaction
+    
     const scalar Fi[3] = { _Fi->force(id,0), _Fi->force(id,1), _Fi->force(id,2) };
 
-    const scalar Fb[3] = { _Fb->force( _rho.at(id), 0 ), _Fb->force( _rho.at(id), 1 ), _Fb->force( _rho.at(id), 2 ) }; 
+
+    // Buoyant
     
-    Ft[0] = Fi[0] + Fb[0] + _Fe[0] * _rho.at(id);
-    Ft[1] = Fi[1] + Fb[1] + _Fe[1] * _rho.at(id);
-    Ft[2] = Fi[2] + Fb[2] + _Fe[2] * _rho.at(id);
+    const scalar Fb[3] = { _Fb->force( _rho.at(id), 0 ), _Fb->force( _rho.at(id), 1 ), _Fb->force( _rho.at(id), 2 ) }; 
+
+    
+    // Adhesion
+
+    scalar Fads[3] = {0,0,0};
+
+    _Fads->force(id, _rho.at(id), _T.at(id), Fads);
+
+    
+    
+    Ft[0] = Fi[0] + Fb[0] + Fads[0] + _Fe[0] * _rho.at(id);
+    Ft[1] = Fi[1] + Fb[1] + Fads[1] + _Fe[1] * _rho.at(id);
+    Ft[2] = Fi[2] + Fb[2] + Fads[2] + _Fe[2] * _rho.at(id);
 
 }
 

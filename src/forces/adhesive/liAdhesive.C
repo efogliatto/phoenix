@@ -85,53 +85,57 @@ const void liAdhesive::force( const uint& i, const scalar& rho, const scalar& T,
 
     // Initialize force
 
-    f[0] = 0;
-    f[1] = 0;
-    f[2] = 0;    
+    scalar F[3] = {0,0,0};
+        
 
     
     if( _mesh.isOnBoundary(i) ) {
+
+
+	scalar g_ads(0);
+
+	string bd = _mesh.nodeToBoundary(i);
+
+	if( _Gads.find(bd) != _Gads.end() )
+	    g_ads = _Gads.at(bd);
+
+       
+    	// Lattice model properties
+
+    	const vector< vector<int> >& nb = _mesh.nbArray();
+
+    	const vector< vector<int> > vel = _mesh.lmodel()->lvel();
+
+    	const vector<uint>& reverse = _mesh.lmodel()->reverse();
+
+    	const uint q = _mesh.lmodel()->q();
+       
+
+
+    	// Compute force
+
+    	scalar presum = liAdhesive::potential(rho,T,_mesh.lmodel()->cs2());
+
+    	presum = presum * presum * (-g_ads);
 	
-
-	const scalar g_ads = _Gads.at( _mesh.nodeToBoundary(i) );
-
+    	for( uint k = 1 ; k < q ; k++ ) {
        
-	// Lattice model properties
-
-	const vector< vector<int> >& nb = _mesh.nbArray();
-
-	const vector< vector<int> >& vel = _mesh.lmodel()->lvel();
-
-	const vector<uint>& reverse = _mesh.lmodel()->reverse();
-
-	const uint q = _mesh.lmodel()->q();
-       
-
-
-	// Compute force
-
-	scalar presum = liAdhesive::potential(rho,T,_mesh.lmodel()->cs2());
-
-	presum = presum * presum * (-g_ads);
-	
-	for( uint k = 1 ; k < q ; k++ ) {
-       
-	    if( nb[i][ reverse[k] ] != -1 ) {
+    	    if( nb[i][ reverse[k] ] == -1 ) {
 	    
-		for( uint j = 0 ; j < 3 ; j++ ) {
+    		for( uint j = 0 ; j < 3 ; j++ ) {
 
-		    f[j] +=   _weights[k] * (scalar)vel[k][j] ;
+    		    F[j] +=  _weights[k] * (scalar)vel[k][j] ;
 
-		}
+    		}
 
-	    }
+    	    }
     
 
-	}
+    	}
 
 
-	for( uint j = 0 ; j < 3 ; j++ )
-	    f[j] = f[j] * presum;
+    	for( uint j = 0 ; j < 3 ; j++ )
+    	    f[j] = F[j] * presum;
 
 	
 
