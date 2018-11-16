@@ -80,7 +80,7 @@ liAdhesive::~liAdhesive() {}
 
 /** Force at specific node */
 
-const void liAdhesive::force( const uint& i, const scalar& rho, const scalar& T, scalar f[3] ) const {
+const void liAdhesive::force( const uint& i, const scalarField& rho, const scalarField& T, scalar f[3] ) const {
 
 
     // Initialize force
@@ -89,57 +89,57 @@ const void liAdhesive::force( const uint& i, const scalar& rho, const scalar& T,
         
 
     
-    if( _mesh.isOnBoundary(i) ) {
+    // if( _mesh.isOnBoundary(i) ) {
 
 
-	scalar g_ads(0);
+    // 	scalar g_ads(0);
 
-	string bd = _mesh.nodeToBoundary(i);
+    // 	string bd = _mesh.nodeToBoundary(i);
 
-	if( _Gads.find(bd) != _Gads.end() )
-	    g_ads = _Gads.at(bd);
+    // 	if( _Gads.find(bd) != _Gads.end() )
+    // 	    g_ads = _Gads.at(bd);
 
        
-    	// Lattice model properties
+    // 	// Lattice model properties
 
-    	const vector< vector<int> >& nb = _mesh.nbArray();
+    // 	const vector< vector<int> >& nb = _mesh.nbArray();
 
-    	const vector< vector<int> > vel = _mesh.lmodel()->lvel();
+    // 	const vector< vector<int> > vel = _mesh.lmodel()->lvel();
 
-    	const vector<uint>& reverse = _mesh.lmodel()->reverse();
+    // 	const vector<uint>& reverse = _mesh.lmodel()->reverse();
 
-    	const uint q = _mesh.lmodel()->q();
+    // 	const uint q = _mesh.lmodel()->q();
        
 
 
-    	// Compute force
+    // 	// Compute force
 
-    	scalar presum = liAdhesive::potential(rho,T,_mesh.lmodel()->cs2());
+    // 	scalar presum = liAdhesive::potential(rho,T,_mesh.lmodel()->cs2());
 
-    	presum = presum * presum * (-g_ads);
+    // 	presum = presum * presum * (-g_ads);
 	
-    	for( uint k = 1 ; k < q ; k++ ) {
+    // 	for( uint k = 1 ; k < q ; k++ ) {
        
-    	    if( nb[i][ reverse[k] ] == -1 ) {
+    // 	    if( nb[i][ reverse[k] ] == -1 ) {
 	    
-    		for( uint j = 0 ; j < 3 ; j++ ) {
+    // 		for( uint j = 0 ; j < 3 ; j++ ) {
 
-    		    F[j] +=  _weights[k] * (scalar)vel[k][j] ;
+    // 		    F[j] +=  _weights[k] * (scalar)vel[k][j] ;
 
-    		}
+    // 		}
 
-    	    }
+    // 	    }
     
 
-    	}
+    // 	}
 
 
-    	for( uint j = 0 ; j < 3 ; j++ )
-    	    f[j] = F[j] * presum;
+    // 	for( uint j = 0 ; j < 3 ; j++ )
+    // 	    f[j] = F[j] * presum;
 
 	
 
-    }
+    // }
 
 
 }

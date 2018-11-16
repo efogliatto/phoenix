@@ -108,7 +108,7 @@ void pseudoPotForce::total( scalar Ft[3], const uint& id ) const {
 
     scalar Fads[3] = {0,0,0};
 
-    _Fads->force(id, _rho.at(id), _T.at(id), Fads);
+    _Fads->force(id, _rho, _T, Fads);
 
     
     

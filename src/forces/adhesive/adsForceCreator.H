@@ -5,6 +5,8 @@
 
 #include <liAdhesive.H>
 
+#include <simpleAdhesive.H>
+
 
 class adsForceCreator {
 

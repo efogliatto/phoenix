@@ -5,6 +5,8 @@
 
 #include <latticeMesh.H>
 
+#include <scalarField.H>
+
 
 class adhesiveForce {
 
@@ -36,7 +38,7 @@ public:
 
     /** Force at specific node */
 
-    virtual const void force( const uint& i, const scalar& rho, const scalar& T, scalar f[3] ) const = 0;
+    virtual const void force( const uint& i, const scalarField& rho, const scalarField& T, scalar f[3] ) const = 0;
 
     
 

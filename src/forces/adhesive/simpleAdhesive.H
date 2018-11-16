@@ -1,47 +1,47 @@
-#ifndef LIADHESIVE_H
-#define LIADHESIVE_H
+#ifndef SIMPLEADHESIVE_H
+#define SIMPLEADHESIVE_H
 
 #include <adhesiveForce.H>
 
-class liAdhesive : public adhesiveForce {
+class simpleAdhesive : public adhesiveForce {
 
 protected:
 
-    /** Adhesion coefficient for each boundary */
-
-    std::map<std::string, scalar> _Gads;
-
     
+    /** Aplicable nodes */
+    
+    std::map< uint, scalar > closestNodes;
+
+
     /** Interaction weights */
 
     std::vector<scalar> _weights;
 
-
-    
     
     /** Interaction potential */
 
     const scalar potential( const scalar& rho, const scalar& T, const scalar& cs2 ) const;
-    
 
 
 public:
 
     /** Constructor */
 
-    liAdhesive( const std::string& dictName, const std::string& eqName, const latticeMesh& mesh );
+    simpleAdhesive( const std::string& dictName, const std::string& eqName, const latticeMesh& mesh );
 
 
     /** Destructor */
 
-    ~liAdhesive();
+    ~simpleAdhesive();
 
 
     /** Force at specific node */
 
     const void force( const uint& i, const scalarField& rho, const scalarField& T,  scalar f[3] ) const;
+
+    
     
 
 };
 
-#endif // LIADHESIVE_H
+#endif // SIMPLEADHESIVE_H

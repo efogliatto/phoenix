@@ -21,7 +21,7 @@ public:
 
     /** Force at specific node */
 
-    const void force( const uint& i, const scalar& rho, const scalar& T, scalar f[3] ) const;
+    const void force( const uint& i, const scalarField& rho, const scalarField& T, scalar f[3] ) const;
 
     
 };

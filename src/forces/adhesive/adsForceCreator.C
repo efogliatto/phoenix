@@ -33,16 +33,27 @@ adhesiveForce* adsForceCreator::create( const string& dictName,
 
 	}
 
-
 	else {
 
 
-	    // Default
+	    if( ftype == "simpleAdhesive" ) {
+
+		return new simpleAdhesive(dictName, eqName, mesh);
+
+	    }
+
+	    
+	    else {
+
+
+		// Default
     
-	    cout << endl << " [ERROR]  Adhesive force type " << ftype << " not available" << endl << endl;
+		cout << endl << " [ERROR]  Adhesive force type " << ftype << " not available" << endl << endl;
 
-	    exit(1);
+		exit(1);
 
+
+	    }
 
 	}
     
