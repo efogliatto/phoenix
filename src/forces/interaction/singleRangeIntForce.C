@@ -13,6 +13,14 @@ singleRangeIntForce::singleRangeIntForce( const string& dictName,
     : interactionForce(dictName, eqName, mesh, Time) {
 
 
+
+    // Read adhesive constant
+
+    dictionary dict(dictName);
+
+    _g_ads = dict.lookUpOrDefault<scalar>( eqName + "/Forces/Interaction/g_ads", 1 );
+
+
     // Update pseudo pot weights
 
     string model = mesh.lmodel()->name();
@@ -63,86 +71,6 @@ singleRangeIntForce::singleRangeIntForce( const string& dictName,
 /** Destructor */
 
 singleRangeIntForce::~singleRangeIntForce() {}
-
-
-
-// /** Update force field */
-
-// void singleRangeIntForce::update( scalarField& rho, scalarField& T ) {
-
-    
-//     // Reference to neighbour array
-
-//     const vector< vector<int> >& nb = _mesh.nbArray();
-
-
-//     // Lattice model properties
-
-//     vector< vector<int> > vel = _mesh.lmodel()->lvel();
-
-//     vector<uint> reverse = _mesh.lmodel()->reverse();
-
-//     scalar cs2 = _mesh.lmodel()->cs2();
-
-//     scalar q = _mesh.lmodel()->q();
-
-    
-
-//     // Move over points
-
-//     for( uint i = 0 ; i < _mesh.local() ; i++ ) {
-
-	    
-// 	vector<scalar> F = {0, 0, 0};	    
-
-// 	for( uint k = 1 ; k < q ; k++ ) {
-       
-// 	    int neighId = nb[i][ reverse[k] ];
-
-// 	    if(neighId == -1)
-// 		neighId = i;
-
-// 	    scalar _rho = rho[neighId];
-
-// 	    scalar _T = T[neighId];
-	    
-// 	    scalar alpha = _weights[k] * potential( _rho, _T, cs2 );
-
-	    
-// 	    for( uint j = 0 ; j < 3 ; j++ ) {
-
-// 		F[j] +=  alpha * (scalar)vel[k][j] ;
-
-// 	    }
-    
-
-// 	}
-
-		
-
-// 	// Extra constant
-		
-// 	scalar beta = -_G * potential( rho[i], T[i], cs2 );
-    
-// 	for( uint j = 0 ; j < 3 ; j++) {
-	
-// 	    _force[i][j] =  F[j] * beta;
-	
-// 	}	
-
-	    
-
-//     }
-	
-
-
-
-//     // Sync across processors
-
-//     _force.sync();
-
-// }
-
 
 
 
@@ -234,6 +162,10 @@ void singleRangeIntForce::update( scalarField& rho, scalarField& T ) {
 	    // Extra constant
 		
 	    scalar beta = -_G * potential( rho[i], T[i], cs2 );
+
+	    if(_mesh.latticePoint(i)[1] == 1)
+		beta = beta * _g_ads;
+	    
     
 	    for( uint j = 0 ; j < 3 ; j++) {
 	

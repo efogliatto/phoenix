@@ -15,6 +15,11 @@ protected:
     std::vector<scalar> _weights;
 
 
+    /** Adhesive constant */
+
+    scalar _g_ads;
+
+
 public:
 
 
