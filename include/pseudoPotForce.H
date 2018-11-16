@@ -1,1 +1,1 @@
-../src/forces/pseudoPotForce.H
+../src/forces/pseudopotential/pseudoPotForce.H

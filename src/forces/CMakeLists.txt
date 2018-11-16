@@ -2,22 +2,22 @@
  
 # LB Forces library
 add_library(forces SHARED 
-  EOS.C
-  vanDerWaals.C
-  CarnahanStarling.C
-  EOSCreator.C
-  interactionForce.C
-  singleRangeIntForce.C
-  singleRangeMixedIntForce.C
-  intForce.C
-  buoyantForce.C
-  fixedDensityBForce.C
-  avgDensityBForce.C
-  bForces.C
-  externalForce.C
+  EOS/EOS.C
+  EOS/vanDerWaals.C
+  EOS/CarnahanStarling.C
+  EOS/EOSCreator.C
+  interaction/interactionForce.C
+  interaction/singleRangeIntForce.C
+  interaction/singleRangeMixedIntForce.C
+  interaction/intForce.C
+  buoyant/buoyantForce.C
+  buoyant/fixedDensityBForce.C
+  buoyant/avgDensityBForce.C
+  buoyant/bForces.C
+  external/externalForce.C
   adhesive/adhesiveForce.C
   adhesive/noAds.C
   adhesive/liAdhesive.C
   adhesive/adsForceCreator.C
-  pseudoPotForce.C
+  pseudopotential/pseudoPotForce.C
   )

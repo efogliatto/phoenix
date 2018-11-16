@@ -1,1 +1,1 @@
-../src/forces/singleRangeMixedIntForce.H
+../src/forces/interaction/singleRangeMixedIntForce.H

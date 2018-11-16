@@ -1,1 +1,1 @@
-../src/forces/interactionForce.H
+../src/forces/interaction/interactionForce.H

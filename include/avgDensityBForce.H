@@ -1,1 +1,1 @@
-../src/forces/avgDensityBForce.H
+../src/forces/buoyant/avgDensityBForce.H

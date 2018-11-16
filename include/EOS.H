@@ -1,1 +1,1 @@
-../src/forces/EOS.H
+../src/forces/EOS/EOS.H
