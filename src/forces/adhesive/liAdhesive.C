@@ -11,66 +11,7 @@ liAdhesive::liAdhesive( const string& dictName,
 			const string& eqName,
 			const latticeMesh& mesh )
     
-    : adhesiveForce(dictName, eqName, mesh) {
-
-
-    // Read constants for each boundary
-
-    const map< string, vector<uint> >& boundary = _mesh.boundaries();
-
-    dictionary dict("start/boundaries");
-
-    for( const auto &bd : boundary )
-	_Gads[bd.first] = dict.lookUpOrDefault<scalar>( eqName + "/" + bd.first + "/Gads", 0 );
-
-
-
-
-    // Update pseudo pot weights
-
-    string model = mesh.lmodel()->name();
-
-    if( model == "D2Q9" ) {
-
-    	_weights.push_back( 0 );
-    	_weights.push_back( 1.0/9 );
-    	_weights.push_back( 1.0/9 );
-    	_weights.push_back( 1.0/9 );
-    	_weights.push_back( 1.0/9 );
-    	_weights.push_back( 1.0/36 );
-    	_weights.push_back( 1.0/36 );
-    	_weights.push_back( 1.0/36 );
-    	_weights.push_back( 1.0/36 );
-
-    }
-
-    else {
-
-	if( model == "D3Q15" ) {
-
-	    _weights.push_back( 0 );
-
-	    for( uint i = 1 ; i <= 6 ; i++ )
-		_weights.push_back( 1.0 / 9.0 );
-
-	    for( uint i = 7 ; i < 15 ; i++ )
-		_weights.push_back( 1.0 / 72.0 );
-	    
-
-
-	}
-
-	else {
-
-	    cout << " [ERROR]  Potential weights not implemented yet for " << model << endl;
-
-	}
-
-    }    
-
-
-
-}
+    : simpleAdhesive(dictName, eqName, mesh) {}
 
 
 /** Destructor */
@@ -82,81 +23,62 @@ liAdhesive::~liAdhesive() {}
 
 const void liAdhesive::force( const uint& i, const scalarField& rho, const scalarField& T, scalar f[3] ) const {
 
-
-    // Initialize force
-
-    scalar F[3] = {0,0,0};
-        
-
+    f[0] = 0;
+    f[1] = 0;
+    f[2] = 0;
     
-    // if( _mesh.isOnBoundary(i) ) {
+    
+    if( closestNodes.find(i) != closestNodes.end() ) {
 
-
-    // 	scalar g_ads(0);
-
-    // 	string bd = _mesh.nodeToBoundary(i);
-
-    // 	if( _Gads.find(bd) != _Gads.end() )
-    // 	    g_ads = _Gads.at(bd);
-
-       
-    // 	// Lattice model properties
-
-    // 	const vector< vector<int> >& nb = _mesh.nbArray();
-
-    // 	const vector< vector<int> > vel = _mesh.lmodel()->lvel();
-
-    // 	const vector<uint>& reverse = _mesh.lmodel()->reverse();
-
-    // 	const uint q = _mesh.lmodel()->q();
-       
-
-
-    // 	// Compute force
-
-    // 	scalar presum = liAdhesive::potential(rho,T,_mesh.lmodel()->cs2());
-
-    // 	presum = presum * presum * (-g_ads);
 	
-    // 	for( uint k = 1 ; k < q ; k++ ) {
+    	// Reference to neighbour array
+
+    	const vector< vector<int> >& nb = _mesh.nbArray();
+
+
+    	// Lattice model properties
+
+    	const vector< vector<int> >& vel = _mesh.lmodel()->lvel();
+
+    	const vector<uint>& reverse = _mesh.lmodel()->reverse();
+
+    	const scalar cs2 = _mesh.lmodel()->cs2();
+
+    	const uint q = _mesh.lmodel()->q();
+
+
+    	vector<scalar> F = {0, 0, 0};	    
+
+    	for( uint k = 1 ; k < q ; k++ ) {
        
-    // 	    if( nb[i][ reverse[k] ] == -1 ) {
+    	    int neighId = nb[i][ reverse[k] ];
+
+	    if( _mesh.isOnBoundary(neighId) ) {
 	    
-    // 		for( uint j = 0 ; j < 3 ; j++ ) {
+		for( uint j = 0 ; j < 3 ; j++ ) {
 
-    // 		    F[j] +=  _weights[k] * (scalar)vel[k][j] ;
+		    F[j] +=  _weights[k] * (scalar)vel[k][j] ;
 
-    // 		}
+		}
 
-    // 	    }
+	    }
     
 
-    // 	}
+    	}
 
+		
 
-    // 	for( uint j = 0 ; j < 3 ; j++ )
-    // 	    f[j] = F[j] * presum;
+	// Extra constant
+		
+	scalar beta = potential( rho.at(i), T.at(i), cs2 );
 
+	beta = beta * closestNodes.at(i);	    
+    
+	for( uint j = 0 ; j < 3 ; j++)
+	    f[j] =  F[j] * beta;
+	
 	
 
-    // }
-
-
-}
-
-
-
-
-/** Interaction potential */
-
-const scalar liAdhesive::potential( const scalar& rho, const scalar& T, const scalar& cs2 ) const {
-
-    scalar a = 2 * (eos->p_eos(rho,T) - rho * cs2);
-
-    scalar b(0);
-
-    (a >= 0)  ?	 b = sqrt(a)  :  b = sqrt(-a);
-    
-    return b;
+    }
 
 }
