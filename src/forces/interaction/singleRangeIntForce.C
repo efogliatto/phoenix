@@ -14,13 +14,6 @@ singleRangeIntForce::singleRangeIntForce( const string& dictName,
 
 
 
-    // Read adhesive constant
-
-    dictionary dict(dictName);
-
-    _g_ads = dict.lookUpOrDefault<scalar>( eqName + "/Forces/Interaction/g_ads", 1 );
-
-
     // Update pseudo pot weights
 
     string model = mesh.lmodel()->name();
