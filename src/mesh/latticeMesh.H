@@ -56,6 +56,12 @@ protected:
     std::map<uint, std::string> nodeToBnd;
 
 
+    /** Aplicable nodes */
+    
+    std::map< std::string, std::vector<uint> > closestNodes;
+    
+
+
 
     
 
@@ -152,6 +158,11 @@ public:
     /** Boundary which node belongs */
 
     const std::string nodeToBoundary( const uint id ) const;
+
+
+    /** Nodes close to boundaries */
+
+    const std::map< std::string, std::vector<uint> >& nodesCloseToBoundary() const { return closestNodes; }
     
     
 };

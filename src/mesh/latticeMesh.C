@@ -4,6 +4,8 @@
 
 #include <string>
 
+#include <algorithm>
+
 
 using namespace std;
 
@@ -310,19 +312,93 @@ const void latticeMesh::readBoundaryNodes() {
 	if( nodeToBnd.find(i) != nodeToBnd.end() )
 	    isOnBnd[i] = 1;
 
-	
-	// for(uint k = 0 ; k < lmodel()->q() ; k++) {
-
-	//     if(nb[i][k] == -1)
-	// 	isOnBnd[i] = 1;
-
-	// }
-
     }
 
 
+    // Create map for closests nodes
+
+    const uint q = lmodel()->q();    
+    
+    for( const auto &bd : boundary ) {
+
+    	for( auto id : bd.second ) {
 
 
+
+	    // Dont check for periodic nodes
+
+	    bool is_periodic(true);
+	    
+    	    for( uint k = 0 ; k < q ; k++ ) {
+
+		if(nb[id][k] == -1)
+		    is_periodic = false;
+
+	    }
+
+	    
+
+	    // Check neighbour of boundary node
+
+	    if( !is_periodic ) {
+	    
+		for( uint k = 0 ; k < q ; k++ ) {
+
+		    int nbid = nb[id][k];
+
+		
+		    if(  (nbid != -1)  &&  (nbid < (int)local())  ) {
+
+			bool is_on_bnd(false);
+		    
+			for( uint l = 0 ; l < q ; l++ ) {
+
+			    if( nb[nbid][l] == -1 ) {
+
+				is_on_bnd = true;
+
+			    }
+
+			}
+
+
+			// Neighbour on boundary node is not on boundary
+
+			if( !is_on_bnd ) {
+
+
+			    // Before adding to closestNodes, check if it is not already in the map
+
+			    bool isClosest(false);
+			
+			    for( const auto &cnbd : closestNodes ) {
+
+				if( std::find(cnbd.second.begin(), cnbd.second.end(), nbid) != cnbd.second.end() )
+				    isClosest = true;
+			    
+			    }
+
+			    if( !isClosest )
+				closestNodes[bd.first].push_back(nbid);
+			
+
+			}
+
+		    
+
+
+		    }
+		
+		}
+		
+    	    }
+
+	    
+
+    	}
+
+    }    
+    
     
 
 }

@@ -70,11 +70,11 @@ simpleAdhesive::simpleAdhesive( const string& dictName,
     dictionary dict("start/boundaries");
 
     
-    // Lattice model properties
+    // // Lattice model properties
 
-    const vector< vector<int> >& nb = _mesh.nbArray();
+    // const vector< vector<int> >& nb = _mesh.nbArray();
 	    
-    const uint q = _mesh.lmodel()->q();    
+    // const uint q = _mesh.lmodel()->q();    
 
 
     
@@ -83,51 +83,51 @@ simpleAdhesive::simpleAdhesive( const string& dictName,
 	scalar g_ads = dict.lookUpOrDefault<scalar>( eqName + "/" + bd.first + "/Gads", 0 );
 
 	
-	// Check for closest nodes. Move over boundary nodes and check if neighbours are on boundaries
+	// // Check for closest nodes. Move over boundary nodes and check if neighbours are on boundaries
 	
-	if(  ( g_ads != 0 )  ) {	   
+	// if(  ( g_ads != 0 )  ) {	   
 	  
 	    
-	    for( const auto id : bd.second ) {		
+	//     for( const auto id : bd.second ) {		
 		
-		for(uint k = 1 ; k < q ; k++) {
+	// 	for(uint k = 1 ; k < q ; k++) {
 	    
-		    int aux = nb[id][k];
+	// 	    int aux = nb[id][k];
 
-		    if(aux != -1) {
+	// 	    if(aux != -1) {
 
-			bool is_on_bnd(false);
+	// 		bool is_on_bnd(false);
 
-			for(uint l = 1 ; l < q ; l++) {
+	// 		for(uint l = 1 ; l < q ; l++) {
 
-		    	    if( nb[aux][l] == -1 ) {
+	// 	    	    if( nb[aux][l] == -1 ) {
 				
-		    		is_on_bnd = true;
+	// 	    		is_on_bnd = true;
 
-		    	    }
+	// 	    	    }
 
-			}
+	// 		}
 
-			if( (!is_on_bnd)  &&  (closestNodes.find(id) == closestNodes.end()) ) {
+	// 		if( (!is_on_bnd)  &&  (closestNodes.find(id) == closestNodes.end()) ) {
 
-			    closestNodes[id] = g_ads;
+	// 		    closestNodes[id] = g_ads;
 			    
-			}
+	// 		}
 			
 
-		    }
+	// 	    }
 		    
 		    
 		    
 		    
 
-		}
+	// 	}
 		
 
-	    }
+	//     }
 	    
 
-	}
+	// }
 
     }
 
