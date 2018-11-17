@@ -69,67 +69,38 @@ simpleAdhesive::simpleAdhesive( const string& dictName,
 
     dictionary dict("start/boundaries");
 
-    
-    // // Lattice model properties
-
-    // const vector< vector<int> >& nb = _mesh.nbArray();
-	    
-    // const uint q = _mesh.lmodel()->q();    
-
-
-    
+    map<string, scalar> Gads;
+        
     for( const auto &bd : boundary ) {
 	
 	scalar g_ads = dict.lookUpOrDefault<scalar>( eqName + "/" + bd.first + "/Gads", 0 );
 
-	
-	// // Check for closest nodes. Move over boundary nodes and check if neighbours are on boundaries
-	
-	// if(  ( g_ads != 0 )  ) {	   
-	  
-	    
-	//     for( const auto id : bd.second ) {		
-		
-	// 	for(uint k = 1 ; k < q ; k++) {
-	    
-	// 	    int aux = nb[id][k];
-
-	// 	    if(aux != -1) {
-
-	// 		bool is_on_bnd(false);
-
-	// 		for(uint l = 1 ; l < q ; l++) {
-
-	// 	    	    if( nb[aux][l] == -1 ) {
-				
-	// 	    		is_on_bnd = true;
-
-	// 	    	    }
-
-	// 		}
-
-	// 		if( (!is_on_bnd)  &&  (closestNodes.find(id) == closestNodes.end()) ) {
-
-	// 		    closestNodes[id] = g_ads;
-			    
-	// 		}
-			
-
-	// 	    }
-		    
-		    
-		    
-		    
-
-	// 	}
-		
-
-	//     }
-	    
-
-	// }
+	if(  ( g_ads != 0 )  &&  ( bd.second.size() != 0 )  )
+	    Gads[bd.first] = g_ads;
 
     }
+
+
+
+    // Create constants for closestNodes map
+
+    const map<string, vector<uint>>& closest = _mesh.nodesCloseToBoundary();
+    
+    for(const auto &g : Gads) {
+
+	if( closest.find(g.first) != closest.end() ) {
+
+	    for( auto id : closest.at(g.first) ) {
+
+		closestNodes[id] = g.second;
+
+	    }
+
+	}
+
+    }
+
+	
 
 }    
 
@@ -160,62 +131,66 @@ const scalar simpleAdhesive::potential( const scalar& rho, const scalar& T, cons
 
 const void simpleAdhesive::force( const uint& i, const scalarField& rho, const scalarField& T,  scalar f[3] ) const {
 
+
+    f[0] = 0;
+    f[1] = 0;
+    f[2] = 0;
     
-    // if( closestNodes.find(i) != closestNodes.end() ) {
+    
+    if( closestNodes.find(i) != closestNodes.end() ) {
 
 	
-    // 	// Reference to neighbour array
+    	// Reference to neighbour array
 
-    // 	const vector< vector<int> >& nb = _mesh.nbArray();
-
-
-    // 	// Lattice model properties
-
-    // 	const vector< vector<int> >& vel = _mesh.lmodel()->lvel();
-
-    // 	const vector<uint>& reverse = _mesh.lmodel()->reverse();
-
-    // 	const scalar cs2 = _mesh.lmodel()->cs2();
-
-    // 	const uint q = _mesh.lmodel()->q();
+    	const vector< vector<int> >& nb = _mesh.nbArray();
 
 
-    // 	vector<scalar> F = {0, 0, 0};	    
+    	// Lattice model properties
 
-    // 	for( uint k = 1 ; k < q ; k++ ) {
+    	const vector< vector<int> >& vel = _mesh.lmodel()->lvel();
+
+    	const vector<uint>& reverse = _mesh.lmodel()->reverse();
+
+    	const scalar cs2 = _mesh.lmodel()->cs2();
+
+    	const uint q = _mesh.lmodel()->q();
+
+
+    	vector<scalar> F = {0, 0, 0};	    
+
+    	for( uint k = 1 ; k < q ; k++ ) {
        
-    // 	    int neighId = nb[i][ reverse[k] ];
+    	    int neighId = nb[i][ reverse[k] ];
 
-    // 	    scalar _rho = rho.at(neighId);
+    	    scalar _rho = rho.at(neighId);
 
-    // 	    scalar _T = T.at(neighId);
+    	    scalar _T = T.at(neighId);
 	    
-    // 	    scalar alpha = _weights[k] * potential( _rho, _T, cs2 );
+    	    scalar alpha = _weights[k] * potential( _rho, _T, cs2 );
 
 	    
-    // 	    for( uint j = 0 ; j < 3 ; j++ ) {
+    	    for( uint j = 0 ; j < 3 ; j++ ) {
 
-    // 		F[j] +=  alpha * (scalar)vel[k][j] ;
+    		F[j] +=  alpha * (scalar)vel[k][j] ;
 
-    // 	    }
+    	    }
     
 
-    // 	}
+    	}
 
 		
 
-	// // Extra constant
+	// Extra constant
 		
-	// scalar beta = potential( rho.at(i), T.at(i), cs2 ) * closestNodes.at(i);
-	    
+	scalar beta = potential( rho.at(i), T.at(i), cs2 ) * closestNodes.at(i);	    
     
-	// for( uint j = 0 ; j < 3 ; j++) {
+	for( uint j = 0 ; j < 3 ; j++) {
 	
-	//     f[j] =  F[j] * beta;
+	    f[j] =  F[j] * beta;
 	
-	// }	
+	}	
 	
 
-    // }
+    }
 
 }

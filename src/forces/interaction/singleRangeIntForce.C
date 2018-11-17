@@ -162,10 +162,6 @@ void singleRangeIntForce::update( scalarField& rho, scalarField& T ) {
 	    // Extra constant
 		
 	    scalar beta = -_G * potential( rho[i], T[i], cs2 );
-
-	    if(_mesh.latticePoint(i)[1] == 1)
-		beta = beta * _g_ads;
-	    
     
 	    for( uint j = 0 ; j < 3 ; j++) {
 	
