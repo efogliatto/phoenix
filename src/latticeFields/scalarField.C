@@ -520,8 +520,21 @@ const void scalarField::grad(scalar g[3], const uint& id, const bool inverse) co
 
 	else {
 
-	    for( uint j = 0 ; j < 3 ; j++ )
-		inverse  ?  g[j] += omega[k] * vel[reverse[k]][j] / (field[id] * cs2 )  :  g[j] += omega[k] * vel[reverse[k]][j] * field[id] / cs2;
+	    int otherNb = nb[id][reverse[k]];
+
+	    if( otherNb != -1 ) {
+
+		for( uint j = 0 ; j < 3 ; j++ )
+		    inverse  ?  g[j] += omega[k] * vel[reverse[k]][j] / ((2.0*field[id] - field[otherNb]) * cs2 )  :  g[j] += omega[k] * vel[reverse[k]][j] * (2.0*field[id]-field[otherNb]) / cs2;
+
+	    }
+
+	    else {
+
+		for( uint j = 0 ; j < 3 ; j++ )
+		    inverse  ?  g[j] += omega[k] * vel[reverse[k]][j] / (field[id] * cs2 )  :  g[j] += omega[k] * vel[reverse[k]][j] * field[id] / cs2;
+
+	    }
 
 	}
 

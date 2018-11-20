@@ -56,11 +56,11 @@ int main( int argc, char **argv ) {
 
 	whf_file.open("wallHeatFlux.dat",std::ofstream::out);
 
-	whf_file << "Time ";
+	whf_file << "#Time  ";
 
 	for( const auto &bd : boundaries  ) {
 
-	    whf_file << bd.first << " ";
+	    whf_file << bd.first << "  ";
 
 	}
 
@@ -101,7 +101,7 @@ int main( int argc, char **argv ) {
 
 	    whf_file.open("wallHeatFlux.dat",std::ofstream::app);
 
-	    whf_file << tlist[i] << "   ";
+	    whf_file << tlist[i] << "  ";
 
 	    whf_file.close();
 
@@ -114,12 +114,12 @@ int main( int argc, char **argv ) {
 	T.update(i);
 
 
-	scalar grad[3] = {0,0,0};
-
 	for( const auto &bd : boundaries  ) {
 
 
 	    // Compute gradient over local nodes
+
+	    scalar grad[3] = {0,0,0};	    
 	    
 	    scalar g_avg[3] = {0,0,0};
 
@@ -144,6 +144,7 @@ int main( int argc, char **argv ) {
 		scalar globalSum = 0;
 
 		int nelem = 0;
+		
 
 		// int nlocal = mesh.local();
     
@@ -197,11 +198,7 @@ int main( int argc, char **argv ) {
 		whf_file.close();
 
 	    }
-
-
-
 	    
-
 
 	}
 
@@ -228,9 +225,6 @@ int main( int argc, char **argv ) {
 
 
     
-
-
-
 
     // Print info
     if(pid == 0)	
