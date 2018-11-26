@@ -81,7 +81,8 @@ void energyFixedT::update( const energyEquation* eeq ) {
 
     default_random_engine re;
 
-    re.seed( time(NULL) );
+    // re.seed( time(NULL) );
+    re.seed( _mesh.pid() );
     
 
     // Move over boundary elements
