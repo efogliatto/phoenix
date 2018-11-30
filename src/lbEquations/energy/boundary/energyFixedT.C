@@ -32,7 +32,7 @@ energyFixedT::energyFixedT( const std::string& eqName,
     _bndVal.resize( _nodes.size() );
 
     for( uint i = 0 ; i < _bndVal.size() ; i++ )
-	    _bndVal[i] = val;
+	_bndVal[i] = val;
 
 
 
