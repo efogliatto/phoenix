@@ -54,9 +54,9 @@ const void LiMRTEq::collision() {
     
     // Lattice constants
 
-    scalarMatrix M = mesh.lmodel()->MRTMatrix();
+    const scalarMatrix& M = mesh.lmodel()->MRTMatrix();
 
-    scalarMatrix invM = mesh.lmodel()->MRTInvMatrix();    
+    const scalarMatrix& invM = mesh.lmodel()->MRTInvMatrix();    
 
     const uint nodes = mesh.npoints();
 
