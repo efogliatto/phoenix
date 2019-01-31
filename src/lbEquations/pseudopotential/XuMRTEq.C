@@ -33,9 +33,14 @@ XuMRTEq::XuMRTEq( const string& name,
     
     
     
-    // Set equilibrium pdf values
+    // Set equilibrium pdf values only if time is start time
 
-    XuMRTEq::setEquilibrium();
+    if( Time.currentTime() == Time.timeList()[0] )  {
+	
+	XuMRTEq::setEquilibrium();
+
+    }
+	
 
 }
     

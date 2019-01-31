@@ -30,9 +30,13 @@ myMRTEq::myMRTEq( const std::string& name,
     
 
 
-    // Set initial values to equilibrium distribution
+    // Set equilibrium pdf values only if time is start time
 
-    myMRTEq::setEquilibrium();
+    if( Time.currentTime() == Time.timeList()[0] )  {
+
+	myMRTEq::setEquilibrium();
+
+    }
 
 }
 

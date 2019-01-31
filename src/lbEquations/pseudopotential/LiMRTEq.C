@@ -33,9 +33,13 @@ LiMRTEq::LiMRTEq( const string& name,
     
     
     
-    // Set equilibrium pdf values
+    // Set equilibrium pdf values only if time is start time
 
-    LiMRTEq::setEquilibrium();
+    if( Time.currentTime() == Time.timeList()[0] )  {
+
+	LiMRTEq::setEquilibrium();
+
+    }
 
 }
     
