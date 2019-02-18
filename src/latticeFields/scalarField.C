@@ -553,6 +553,78 @@ const void scalarField::grad(scalar g[3], const uint& id, const bool inverse) co
 
 
 
+
+
+
+/** Laplacian at node */
+
+const scalar scalarField::laplacian(const uint& id, const bool inverse) const {
+
+
+    // Lattice constants
+
+    const vector< vector<int> >& nb = mesh.nbArray();
+
+    const vector<uint>& reverse = mesh.lmodel()->reverse();
+
+    const vector<scalar>& omega = mesh.lmodel()->omega();
+
+    const scalar cs2 = mesh.lmodel()->cs2();
+
+    const scalar q = mesh.lmodel()->q();
+
+
+    
+    // Initialize laplacian
+
+    scalar lap(0);
+
+
+
+    // Move over velocities
+    
+    for( uint k = 1 ; k < q ; k++ ) {
+
+	int nbid = nb[id][k];
+
+	if( nbid != -1 ) {
+
+	    inverse  ?  lap += 2.0 * omega[k] * ((1/field[nbid] - 1/field[id]) ) / cs2  :  lap += 2.0 * omega[k] * (field[nbid] - field[id]) / cs2;
+
+	}
+
+	else {
+
+	    int otherNb = nb[id][reverse[k]];
+
+	    if( otherNb != -1 ) {
+
+		scalar extpNb = 2.0*field[id]-field[otherNb];
+
+	    	inverse  ?  lap += 2.0 * omega[k]  * ((1.0/extpNb - 1/field[id]) ) / cs2  :  lap += 2.0 * omega[k] * (extpNb - field[id]) / cs2;
+
+	    }
+
+	}
+
+	
+
+    }
+
+
+    return lap;
+    
+
+}
+
+
+
+
+
+
+
+
+
 /** Field average */
 
 const scalar scalarField::average() const {

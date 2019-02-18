@@ -47,6 +47,11 @@ public:
 
     const void grad(scalar g[3], const uint& id, const bool inverse = false) const;
 
+
+    /** Laplacian at node */
+
+    const scalar laplacian(const uint& id, const bool inverse = false) const;
+
     
     /** Synchronization across procceses */
 

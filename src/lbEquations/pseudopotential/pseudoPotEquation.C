@@ -274,16 +274,34 @@ const void pseudoPotEquation::eqPS( std::vector<scalar>& n, const scalar& rho_, 
 
 
 
+/** Update potential as scalar field */
+
+const void pseudoPotEquation::updatePotential( scalarField& phi ) {
+
+    const scalar cs2 = mesh.lmodel()->cs2();
+    
+    for( uint i = 0 ; i < mesh.npoints() ; i++ ) {
+
+	phi[i] = F.potential( rho.at(i), T.at(i), cs2 );
+
+    }
+
+}
 
 
-// /** Update boundaries */
 
-// void pseudoPotEquation::updateBoundaries() {
+/** Compute and set pressure field */
 
-//     for(uint i = 0 ; i < _boundaries.size() ; i++) {
+const void pseudoPotEquation::pressure( const scalarField& phi, scalarField& p ) {
 
-// 	_boundaries[i]->update( mesh, _pdf, rho, T, U, &F );
+    // Base case. Ideal LBM
 
-//     }
+    const scalar cs2 = mesh.lmodel()->cs2();
+    
+    for( uint i = 0 ; i < mesh.npoints() ; i++ ) {
 
-// }
+	p[i] = rho.at(i) * cs2;
+
+    }    
+
+}

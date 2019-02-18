@@ -86,3 +86,23 @@ const void pseudoPotEqHandler::updateMacroVelocity() {
     _equation->updateMacroVelocity();
 
 }
+
+
+
+/** Update potential as scalar field  */
+
+const void pseudoPotEqHandler::updatePotential( scalarField& phi ) {
+
+    _equation->updatePotential(phi);
+
+}
+
+
+
+/** Compute and set pressure field */
+
+const void pseudoPotEqHandler::pressure( const scalarField& phi, scalarField& p ) {
+
+    _equation->pressure(phi, p);
+
+}

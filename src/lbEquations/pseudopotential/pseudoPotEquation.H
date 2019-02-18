@@ -115,8 +115,16 @@ public:
     /** Compute local velocity */
 
     const void localVelocity( std::vector<scalar>& v, const uint& id, const bool updDens = false ) const;
-
     
+
+    /** Update potential as scalar field */
+
+    const void updatePotential( scalarField& phi );
+
+
+    /** Compute and set pressure field */
+
+    virtual const void pressure( const scalarField& phi, scalarField& p );
     
 };
 

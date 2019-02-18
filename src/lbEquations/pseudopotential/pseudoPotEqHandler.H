@@ -63,6 +63,16 @@ public:
     /** Update boundaries */
 
     const void updateBoundaries();
+
+
+    /** Update potential as scalar field  */
+
+    const void updatePotential( scalarField& phi );
+
+
+    /** Compute and set pressure field */
+
+    const void pressure( const scalarField& phi, scalarField& p );
     
 
 };
