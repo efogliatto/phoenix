@@ -56,6 +56,23 @@ const scalar interactionForce::potential( const scalar& rho, const scalar& T, co
 }
 
 
+
+/** Adecuately signed potential strength */
+
+const scalar interactionForce::signedPotentialStrength( const scalar& rho, const scalar& T, const scalar& cs2 ) const {
+
+    scalar a = 2 * (eos->p_eos(rho,T) - rho * cs2)  /  _G;
+    
+    scalar b(0);
+
+    (a >= 0)  ?	 b = _G  :  b = -_G;
+    
+    return b;
+    
+}
+
+
+
 /** Set force at specific node */
 
 const void interactionForce::set( const uint& i, const vector<scalar>& Fint ) {

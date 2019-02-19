@@ -49,7 +49,7 @@ int main( int argc, char **argv ) {
 
     timeOptions Time(pid);
 
-    vector<uint> tlist = Time.timeList();    
+    vector<uint> tlist = Time.timeList();
 
 
     // Macroscopic density

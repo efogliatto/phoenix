@@ -102,6 +102,11 @@ public:
     /** Interaction potential */
 
     const scalar potential(const scalar& rho, const scalar& T, const scalar& cs2) const;
+
+
+    /** Adequately signed potential strength */
+
+    const scalar signedPotential( const scalar& rho, const scalar& T, const scalar& cs2 ) const;
     
     
 };

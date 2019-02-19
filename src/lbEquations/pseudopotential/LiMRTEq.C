@@ -227,16 +227,13 @@ const void LiMRTEq::setEquilibrium() {
 
 const void LiMRTEq::pressure( const scalarField& phi, scalarField& p ) {
 
-
-    if( mesh.pid() == 0 )
-	cout << "Calculating pressure with G = -1" << endl;
     
     
     // Lattice constants   
     
     const scalar cs2 = mesh.lmodel()->cs2();
 
-    const scalar G(-1);
+    scalar G(-1);
 
     const scalar c(1);
 
@@ -265,6 +262,10 @@ const void LiMRTEq::pressure( const scalarField& phi, scalarField& p ) {
 	    phiMag += grad[j] * grad[j];
 
 
+	// Signed potential strength
+
+	G = F.signedPotential(rho.at(i), T.at(i), cs2);
+	
 	
 	// Isotropic pressure
 

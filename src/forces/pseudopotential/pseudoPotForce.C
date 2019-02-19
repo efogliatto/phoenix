@@ -169,3 +169,13 @@ const scalar pseudoPotForce::potential(const scalar& rho, const scalar& T, const
     return _Fi->potential(rho,T,cs2);
 
 }
+
+
+
+/** Adequately signed potential strength */
+
+const scalar pseudoPotForce::signedPotential( const scalar& rho, const scalar& T, const scalar& cs2 ) const {
+
+    return _Fi->signedPotentialStrength(rho,T,cs2);
+
+}
