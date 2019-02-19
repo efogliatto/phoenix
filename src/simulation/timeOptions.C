@@ -2,6 +2,8 @@
 
 #include <mpi.h>
 
+#include <algorithm>
+
 using namespace std;
 
 
@@ -114,13 +116,15 @@ const bool timeOptions::write() const {
 
 const void timeOptions::addScalarField( const string& name ) {
 
-    scalarFields.push_back(name);
+    if(  std::find(scalarFields.begin(), scalarFields.end(), name) == scalarFields.end()  )    
+	scalarFields.push_back(name);
     
 }
 
 const void timeOptions::addVectorField( const string& name ) {
 
-    vectorFields.push_back(name);
+    if(  std::find(vectorFields.begin(), vectorFields.end(), name) == vectorFields.end()  )        
+	vectorFields.push_back(name);
 
 }
 
@@ -273,6 +277,7 @@ const void timeOptions::updateCaseFile() const {
 	    outFile << "\n";
 	    outFile << "VARIABLE\n";
 	    outFile << "\n";
+
 		
 	    for( auto s : scalarFields )
 		outFile << "scalar per node:           " << s << " lattice." << s << "_*" << endl;
@@ -544,5 +549,81 @@ const vector<uint> timeOptions::timeList() const {
     
 
     return tlist;
+
+}
+
+
+
+
+
+/** Check lbm.case and save other fields that are not in register */
+
+void timeOptions::keepRegisteredFields() {
+
+
+
+    if( pid == 0 ) {
+  
+
+
+    	// Try to open .case file to get time steps
+
+	ifstream cfile( "lbm.case" );
+
+	if( cfile.is_open() ) {	
+
+
+    	    // Read Number of steps
+
+    	    string word;
+
+	    string fieldType;
+
+
+
+	    
+    	    while(  ( !cfile.eof() )  ) {
+
+		cfile >> fieldType;
+		
+    		if (  ( fieldType == "scalar" )  ||  ( fieldType == "vector" )  ){
+
+		    cfile >> word;
+
+		    if (  ( !cfile.eof() )   &&   ( word == "per" )   ) {
+
+			cfile >> word;
+
+			if (  ( !cfile.eof() )   &&   ( word == "node:" )   ) {		       
+			    
+			    cfile >> word;
+
+			    
+			    if( fieldType == "scalar" ) {
+				
+				addScalarField(word);
+
+			    }
+
+			    if( fieldType == "vector" ) {
+				
+				addVectorField(word);
+
+			    }
+			
+    			}
+			
+    		    }
+
+    		}
+
+    	    }
+
+	}
+	
+
+    }
+
+    
 
 }

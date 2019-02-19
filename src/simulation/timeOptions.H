@@ -72,7 +72,7 @@ protected:
 
     std::vector<std::string> vectorFields;
 
-    std::vector< std::tuple<std::string, uint> > pdfFields;    
+    std::vector< std::tuple<std::string, uint> > pdfFields;
 
 
 
@@ -139,6 +139,10 @@ public:
 
     const std::vector<uint> timeList() const;
 
+
+    /** Check lbm.case and save other fields that are not in register */
+
+    void keepRegisteredFields();    
     
 };
 

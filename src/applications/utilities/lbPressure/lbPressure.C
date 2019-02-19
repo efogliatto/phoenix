@@ -54,12 +54,12 @@ int main( int argc, char **argv ) {
 
     // Macroscopic density
 
-    scalarField rho( mesh, Time, "rho", IO::MUST_READ, IO::MUST_WRITE );
+    scalarField rho( mesh, Time, "rho", IO::MUST_READ, IO::NO_WRITE );
 
 
     // Macroscopic temperature
 
-    scalarField T( mesh, Time, "T", IO::MUST_READ, IO::MUST_WRITE );
+    scalarField T( mesh, Time, "T", IO::MUST_READ, IO::NO_WRITE );
 
 
     // Macroscopic velocity
@@ -89,13 +89,12 @@ int main( int argc, char **argv ) {
 
     pseudoPotEqHandler NS("Navier-Stokes", mesh, Time, f, rho, U, T);
 
-  
-
 
     
     // Advance over write times
     
-    for( uint i = 0 ; i < tlist.size() ; ++i ) {    
+    for( uint i = 0 ; i < tlist.size() ; ++i ) {
+
 
 	if(pid == 0) {
 		
@@ -119,11 +118,12 @@ int main( int argc, char **argv ) {
 	// Compute pressure
 
 	NS.pressure(phi, p);
-
-
 	
 		
     	// Write fields
+
+	while( Time.currentTime() != tlist[i] )
+	    Time.update();
 
 	p.write();
 		    
@@ -140,8 +140,18 @@ int main( int argc, char **argv ) {
 
 
     // Print info
-    if(pid == 0)	
+    if(pid == 0) {
+	
     	cout << endl << "  Finished in " << Time.elapsed() << " seconds " << endl << endl;
+
+
+	// Update case file
+
+	Time.keepRegisteredFields();
+
+	Time.updateCaseFile();
+	
+    }
 	
     
 
