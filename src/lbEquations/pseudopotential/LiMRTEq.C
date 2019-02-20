@@ -249,7 +249,7 @@ const void LiMRTEq::pressure( const scalarField& phi, scalarField& p ) {
 
     // Compute only at local points
 
-    for(uint i = 0 ; i < mesh.local() ; ++i){
+    for(uint i = 0 ; i < mesh.local() ; i++){
 
 
 	// Compute potential gradient
@@ -268,7 +268,7 @@ const void LiMRTEq::pressure( const scalarField& phi, scalarField& p ) {
 	
 	
 	// Isotropic pressure
-
+	
 	p[i] = rho.at(i)*cs2
 	    + (G * c * c / 2.0) * phi.at(i) * phi.at(i)
 	    + (G * c * c * c * c/ 12.0) * phi.at(i) * phi.laplacian(i)

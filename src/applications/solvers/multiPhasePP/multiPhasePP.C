@@ -54,7 +54,7 @@ int main( int argc, char **argv ) {
 
     // Macroscopic temperature
 
-    scalarField T( mesh, Time, "T", IO::MUST_READ, IO::NO_WRITE );
+    scalarField T( mesh, Time, "T", IO::MUST_READ, IO::MUST_WRITE );
 
 
     // Macroscopic velocity
@@ -114,6 +114,8 @@ int main( int argc, char **argv ) {
     	    U.write();
 
     	    f.write();
+
+	    T.write();
 
 	    
     	    if(pid == 0) {
