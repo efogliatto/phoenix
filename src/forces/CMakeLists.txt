@@ -5,6 +5,7 @@ add_library(forces SHARED
   EOS/EOS.C
   EOS/vanDerWaals.C
   EOS/CarnahanStarling.C
+  EOS/PengRobinson.C
   EOS/EOSCreator.C
   interaction/interactionForce.C
   interaction/singleRangeIntForce.C

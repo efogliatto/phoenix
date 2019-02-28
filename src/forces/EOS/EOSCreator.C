@@ -15,6 +15,7 @@ EOS* EOSCreator::create( const string& dictName, const string& eqName ) {
 
     _eosMapType["vanDerWaals"]           = eosType::VdW;
     _eosMapType["Carnahan-Starling"]     = eosType::CS;
+    _eosMapType["Peng-Robinson"]         = eosType::PR;
 
     
     // Load model name from dictionary
@@ -42,7 +43,15 @@ EOS* EOSCreator::create( const string& dictName, const string& eqName ) {
 
     	    return new CarnahanStarling(dictName, eqName);
 
-    	    break;	    
+    	    break;
+
+
+	    
+    	case eosType::PR:
+
+    	    return new PengRobinson(dictName, eqName);
+
+    	    break;	    	    
 
     	}
 

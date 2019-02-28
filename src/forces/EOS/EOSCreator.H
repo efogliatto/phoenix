@@ -5,6 +5,8 @@
 
 #include <CarnahanStarling.H>
 
+#include <PengRobinson.H>
+
 #include <map>
 
 
@@ -16,7 +18,7 @@ protected:
 
     // EOS types
 
-    enum class eosType{ VdW, CS };
+    enum class eosType{ VdW, CS, PR };
 
     std::map<std::string, eosType> _eosMapType;
 
