@@ -63,6 +63,13 @@ void markusHaziHS::update( const scalarField& rho, const scalarField& T, const v
     for( uint id = 0 ; id < np ; id++ ) {
 
 
+	// Cached scalar values
+
+	const scalar _rho = rho.at(id);
+
+	const scalar _T = T.at(id);
+	
+	
     
 	// Thermal difusivity
     
@@ -73,51 +80,20 @@ void markusHaziHS::update( const scalarField& rho, const scalarField& T, const v
 
 	case latticeModel::latticeType::D2Q9:
 
-	    lambda = rho.at(id) * _Cv * (1/_Tau[3] - 0.5) * (4.0 + 3.0 * _a1  + 2.0 * _a2) / 6.0;
+	    lambda = _rho * _Cv * (1/_Tau[3] - 0.5) * (4.0 + 3.0 * _a1  + 2.0 * _a2) / 6.0;
 
 	    break;
 
 
 	case latticeModel::latticeType::D3Q15:
 
-	    lambda = rho.at(id) * _Cv * (1/_Tau[3] - 0.5) * (6.0 + 11.0 * _a1  + _a2) / 9.0;
+	    lambda = _rho * _Cv * (1/_Tau[3] - 0.5) * (6.0 + 11.0 * _a1  + _a2) / 9.0;
 
 	    break;
 
 	}
 
-	
-	
-	// if( _mesh.lmodel()->name() == "D2Q9" ) {
-
-	//     lambda = rho.at(id) * _Cv * (1/_Tau[3] - 0.5) * (4.0 + 3.0 * _a1  + 2.0 * _a2) / 6.0;	
-
-	// }
-
-	// else {
-
-	//     if( _mesh.lmodel()->name() == "D2Q9" ) {
-
-	// 	lambda = rho.at(id) * _Cv * (1/_Tau[3] - 0.5) * (6.0 + 11.0 * _a1  + _a2) / 9.0;	
-
-	//     }
-
-	//     else {
-
-	// 	cout << " [ERROR]  Heat source model not implemented" << endl << endl;
-
-	// 	exit(1);
-
-	//     }
-
-	// }
-
-
-	// Cached scalar values
-
-	const scalar _rho = rho.at(id);
-
-	const scalar _T = T.at(id);
+	      
 
 
 
