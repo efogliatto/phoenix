@@ -61,7 +61,7 @@ const scalar PengRobinson::dp_dT(const scalar& rho, const scalar& T) const {
 
     scalar theta = 1 + (0.37464 + 1.54226 * w - 0.26992 * w * w);
 
-    theta = theta * theta * (sqrt(Tc/T) -1) / Tc;
+    theta = theta * theta * (1-sqrt(Tc/T)) / Tc;
     
 
     scalar p = rho / (1.0 - rho * b) - a * theta * rho * rho / ( 1  +  2 * b * rho  -  b * b * rho * rho );
