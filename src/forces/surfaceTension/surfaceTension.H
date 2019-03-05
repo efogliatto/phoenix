@@ -18,13 +18,13 @@ protected:
     const latticeMesh& _mesh;
 
 
-    // /** Equation of state */
-
-    // EOS* eos;
-
-
 public:
 
+    
+    /** Surface tension model type */
+
+    enum class stType { none, liST };
+    
     
     /** Constructor */
 
@@ -33,8 +33,13 @@ public:
 
     /** Destructor */
 
-    ~surfaceTension();
+    ~surfaceTension();    
 
+
+    /** Surface Tension model */
+
+    virtual const stType sTModel() const = 0;
+    
 
     /** Surface tension at specific node */
 

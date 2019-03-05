@@ -10,13 +10,6 @@ surfaceTension::surfaceTension( const string& dictName,
 				const latticeMesh& mesh )
 
     : _mesh(mesh) {
-
-
-    // // Create eos
-
-    // EOSCreator creator;
-
-    // eos = creator.create(dictName, eqName);
     
 }
 

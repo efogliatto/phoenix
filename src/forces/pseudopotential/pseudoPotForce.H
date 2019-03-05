@@ -120,6 +120,11 @@ public:
     /** Additional surface tension term at node */
 
     const void addSurfaceTension( const uint& i, std::vector<scalar>& C, const std::vector<scalar>& Tau ) const;
+
+
+    /** Surface tension model */
+
+    const surfaceTension::stType sTModel() const { return _St->sTModel(); }
     
     
 };

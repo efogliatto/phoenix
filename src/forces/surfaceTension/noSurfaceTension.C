@@ -18,6 +18,9 @@ noSurfaceTension::noSurfaceTension( const string& dictName,
 noSurfaceTension::~noSurfaceTension() {}
 
 
+
+
+
 /** Force at specific node */
 
 const void noSurfaceTension::ST( const uint& i, const scalarField& rho, const scalarField& T, vector<scalar>& C, interactionForce* _fi, const std::vector<scalar>& Tau ) const {

@@ -62,13 +62,22 @@ const void LiMRTEq::collision() {
 
     const scalarMatrix& invM = mesh.lmodel()->MRTInvMatrix();    
 
-    const uint nodes = mesh.npoints();
-
     const scalar cs2 = mesh.lmodel()->cs2();
 
     const scalar q = mesh.lmodel()->q();
 
     scalar Ft[3];
+
+
+
+    // Collision range depends on surface tension model
+    
+    uint nodes( mesh.npoints() );
+
+    if( F.sTModel() == surfaceTension::stType::liST )
+	nodes = mesh.local();
+
+    
 
     
     // Partial distributions
@@ -175,6 +184,14 @@ const void LiMRTEq::collision() {
 	
 
     }
+
+
+    
+    // Extra sync only for Li's surface tension model
+    
+    if( F.sTModel() == surfaceTension::stType::liST )
+	_pdf.sync();
+	
 
     
 
