@@ -21,7 +21,7 @@ public:
 
     /** Surface tension term at specific node */
 
-    const void ST( const uint& i, const scalarField& rho, const scalarField& T, std::vector<scalar>& C ) const;
+    const void ST( const uint& i, const scalarField& rho, const scalarField& T, std::vector<scalar>& C, interactionForce* _fi, const std::vector<scalar>& Tau ) const;
 
     
 };

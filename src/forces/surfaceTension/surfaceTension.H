@@ -1,7 +1,7 @@
 #ifndef SURFACETENSION_H
 #define SURFACETENSION_H
 
-// #include <EOSCreator.H>
+#include <interactionForce.H>
 
 #include <latticeMesh.H>
 
@@ -38,7 +38,7 @@ public:
 
     /** Surface tension at specific node */
 
-    virtual const void ST( const uint& i, const scalarField& rho, const scalarField& T, std::vector<scalar>& C ) const = 0;
+    virtual const void ST( const uint& i, const scalarField& rho, const scalarField& T, std::vector<scalar>& C, interactionForce* _fi, const std::vector<scalar>& Tau ) const = 0;
 
     
 

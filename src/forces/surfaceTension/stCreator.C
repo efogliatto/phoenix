@@ -27,36 +27,22 @@ surfaceTension* stCreator::create( const string& dictName,
 
     else {
 
-	// if( ftype == "none" ) {
+	if( sttype == "liSurfaceTension" ) {
 
-	//     return new noAds(dictName, eqName, mesh);
+	    return new liSurfaceTension(dictName, eqName, mesh);
 
-	// }
+	}
 
-	// else {
+	else {
 
-
-	//     if( ftype == "simpleAdhesive" ) {
-
-	// 	return new simpleAdhesive(dictName, eqName, mesh);
-
-	//     }
-
-	    
-	//     else {
-
-
-		// Default
+	    // Default
     
-		cout << endl << " [ERROR]  Surface tension type " << sttype << " not available" << endl << endl;
+	    cout << endl << " [ERROR]  Surface tension type " << sttype << " not available" << endl << endl;
 
-		exit(1);
+	    exit(1);
 
-
-	//     }
-
-	// }
-    
+	}
+	
     }
 
     

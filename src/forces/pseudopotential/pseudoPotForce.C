@@ -37,7 +37,15 @@ pseudoPotForce::pseudoPotForce( const string& dictName,
 
     adsForceCreator adcreator;
 
-    _Fads = adcreator.create(dictName, eqName, mesh);    
+    _Fads = adcreator.create(dictName, eqName, mesh);
+
+
+
+    // Create additional surface tension term
+
+    stCreator st;
+
+    _St = st.create(dictName, eqName, mesh);
     
 
 }
@@ -177,5 +185,15 @@ const scalar pseudoPotForce::potential(const scalar& rho, const scalar& T, const
 const scalar pseudoPotForce::signedPotential( const scalar& rho, const scalar& T, const scalar& cs2 ) const {
 
     return _Fi->signedPotentialStrength(rho,T,cs2);
+
+}
+
+
+
+/** Additional surface tension term at node */
+
+const void pseudoPotForce::addSurfaceTension( const uint& i, vector<scalar>& C, const std::vector<scalar>& Tau ) const {
+
+    _St->ST( i, _rho, _T, C, _Fi, Tau );
 
 }

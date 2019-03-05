@@ -79,7 +79,7 @@ const void LiMRTEq::collision() {
 
     vector<scalar> S(9);     // MRT force
 
-    // vector<scalar> C(9);     // Surface tension term
+    vector<scalar> C(9);     // Surface tension term
 
 
     
@@ -146,11 +146,14 @@ const void LiMRTEq::collision() {
 
 
 
+	
 	// Surface tension extra term
 
-	// F.surfaceTension(C);
+	F.addSurfaceTension(id, C, _Tau);
 	
 
+
+	
 	// Collision in moment space
 	
 	for( uint k = 0 ; k < q ; k++ ) {
@@ -158,12 +161,13 @@ const void LiMRTEq::collision() {
 	    m[k] = m[k]
 		-  _Tau[k]*( m[k] - m_eq[k] )
 		+  ( 1 - 0.5*_Tau[k] ) * S[k] 
-		// +  C[k]
+		+  C[k]
 		;
 	    
 	}
 
 	
+
 	
 	// Back to population space
 	

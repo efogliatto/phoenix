@@ -1,28 +1,35 @@
-#ifndef LIADHESIVE_H
-#define LIADHESIVE_H
+#ifndef LISURFACETENSION_H
+#define LISURFACETENSION_H
 
-#include <simpleAdhesive.H>
+#include <surfaceTension.H>
 
-class liAdhesive : public simpleAdhesive {
+class liSurfaceTension : public surfaceTension {
+
+
+private:
+
+    /** Model constant */
+
+    scalar _kappa;
 
     
 public:
 
     /** Constructor */
 
-    liAdhesive( const std::string& dictName, const std::string& eqName, const latticeMesh& mesh );
+    liSurfaceTension( const std::string& dictName, const std::string& eqName, const latticeMesh& mesh );
 
 
     /** Destructor */
 
-    ~liAdhesive();
+    ~liSurfaceTension();
 
 
-    /** Force at specific node */
+    /** Additional surface term at specific node */
 
-    const void force( const uint& i, const scalarField& rho, const scalarField& T,  scalar f[3] ) const;
+    const void ST( const uint& i, const scalarField& rho, const scalarField& T, std::vector<scalar>& C, interactionForce* _fi, const std::vector<scalar>& Tau ) const;
     
 
 };
 
-#endif // LIADHESIVE_H
+#endif // LISURFACETENSION_H

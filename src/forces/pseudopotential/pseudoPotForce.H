@@ -9,7 +9,7 @@
 
 #include <externalForce.H>
 
-// #include <surfaceTension.H>
+#include <stCreator.H>
 
 
 class pseudoPotForce {
@@ -38,10 +38,11 @@ protected:
     externalForce _Fe;
 
 
-    // /** Surface tension force */
+    /** Additional surface tension term */
 
-    // surfaceTension _St;
+    surfaceTension* _St;
 
+    
 
     /** Reference to external density */
 
@@ -114,6 +115,11 @@ public:
     /** Adequately signed potential strength */
 
     const scalar signedPotential( const scalar& rho, const scalar& T, const scalar& cs2 ) const;
+
+
+    /** Additional surface tension term at node */
+
+    const void addSurfaceTension( const uint& i, std::vector<scalar>& C, const std::vector<scalar>& Tau ) const;
     
     
 };
