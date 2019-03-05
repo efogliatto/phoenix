@@ -155,7 +155,7 @@ const void LiMRTEq::collision() {
 	
 	for( uint k = 0 ; k < q ; k++ ) {
 
-	    m[k] = m[k]  -
+	    m[k] = m[k]
 		-  _Tau[k]*( m[k] - m_eq[k] )
 		+  ( 1 - 0.5*_Tau[k] ) * S[k] 
 		// +  C[k]
