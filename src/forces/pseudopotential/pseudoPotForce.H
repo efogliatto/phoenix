@@ -9,6 +9,8 @@
 
 #include <externalForce.H>
 
+// #include <surfaceTension.H>
+
 
 class pseudoPotForce {
 
@@ -34,6 +36,11 @@ protected:
     /** External force */
 
     externalForce _Fe;
+
+
+    // /** Surface tension force */
+
+    // surfaceTension _St;
 
 
     /** Reference to external density */

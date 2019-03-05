@@ -146,12 +146,20 @@ const void LiMRTEq::collision() {
 
 
 
+	// Surface tension extra term
+
+	// F.surfaceTension(C);
+	
 
 	// Collision in moment space
 	
 	for( uint k = 0 ; k < q ; k++ ) {
 
-	    m[k] = m[k]  -  _Tau[k]*( m[k] - m_eq[k] )  +  ( 1 - 0.5*_Tau[k] ) * S[k];
+	    m[k] = m[k]  -
+		-  _Tau[k]*( m[k] - m_eq[k] )
+		+  ( 1 - 0.5*_Tau[k] ) * S[k] 
+		// +  C[k]
+		;
 	    
 	}
 
