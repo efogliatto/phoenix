@@ -195,12 +195,14 @@ void ppFixedU::update( const pseudoPotEquation* ppeq ) {
 
 
 
+
+
 	// Equilibrium
 
 	ppeq->eqPS( f_eq_nb, nbrho, nvel );
 
-	// ppeq->eqPS( f_eq_bnd, _rho.at(id), Uw );
 	ppeq->eqPS( f_eq_bnd, nbrho, Uw );
+
 
 
 	
