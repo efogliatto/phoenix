@@ -12,6 +12,16 @@ protected:
     std::vector< std::vector<scalar> > _bndVal;
 
 
+    /** Pre-allocated neighbour node ids */
+
+    std::vector<uint> _nbid;
+
+
+    /** Boundary normal */
+
+    std::vector< std::vector<int> > _normal;    
+
+
 public:
 
 
