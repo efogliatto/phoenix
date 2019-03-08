@@ -95,6 +95,11 @@ public:
     const void setIntForce(const uint& i, const std::vector<scalar>& Fint)  { F.setInteraction(i, Fint); }
 
 
+    /** Access to total force at node */
+
+    const void totalForce( scalar Ft[3], const uint& i ) const { F.total(Ft,i); }
+
+
     /** Update forces */
 
     const void updateForces() {  F.update(rho,T);  }
