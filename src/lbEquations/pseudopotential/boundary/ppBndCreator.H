@@ -3,6 +3,8 @@
 
 #include <ppFixedU.H>
 
+#include <ppNEBB.H>
+
 #include <ppPeriodic.H>
 
 #include <ppOutflow.H>

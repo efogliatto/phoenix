@@ -9,6 +9,8 @@ add_library(lbequations SHARED
   pseudopotential/PPEquation.C
   pseudopotential/pseudoPotEqHandler.C
   pseudopotential/boundary/ppBndCond.C
+  pseudopotential/boundary/ppWetNodeBnd.C
+  pseudopotential/boundary/ppNEBB.C
   pseudopotential/boundary/ppFixedU.C
   pseudopotential/boundary/ppPeriodic.C
   pseudopotential/boundary/ppOutflow.C

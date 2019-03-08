@@ -46,11 +46,21 @@ ppBndCond* ppBndCreator::create( const string& eqName,
 
 	    else {
 
-		// Default
-    
-		cout << endl << " [ERROR]  Boundary condition " << btype << " not available for pseudopotential model" << endl << endl;
+		if( btype == "NEBB" ) {
 
-		exit(1);
+		    return new ppNEBB( eqName, bdName, mesh, rho, T, U, pdf );
+
+		}
+
+		else {
+
+		    // Default
+    
+		    cout << endl << " [ERROR]  Boundary condition " << btype << " not available for pseudopotential model" << endl << endl;
+
+		    exit(1);
+
+		}
 
 	    }
 
