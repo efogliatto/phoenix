@@ -77,7 +77,7 @@ public:
 
     /** Equilibrium in population space */
 
-    const void eqPS( std::vector<scalar>& n, const scalar& T_, const std::vector<scalar>& U_ ) const;    
+    const void eqPS( std::vector<scalar>& n, const scalar& T_, const std::vector<scalar>& U_, const scalar& hs ) const;    
 
     
     /** Thermal conductivity at node */

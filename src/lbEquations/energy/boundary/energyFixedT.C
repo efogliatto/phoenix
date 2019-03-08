@@ -206,7 +206,7 @@ void energyFixedT::update( const energyEquation* eeq ) {
 	
 
 
-	// Equilibrium
+	// Velocity at boundary
 
 	for(uint j = 0 ; j < 3 ; j++) {
 			
@@ -220,9 +220,9 @@ void energyFixedT::update( const energyEquation* eeq ) {
 
 	// Equilibrium
 
-	eeq->eqPS( f_eq_nb, _T.at(nbid), Unbid );
+	eeq->eqPS( f_eq_nb, _T.at(nbid), Unbid, eeq->heat(nbid) );
 
-	eeq->eqPS( f_eq_bnd, Tw, Uw );
+	eeq->eqPS( f_eq_bnd, Tw, Uw, eeq->heat(id) );
 
 
 	
@@ -240,98 +240,3 @@ void energyFixedT::update( const energyEquation* eeq ) {
     
 
 }
-
-
-
-
-
-
-// /** Update pdf field */
-
-// void energyFixedT::update( const energyEquation* eeq ) {
-
-
-//     // Lattice constants
-    
-//     const uint q = _mesh.lmodel()->q();
-
-//     vector<scalar> f_eq_nb(q);
-
-//     vector<scalar> f_eq_bnd(q);
-
-//     const vector< vector<int> >& nb = _mesh.nbArray();
-
-//     const vector<uint> reverse = _mesh.lmodel()->reverse();
-
-//     vector<scalar> Unbid = {0,0,0};
-
-//     vector<scalar> Uw = {0,0,0};
-
-
-
-//     // Random seeds
-    
-//     uniform_real_distribution<scalar> unif( (100.0-_pert)/100.0, (100.0+_pert)/100.0);
-
-//     default_random_engine re;
-
-//     // re.seed( time(NULL) );
-//     re.seed( _mesh.pid() );
-    
-
-//     // Move over boundary elements
-
-//     for( uint i = 0 ; i < _nodes.size() ; i++ ) {
-
-// 	uint id = _nodes[i];
-
-// 	scalar Tw = unif(re) * _bndVal[i];	
-
-	
-// 	for( uint k = 0 ; k < q ; k++ ) {
-
-
-// 	    if ( nb[id][k] == -1 ) {
-
-		
-// 		// Need density and velocity at neighbour (reverse) node
-		    
-// 		int nbid = nb[id][ reverse[k] ];
-
-
-// 		if( nbid != -1 ) {
-
-			
-// 		    // Equilibrium
-
-// 		    for(uint j = 0 ; j < 3 ; j++) {
-			
-// 			Unbid[j] = _U.at(nbid,j);
-
-// 			Uw[j] = _U.at(id,j);
-
-// 		    }
-		    
-
-// 		    eeq->eqPS( f_eq_nb, _T.at(nbid), Unbid );
-
-// 		    eeq->eqPS( f_eq_bnd, Tw, Uw );
-	    
-
-		    
-// 		    // Update distribution
-			
-// 		    _pdf.set(id, k, f_eq_bnd[k] + (_pdf[nbid][k] - f_eq_nb[k] ) );		    
-
-// 		}
-		
-
-// 	    }
-	    
-
-// 	}
-
-
-//     }
-
-// }

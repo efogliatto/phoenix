@@ -151,7 +151,7 @@ const void myMRTEq::eqMS( vector<scalar>& m, const scalar& T_, const vector<scal
 
 const void myMRTEq::eqPS( vector<scalar>& n, const uint& id ) const {
 
-    myMRTEq::eqPS( n, T.at(id), U.at(id) );
+    myMRTEq::eqPS( n, T.at(id), U.at(id), _hs->source(id) );
     
 }
 
@@ -159,12 +159,15 @@ const void myMRTEq::eqPS( vector<scalar>& n, const uint& id ) const {
 
 /** Equilibrium in population space */
 
-const void myMRTEq::eqPS( vector<scalar>& n, const scalar& T_, const std::vector<scalar>& U_ ) const {
+const void myMRTEq::eqPS( vector<scalar>& n, const scalar& T_, const std::vector<scalar>& U_, const scalar& hs ) const {
 
+
+    const uint q = mesh.lmodel()->q();
+    
 
     // First compute in moment space
    
-    vector<scalar> n_eq( mesh.lmodel()->q() );
+    vector<scalar> n_eq( q );
 
     myMRTEq::eqMS(n_eq,T_,U_);
 
@@ -175,6 +178,25 @@ const void myMRTEq::eqPS( vector<scalar>& n, const scalar& T_, const std::vector
     const scalarMatrix& invM = mesh.lmodel()->MRTInvMatrix();
 
     invM.matDotVec(n_eq,n);
+
+
+
+    // Source term in moment space
+   
+    vector<scalar> GammaHat(q);
+
+    vector<scalar> Gamma(q);
+
+    GammaHat[0] = hs;
+
+    invM.matDotVec(GammaHat,Gamma);
+    
+
+    
+    // Update Source term
+
+    for( uint k = 0 ; k < q ; k++ )    
+	n[k] = n[k] - 0.5 * Gamma[k];
 
 }
 
