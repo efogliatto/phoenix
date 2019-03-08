@@ -163,6 +163,11 @@ public:
     /** Nodes close to boundaries */
 
     const std::map< std::string, std::vector<uint> >& nodesCloseToBoundary() const { return closestNodes; }
+
+
+    /** Boundary normal type */
+
+    enum class normalType{ X0, X1, Y0, Y1, Z0, Z1, UNDEF };    
     
     
 };

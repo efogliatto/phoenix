@@ -106,7 +106,7 @@ ppWetNodeBnd::ppWetNodeBnd( const std::string& eqName,
 
 	    if(  ( normal[0] == -1 )  &&  ( normal[1] == 0 )  &&  ( normal[2] == 0 ) ) {
 
-	    	_normal[i] = normalType::X0;
+	    	_normal[i] = latticeMesh::normalType::X0;
 
 	    }
 
@@ -114,7 +114,7 @@ ppWetNodeBnd::ppWetNodeBnd( const std::string& eqName,
 
 		if(  ( normal[0] == 1 )  &&  ( normal[1] == 0 )  &&  ( normal[2] == 0 ) ) {
 
-		    _normal[i] = normalType::X1;
+		    _normal[i] = latticeMesh::normalType::X1;
 
 		}
 
@@ -122,7 +122,7 @@ ppWetNodeBnd::ppWetNodeBnd( const std::string& eqName,
 
 		    if(  ( normal[0] == 0 )  &&  ( normal[1] == -1 )  &&  ( normal[2] == 0 ) ) {
 
-			_normal[i] = normalType::Y0;
+			_normal[i] = latticeMesh::normalType::Y0;
 
 		    }
 
@@ -130,7 +130,7 @@ ppWetNodeBnd::ppWetNodeBnd( const std::string& eqName,
 
 			if(  ( normal[0] == 0 )  &&  ( normal[1] == 1 )  &&  ( normal[2] == 0 ) ) {
 
-			    _normal[i] = normalType::Y1;
+			    _normal[i] = latticeMesh::normalType::Y1;			    
 
 			}
 
@@ -138,7 +138,7 @@ ppWetNodeBnd::ppWetNodeBnd( const std::string& eqName,
 
 			    if(  ( normal[0] == 0 )  &&  ( normal[1] == 0 )  &&  ( normal[2] == -1 ) ) {
 
-				_normal[i] = normalType::Z0;
+				_normal[i] = latticeMesh::normalType::Z0;
 
 			    }
 
@@ -146,13 +146,13 @@ ppWetNodeBnd::ppWetNodeBnd( const std::string& eqName,
 
 				if(  ( normal[0] == 0 )  &&  ( normal[1] == 0 )  &&  ( normal[2] == 1 ) ) {
 
-				    _normal[i] = normalType::Z1;
+				    _normal[i] = latticeMesh::normalType::Z1;
 
 				}
 
 				else {
 
-				    _normal[i] = normalType::UNDEF;
+				    _normal[i] = latticeMesh::normalType::UNDEF;
 
 				}
 

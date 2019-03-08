@@ -36,12 +36,6 @@ protected:
 
     pseudoPotForce F;
 
-
-    // /** Boundary conditions */
-
-    // std::vector< ppBndCond* > _boundaries;
-
-
   
     
 
@@ -112,9 +106,17 @@ public:
     const scalar localDensity( const uint& id ) const;
 
 
+    
+    /** Compute local density with unknowns. Useful in wet-node approach */
+
+    const scalar localDensityWithUnknowns( const uint& id, latticeMesh::normalType& ntype ) const;    
+
+    
+
     /** Compute local velocity */
 
     const void localVelocity( std::vector<scalar>& v, const uint& id, const bool updDens = false ) const;
+
     
 
     /** Update potential as scalar field */
@@ -122,6 +124,7 @@ public:
     const void updatePotential( scalarField& phi );
 
 
+    
     /** Compute and set pressure field */
 
     virtual const void pressure( const scalarField& phi, scalarField& p );

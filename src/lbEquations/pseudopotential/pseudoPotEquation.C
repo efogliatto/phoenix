@@ -25,35 +25,12 @@ pseudoPotEquation::pseudoPotEquation( const string& name,
 
     F.update(rho,T);
 
-
-
-    // // Read Boundary conditions
-
-    // dictionary dict("start/boundaries");
-
-    // const map< string, vector<uint> >& bnd = mesh.boundaries();
-
-    // ppBndCreator BndCreator;
-
-    // for(map< string, vector<uint> >::const_iterator iter = bnd.begin(); iter != bnd.end(); ++iter)  {
-	
-    // 	string bdname = iter->first;
-
-    // 	_boundaries.push_back( BndCreator.create(name, bdname, mesh.boundaryNodes(bdname) ) );
-
-    // }
-
 }
 
 
 /** Default destructor */
 
 pseudoPotEquation::~pseudoPotEquation() {}
-
-
-
-
-
 
 
 
@@ -74,6 +51,101 @@ const scalar pseudoPotEquation::localDensity( const uint& id ) const {
     return r;    
 
 }
+
+
+
+/** Compute local density with unknowns */
+
+const scalar pseudoPotEquation::localDensityWithUnknowns( const uint& id, latticeMesh::normalType& ntype ) const {
+
+
+    scalar rw(0);
+
+    scalar Ft[3];
+
+    
+    // Hand coded
+
+    switch( mesh.lmodel()->type() ) {
+
+    case latticeModel::latticeType::D2Q9:
+
+
+	// Total force at node
+	
+	F.total(Ft, id);
+	
+
+	switch(ntype) {
+
+	case latticeMesh::normalType::Y1:
+	    
+	    rw = _pdf[id][0] + _pdf[id][1] + _pdf[id][3] + 2*(_pdf[id][2] + _pdf[id][5] + _pdf[id][6]) + 0.5 * Ft[1];
+
+	    rw = rw / (1 + U.at(id)[1]);
+	    
+	    break;
+
+
+	case latticeMesh::normalType::Y0:
+	    
+	    rw = _pdf[id][0] + _pdf[id][1] + _pdf[id][3] + 2*(_pdf[id][4] + _pdf[id][7] + _pdf[id][8]) - 0.5 * Ft[1];
+
+	    rw = rw / (1 - U.at(id)[1]);
+	    
+	    break;
+
+
+	case latticeMesh::normalType::X0:
+	    
+	    rw = _pdf[id][0] + _pdf[id][2] + _pdf[id][4] + 2*(_pdf[id][3] + _pdf[id][6] + _pdf[id][7]) - 0.5 * Ft[0];
+
+	    rw = rw / (1 - U.at(id)[0]);
+	    
+	    break;
+
+
+	case latticeMesh::normalType::X1:
+	    
+	    rw = _pdf[id][0] + _pdf[id][2] + _pdf[id][4] + 2*(_pdf[id][1] + _pdf[id][5] + _pdf[id][8]) + 0.5 * Ft[0];
+
+	    rw = rw / (1 + U.at(id)[0]);
+	    
+	    break;	    
+	    
+
+	default:
+
+	    cout << "Unable to compute local density" << endl;
+
+	    exit(1);
+	    
+	    break;
+
+	}
+
+	
+	break;
+
+
+    default:
+
+	cout << "Local density with unknowns not yet implemented for this lattice type" << endl;
+
+	exit(1);
+
+	break;
+	
+    }
+
+    
+
+    return rw;
+    
+
+}
+
+
 
 
 /** Compute local velocity */

@@ -15,16 +15,11 @@ protected:
     /** Pre-allocated neighbour node ids */
 
     std::vector<uint> _nbid;
-
-
-    /** Boundary normal type */
-
-    enum class normalType{ X0, X1, Y0, Y1, Z0, Z1, UNDEF };
     
 
     /** Boundary normal */
 
-    std::vector<normalType> _normal;
+    std::vector<latticeMesh::normalType> _normal;
 
 
 public:
