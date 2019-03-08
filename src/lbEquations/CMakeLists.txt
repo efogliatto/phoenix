@@ -11,6 +11,7 @@ add_library(lbequations SHARED
   pseudopotential/boundary/ppBndCond.C
   pseudopotential/boundary/ppWetNodeBnd.C
   pseudopotential/boundary/ppNEBB.C
+  pseudopotential/boundary/ppNEExt.C
   pseudopotential/boundary/ppFixedU.C
   pseudopotential/boundary/ppPeriodic.C
   pseudopotential/boundary/ppOutflow.C

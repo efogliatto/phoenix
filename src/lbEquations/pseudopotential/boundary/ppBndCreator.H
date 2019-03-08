@@ -5,6 +5,8 @@
 
 #include <ppNEBB.H>
 
+#include <ppNEExt.H>
+
 #include <ppPeriodic.H>
 
 #include <ppOutflow.H>

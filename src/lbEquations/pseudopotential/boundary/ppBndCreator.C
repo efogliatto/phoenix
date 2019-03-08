@@ -53,12 +53,22 @@ ppBndCond* ppBndCreator::create( const string& eqName,
 		}
 
 		else {
+	
+		    if( btype == "NEExt" ) {
 
-		    // Default
+			return new ppNEExt( eqName, bdName, mesh, rho, T, U, pdf );
+
+		    }
+
+		    else {
+
+			// Default
     
-		    cout << endl << " [ERROR]  Boundary condition " << btype << " not available for pseudopotential model" << endl << endl;
+			cout << endl << " [ERROR]  Boundary condition " << btype << " not available for pseudopotential model" << endl << endl;
 
-		    exit(1);
+			exit(1);
+
+		    }
 
 		}
 

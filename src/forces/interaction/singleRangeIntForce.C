@@ -69,121 +69,6 @@ singleRangeIntForce::~singleRangeIntForce() {}
 
 
 
-/** Update force field */
-
-void singleRangeIntForce::update( scalarField& rho, scalarField& T ) {
-
-    
-    // Reference to neighbour array
-
-    const vector< vector<int> >& nb = _mesh.nbArray();
-
-
-    // Lattice model properties
-
-    vector< vector<int> > vel = _mesh.lmodel()->lvel();
-
-    vector<uint> reverse = _mesh.lmodel()->reverse();
-
-    scalar cs2 = _mesh.lmodel()->cs2();
-
-    scalar q = _mesh.lmodel()->q();
-
-    
-
-    // Move over points
-
-    for( uint i = 0 ; i < _mesh.local() ; i++ ) {
-
-	    
-	vector<scalar> F = {0, 0, 0};	    
-
-	
-	for( uint k = 1 ; k < q ; k++ ) {
-       
-	    int neighId = nb[i][ reverse[k] ];
-
-	    scalar _rho(0), _T(0);
-
-
-	    // Bulk fluid node
-
-	    if( neighId != -1 ) {
-
-		_rho = rho.at(neighId);
-
-		_T = T.at(neighId);
-
-	    }
-
-
-	    // Ghost node
-	    
-	    else {
-
-	    	neighId = nb[i][k];
-
-	    	if( neighId != -1 ) {
-
-	    	    _rho = 2*rho.at(i) - rho.at(neighId);
-
-	    	    _T = 2*T.at(i) - T.at(neighId);
-
-	    	}
-
-	    	else {
-
-	    	    _rho = rho.at(i);
-
-	    	    _T = T.at(i);
-
-	    	}
-
-	    }
-
-
-	    // Sum neighbour potential
-	    
-	    scalar alpha = _weights[k] * potential( _rho, _T, cs2 );
-	    
-	    for( uint j = 0 ; j < 3 ; j++ ) {
-
-	    	F[j] +=  alpha * (scalar)vel[k][j] ;
-
-	    }
-
-
-	}
-		
-
-	// Extra constant
-		
-	scalar beta = -_G * potential( rho[i], T[i], cs2 );
-    
-	for( uint j = 0 ; j < 3 ; j++) {
-	
-	    _force[i][j] =  F[j] * beta;
-	
-	}	
-
-	    
-
-    }
-    
-
-
-    // Sync across processors
-
-    _force.sync();
-
-}
-
-
-
-
-
-
-// // Old version. no interaction force on wall
 // /** Update force field */
 
 // void singleRangeIntForce::update( scalarField& rho, scalarField& T ) {
@@ -210,80 +95,81 @@ void singleRangeIntForce::update( scalarField& rho, scalarField& T ) {
 
 //     for( uint i = 0 ; i < _mesh.local() ; i++ ) {
 
-
-// 	// Check if neighbour is on boundary
-
-// 	bool isOnBnd(false);
-
-// 	for( uint k = 0 ; k < q ; k++ ) {
-
-// 	    if( nb[i][k] == -1 ) {
-
-// 		isOnBnd = true;
-
-// 		k = q;
-
-// 	    }
-
-// 	}
-
-
-
-// 	// Compute only if node is not on bounday
-
-// 	if( isOnBnd ) {
-
-// 	    for( uint j = 0 ; j < 3 ; j++ )
-// 		_force[i][j] = 0;
-
-// 	}
-
-
-// 	else {
-
 	    
-// 	    vector<scalar> F = {0, 0, 0};	    
+// 	vector<scalar> F = {0, 0, 0};	    
 
-// 	    for( uint k = 1 ; k < q ; k++ ) {
+	
+// 	for( uint k = 1 ; k < q ; k++ ) {
        
-// 		int neighId = nb[i][ reverse[k] ];
+// 	    int neighId = nb[i][ reverse[k] ];
 
-// 		scalar _rho = rho[neighId];
+// 	    scalar _rho(0), _T(0);
 
-// 		scalar _T = T[neighId];
-	    
-// 		scalar alpha = _weights[k] * potential( _rho, _T, cs2 );
 
-	    
-// 		for( uint j = 0 ; j < 3 ; j++ ) {
+// 	    // Bulk fluid node
 
-// 		    F[j] +=  alpha * (scalar)vel[k][j] ;
+// 	    if( neighId != -1 ) {
 
-// 		}
-    
+// 		_rho = rho.at(neighId);
+
+// 		_T = T.at(neighId);
 
 // 	    }
 
-		
 
-// 	    // Extra constant
-		
-// 	    scalar beta = -_G * potential( rho[i], T[i], cs2 );
-    
-// 	    for( uint j = 0 ; j < 3 ; j++) {
-	
-// 		_force[i][j] =  F[j] * beta;
-	
-// 	    }	
-
+// 	    // Ghost node
 	    
+// 	    else {
+
+// 	    	neighId = nb[i][k];
+
+// 	    	if( neighId != -1 ) {
+
+// 	    	    _rho = 2*rho.at(i) - rho.at(neighId);
+
+// 	    	    _T = 2*T.at(i) - T.at(neighId);
+
+// 	    	}
+
+// 	    	else {
+
+// 	    	    _rho = rho.at(i);
+
+// 	    	    _T = T.at(i);
+
+// 	    	}
+
+// 	    }
+
+
+// 	    // Sum neighbour potential
+	    
+// 	    scalar alpha = _weights[k] * potential( _rho, _T, cs2 );
+	    
+// 	    for( uint j = 0 ; j < 3 ; j++ ) {
+
+// 	    	F[j] +=  alpha * (scalar)vel[k][j] ;
+
+// 	    }
+
 
 // 	}
+		
+
+// 	// Extra constant
+		
+// 	scalar beta = -_G * potential( rho[i], T[i], cs2 );
+    
+// 	for( uint j = 0 ; j < 3 ; j++) {
 	
+// 	    _force[i][j] =  F[j] * beta;
+	
+// 	}	
+
+	    
 
 //     }
-
-
+    
 
 
 //     // Sync across processors
@@ -291,3 +177,117 @@ void singleRangeIntForce::update( scalarField& rho, scalarField& T ) {
 //     _force.sync();
 
 // }
+
+
+
+
+
+
+// Old version. no interaction force on wall
+/** Update force field */
+
+void singleRangeIntForce::update( scalarField& rho, scalarField& T ) {
+
+    
+    // Reference to neighbour array
+
+    const vector< vector<int> >& nb = _mesh.nbArray();
+
+
+    // Lattice model properties
+
+    vector< vector<int> > vel = _mesh.lmodel()->lvel();
+
+    vector<uint> reverse = _mesh.lmodel()->reverse();
+
+    scalar cs2 = _mesh.lmodel()->cs2();
+
+    scalar q = _mesh.lmodel()->q();
+
+    
+
+    // Move over points
+
+    for( uint i = 0 ; i < _mesh.local() ; i++ ) {
+
+
+	// Check if neighbour is on boundary
+
+	bool isOnBnd(false);
+
+	for( uint k = 0 ; k < q ; k++ ) {
+
+	    if( nb[i][k] == -1 ) {
+
+		isOnBnd = true;
+
+		k = q;
+
+	    }
+
+	}
+
+
+
+	// Compute only if node is not on bounday
+
+	if( isOnBnd ) {
+
+	    for( uint j = 0 ; j < 3 ; j++ )
+		_force[i][j] = 0;
+
+	}
+
+
+	else {
+
+	    
+	    vector<scalar> F = {0, 0, 0};	    
+
+	    for( uint k = 1 ; k < q ; k++ ) {
+       
+		int neighId = nb[i][ reverse[k] ];
+
+		scalar _rho = rho[neighId];
+
+		scalar _T = T[neighId];
+	    
+		scalar alpha = _weights[k] * potential( _rho, _T, cs2 );
+
+	    
+		for( uint j = 0 ; j < 3 ; j++ ) {
+
+		    F[j] +=  alpha * (scalar)vel[k][j] ;
+
+		}
+    
+
+	    }
+
+		
+
+	    // Extra constant
+		
+	    scalar beta = -_G * potential( rho[i], T[i], cs2 );
+    
+	    for( uint j = 0 ; j < 3 ; j++) {
+	
+		_force[i][j] =  F[j] * beta;
+	
+	    }	
+
+	    
+
+	}
+	
+
+    }
+
+
+
+
+    // Sync across processors
+
+    _force.sync();
+
+}

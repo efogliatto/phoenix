@@ -61,7 +61,7 @@ const scalar pseudoPotEquation::localDensityWithUnknowns( const uint& id, lattic
 
     scalar rw(0);
 
-    scalar Ft[3];
+    scalar Ft[3] = {0,0,0};
 
     
     // Hand coded
