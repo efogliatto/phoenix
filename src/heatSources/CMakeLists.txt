@@ -4,5 +4,6 @@
 add_library(heatsources SHARED 
   heatSource.C
   markusHaziHS.C
+  liHS.C
   hsCreator.C
   )

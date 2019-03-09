@@ -3,6 +3,8 @@
 
 #include <markusHaziHS.H>
 
+#include <liHS.H>
+
 
 class hsCreator {
 

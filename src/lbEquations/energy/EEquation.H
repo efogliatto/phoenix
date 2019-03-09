@@ -3,6 +3,8 @@
 
 #include <myMRTEq.H>
 
+#include <LiEnergyMRTEq.H>
+
 class EEquation {
 
 public:
