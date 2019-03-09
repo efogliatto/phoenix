@@ -250,39 +250,28 @@ void singleRangeIntForce::update( scalarField& rho, scalarField& T ) {
 		    
 		    case 4:
 
-			// _rho = rho.at(i);
+			_rho = rho.at(i);
 
-			// _T = T.at(i);
+			_T = T.at(i);
 
 			
 			// _rho = 2*rho.at(i) - rho.at(nb[i][4]);
 
 			// _T = 2*T.at(i) - T.at(nb[i][4]);
 
-
-			_rho = rho.at(nb[i][4]);
-
-			_T = T.at(nb[i][4]);
-
 			break;
 			
 		    case 7:
 
-			// _rho = rho.at( nb[i][1] );
+			_rho = rho.at( nb[i][1] );
 
-			// _T = T.at( nb[i][1] );
+			_T = T.at( nb[i][1] );
 
 			    
-			// _rho = 2*rho.at( nb[i][7] ) - rho.at( nb[i][3] );
+			// _rho = 2*rho.at( nb[i][1] ) - rho.at( nb[i][8] );
 
-			// _T = 2*T.at( nb[i][7] ) - T.at( nb[i][3] );
+			// _T = 2*T.at( nb[i][1] ) - T.at( nb[i][8] );
 
-
-			_rho = rho.at(nb[i][8]);
-
-			_T = T.at(nb[i][8]);
-
-			// cout << i << " " << nb[i][8] << "(" << k << ")" << endl;
 
 			break;
 			    
@@ -290,19 +279,14 @@ void singleRangeIntForce::update( scalarField& rho, scalarField& T ) {
 
 		    case 8:
 				
-			// _rho = rho.at( nb[i][3] );
+			_rho = rho.at( nb[i][3] );
 
-			// _T = T.at( nb[i][3] );
+			_T = T.at( nb[i][3] );
 
 				
-			// _rho = 2*rho.at( nb[i][8] ) - rho.at(nb[i][1]);
+			// _rho = 2*rho.at( nb[i][3] ) - rho.at(nb[i][7]);
 
-			// _T = 2*T.at( nb[i][8] ) - T.at(nb[i][1]);
-
-
-			_rho = rho.at(nb[i][7]);
-
-			_T = T.at(nb[i][7]);
+			// _T = 2*T.at( nb[i][3] ) - T.at(nb[i][7]);
 
 
 			break;
