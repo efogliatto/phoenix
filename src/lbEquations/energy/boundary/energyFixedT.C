@@ -220,9 +220,13 @@ void energyFixedT::update( const energyEquation* eeq ) {
 
 	// Equilibrium
 
-	eeq->eqPS( f_eq_nb, _T.at(nbid), Unbid, eeq->heat(nbid) );
+	// eeq->eqPS( f_eq_nb, _T.at(nbid), Unbid, eeq->heat(nbid) );
 
-	eeq->eqPS( f_eq_bnd, Tw, Uw, eeq->heat(id) );
+	// eeq->eqPS( f_eq_bnd, Tw, Uw, eeq->heat(id) );
+
+	eeq->eqPS( f_eq_nb, _T.at(nbid), Unbid, 0 );
+
+	eeq->eqPS( f_eq_bnd, Tw, Uw, 0 );	
 
 
 	

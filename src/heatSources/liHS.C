@@ -145,7 +145,7 @@ void liHS::update( const scalarField& rho, const scalarField& T, const vectorFie
 
 
 	    first = ( first + _Lambda[id] * lapT ) / ( _rho * _Cv )   -   _k*lapT;
-	    
+
 	    
 	    break;
 
