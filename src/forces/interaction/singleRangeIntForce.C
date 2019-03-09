@@ -184,6 +184,7 @@ singleRangeIntForce::~singleRangeIntForce() {}
 
 
 /** Update force field */
+/** Ghost nodes */
 
 void singleRangeIntForce::update( scalarField& rho, scalarField& T ) {
 
@@ -245,53 +246,105 @@ void singleRangeIntForce::update( scalarField& rho, scalarField& T ) {
 		for( uint k = 1 ; k < q ; k++ ) {
 
 
-		    if(k == 2) {
+		    switch(k) {
+		    
+		    case 4:
 
-			_rho = rho.at(i);
+			// _rho = rho.at(i);
 
-			_T = T.at(i);
+			// _T = T.at(i);
+
 			
-		    }
+			// _rho = 2*rho.at(i) - rho.at(nb[i][4]);
 
-		    else {
+			// _T = 2*T.at(i) - T.at(nb[i][4]);
 
-			if(k == 5) {
+
+			_rho = rho.at(nb[i][4]);
+
+			_T = T.at(nb[i][4]);
+
+			break;
+			
+		    case 7:
+
+			// _rho = rho.at( nb[i][1] );
+
+			// _T = T.at( nb[i][1] );
 
 			    
+			// _rho = 2*rho.at( nb[i][7] ) - rho.at( nb[i][3] );
 
-			}
-
-			else {
-
-			    if(k == 6) {
+			// _T = 2*T.at( nb[i][7] ) - T.at( nb[i][3] );
 
 
+			_rho = rho.at(nb[i][8]);
 
-			    }
+			_T = T.at(nb[i][8]);
 
-			    else {
+			// cout << i << " " << nb[i][8] << "(" << k << ")" << endl;
+
+			break;
+			    
+
+
+		    case 8:
+				
+			// _rho = rho.at( nb[i][3] );
+
+			// _T = T.at( nb[i][3] );
+
+				
+			// _rho = 2*rho.at( nb[i][8] ) - rho.at(nb[i][1]);
+
+			// _T = 2*T.at( nb[i][8] ) - T.at(nb[i][1]);
+
+
+			_rho = rho.at(nb[i][7]);
+
+			_T = T.at(nb[i][7]);
+
+
+			break;
 
 
 
-			    }
+		    default:
 
-			}			
+			_rho = rho.at( nb[i][reverse[k]] );
+
+			_T = T.at( nb[i][reverse[k]] );
+
+			break;
+			
 
 		    }
 
-		    
-		    
 
+		    
+		    scalar alpha = _weights[k] * potential( _rho, _T, cs2 );
+	    
+		    for( uint j = 0 ; j < 3 ; j++ ) {
+
+			F[j] +=  alpha * (scalar)vel[k][j] ;
+
+		    }		    		    		    
     
 
 		}
 
 		
-
+		
+		// Extra constant
+		
+		scalar beta = -_G * potential( rho[i], T[i], cs2 );
+    
+		for( uint j = 0 ; j < 3 ; j++) {
 	
-
-
-
+		    _force[i][j] =  F[j] * beta;
+	
+		}
+	
 		
 
 	    }
