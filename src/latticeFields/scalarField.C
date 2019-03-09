@@ -589,7 +589,19 @@ const scalar scalarField::laplacian(const uint& id, const bool inverse) const {
 
 	if( nbid != -1 ) {
 
-	    inverse  ?  lap += 2.0 * omega[k] * ((1/field[nbid] - 1/field[id]) ) / cs2  :  lap += 2.0 * omega[k] * (field[nbid] - field[id]) / cs2;
+	    // inverse  ?  lap += 2.0 * omega[k] * ((1/field[nbid] - 1/field[id]) ) / cs2  :  lap += 2.0 * omega[k] * (field[nbid] - field[id]) / cs2;
+	    
+	    if(inverse) {
+		
+		lap += 2.0 * omega[k] * ((1/field[nbid] - 1/field[id]) ) / cs2;
+		
+	    }
+
+	    else {
+
+		lap += 2.0 * omega[k] * (field[nbid] - field[id]) / cs2;
+
+	    }
 
 	}
 
@@ -601,7 +613,25 @@ const scalar scalarField::laplacian(const uint& id, const bool inverse) const {
 
 		scalar extpNb = 2.0*field[id]-field[otherNb];
 
-	    	inverse  ?  lap += 2.0 * omega[k]  * ((1.0/extpNb - 1/field[id]) ) / cs2  :  lap += 2.0 * omega[k] * (extpNb - field[id]) / cs2;
+	    	// inverse  ?  lap += 2.0 * omega[k]  * ((1.0/extpNb - 1/field[id]) ) / cs2  :  lap += 2.0 * omega[k] * (extpNb - field[id]) / cs2;
+
+		if( inverse ) {
+
+		    lap += 2.0 * omega[k]  * ((1.0/extpNb - 1/field[id]) ) / cs2;
+
+		}
+
+		else {
+
+		    lap += 2.0 * omega[k] * (extpNb - field[id]) / cs2;
+
+		}
+
+	    }
+
+	    else {
+
+
 
 	    }
 
