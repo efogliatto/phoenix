@@ -124,6 +124,7 @@ void pseudoPotForce::total( scalar Ft[3], const uint& id ) const {
     Ft[1] = Fi[1] + Fb[1] + Fads[1] + _Fe[1] * _rho.at(id);
     Ft[2] = Fi[2] + Fb[2] + Fads[2] + _Fe[2] * _rho.at(id);
 
+   
 }
 
 
