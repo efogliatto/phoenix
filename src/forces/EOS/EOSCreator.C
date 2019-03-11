@@ -16,6 +16,7 @@ EOS* EOSCreator::create( const string& dictName, const string& eqName ) {
     _eosMapType["vanDerWaals"]           = eosType::VdW;
     _eosMapType["Carnahan-Starling"]     = eosType::CS;
     _eosMapType["Peng-Robinson"]         = eosType::PR;
+    _eosMapType["piecewiseLinear"]       = eosType::PWL;    
 
     
     // Load model name from dictionary
@@ -51,7 +52,14 @@ EOS* EOSCreator::create( const string& dictName, const string& eqName ) {
 
     	    return new PengRobinson(dictName, eqName);
 
-    	    break;	    	    
+    	    break;
+
+
+    	case eosType::PWL:
+
+    	    return new piecewiseLinear(dictName, eqName);
+
+    	    break;	    
 
     	}
 

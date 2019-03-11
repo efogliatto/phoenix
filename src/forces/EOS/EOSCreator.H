@@ -7,6 +7,8 @@
 
 #include <PengRobinson.H>
 
+#include <piecewiseLinear.H>
+
 #include <map>
 
 
@@ -18,7 +20,7 @@ protected:
 
     // EOS types
 
-    enum class eosType{ VdW, CS, PR };
+    enum class eosType{ VdW, CS, PR, PWL };
 
     std::map<std::string, eosType> _eosMapType;
 
