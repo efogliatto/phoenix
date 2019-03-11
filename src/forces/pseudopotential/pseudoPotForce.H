@@ -52,6 +52,11 @@ protected:
     /** Reference to external temperature */
 
     const scalarField& _T;
+
+
+    /** Reference to latticeMesh */
+
+    const latticeMesh& _mesh;
     
 
 
