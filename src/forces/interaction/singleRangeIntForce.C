@@ -296,25 +296,15 @@ void singleRangeIntForce::update( scalarField& rho, scalarField& T ) {
 
 			_T = T.at(i);
 
-			
-			// _rho = 2*rho.at(i) - rho.at(nb[i][4]);
-
-			// _T = 2*T.at(i) - T.at(nb[i][4]);
-
 			break;
+
 			
 		    case 7:
 
 			_rho = rho.at( nb[i][1] );
 
 			_T = T.at( nb[i][1] );
-
 			    
-			// _rho = 2*rho.at( nb[i][8] ) - rho.at( nb[i][1] );
-
-			// _T = 2*T.at( nb[i][8] ) - T.at( nb[i][1] );
-
-
 			break;
 			    
 
@@ -324,12 +314,6 @@ void singleRangeIntForce::update( scalarField& rho, scalarField& T ) {
 			_rho = rho.at( nb[i][3] );
 
 			_T = T.at( nb[i][3] );
-
-				
-			// _rho = 2*rho.at( nb[i][7] ) - rho.at(nb[i][3]);
-
-			// _T = 2*T.at( nb[i][7] ) - T.at(nb[i][3]);
-
 
 			break;
 
@@ -494,7 +478,19 @@ void singleRangeIntForce::update( scalarField& rho, scalarField& T ) {
 // 	if( isOnBnd ) {
 
 // 	    for( uint j = 0 ; j < 3 ; j++ )
-// 		_force[i][j] = 0;
+// 	    	_force[i][j] = 0;
+
+
+// 	    scalar phi = potential( rho.at(i), T.at(i), cs2 );
+	    
+// 	    if( _mesh.latticePoint(i)[1] == 0 ) {
+
+// 	    	_force[i][1] = -phi * ( potential( rho.at(nb[i][4]), T.at(nb[i][4]), cs2 ) - phi );
+
+// 	    	_force[i][0] = -phi * 0.5 * (potential( rho.at(nb[i][3]), T.at(nb[i][3]), cs2 ) - potential( rho.at(nb[i][1]), T.at(nb[i][1]), cs2 ));
+
+// 	    }
+	    
 
 // 	}
 
