@@ -121,23 +121,65 @@ singleRangeIntForce::~singleRangeIntForce() {}
 	    
 // 	    else {
 
-// 	    	neighId = nb[i][k];
 
-// 	    	if( neighId != -1 ) {
+// 		switch(k) {
+		    
+// 		case 4:
 
-// 	    	    _rho = 2*rho.at(i) - rho.at(neighId);
+// 		    // _rho = rho.at(i);
 
-// 	    	    _T = 2*T.at(i) - T.at(neighId);
+// 		    // _T = T.at(i);
 
-// 	    	}
+			
+// 		    _rho = 2*rho.at(i) - rho.at(nb[i][4]);
 
-// 	    	else {
+// 		    _T = 2*T.at(i) - T.at(nb[i][4]);
 
-// 	    	    _rho = rho.at(i);
+// 		    break;
+			
+// 		case 7:
 
-// 	    	    _T = T.at(i);
+// 		    // _rho = rho.at( nb[i][1] );
 
-// 	    	}
+// 		    // _T = T.at( nb[i][1] );
+
+			    
+// 		    _rho = 2*rho.at( nb[i][1] ) - rho.at( nb[i][8] );
+
+// 		    _T = 2*T.at( nb[i][1] ) - T.at( nb[i][8] );
+
+
+// 		    break;
+			    
+
+
+// 		case 8:
+				
+// 		    // _rho = rho.at( nb[i][3] );
+
+// 		    // _T = T.at( nb[i][3] );
+
+				
+// 		    _rho = 2*rho.at( nb[i][3] ) - rho.at(nb[i][7]);
+
+// 		    _T = 2*T.at( nb[i][3] ) - T.at(nb[i][7]);
+
+
+// 		    break;
+
+
+
+// 		default:
+
+// 		    _rho = rho.at( nb[i][reverse[k]] );
+
+// 		    _T = T.at( nb[i][reverse[k]] );
+
+// 		    break;
+			
+
+// 		}
+		
 
 // 	    }
 
@@ -268,9 +310,9 @@ void singleRangeIntForce::update( scalarField& rho, scalarField& T ) {
 			_T = T.at( nb[i][1] );
 
 			    
-			// _rho = 2*rho.at( nb[i][1] ) - rho.at( nb[i][8] );
+			// _rho = 2*rho.at( nb[i][8] ) - rho.at( nb[i][1] );
 
-			// _T = 2*T.at( nb[i][1] ) - T.at( nb[i][8] );
+			// _T = 2*T.at( nb[i][8] ) - T.at( nb[i][1] );
 
 
 			break;
@@ -284,9 +326,9 @@ void singleRangeIntForce::update( scalarField& rho, scalarField& T ) {
 			_T = T.at( nb[i][3] );
 
 				
-			// _rho = 2*rho.at( nb[i][3] ) - rho.at(nb[i][7]);
+			// _rho = 2*rho.at( nb[i][7] ) - rho.at(nb[i][3]);
 
-			// _T = 2*T.at( nb[i][3] ) - T.at(nb[i][7]);
+			// _T = 2*T.at( nb[i][7] ) - T.at(nb[i][3]);
 
 
 			break;
@@ -395,6 +437,9 @@ void singleRangeIntForce::update( scalarField& rho, scalarField& T ) {
     _force.sync();
 
 }
+
+
+
 
 
 

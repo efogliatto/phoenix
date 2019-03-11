@@ -8,11 +8,6 @@ class simpleAdhesive : public adhesiveForce {
 protected:
 
     
-    /** Aplicable nodes */
-    
-    std::map< uint, scalar > closestNodes;
-
-
     /** Interaction weights */
 
     std::vector<scalar> _weights;
@@ -21,6 +16,11 @@ protected:
     /** Interaction potential */
 
     const scalar potential( const scalar& rho, const scalar& T, const scalar& cs2 ) const;
+
+
+    /** Adhesive constant */
+
+    scalar _Gads;
 
 
 public:
