@@ -12,7 +12,8 @@ interactionForce::interactionForce( const string& dictName,
 				    timeOptions& Time )
 
     : _mesh(mesh),
-      _force(mesh, Time, "Fi", IO::NO_READ, IO::NO_WRITE) {
+      _force(mesh, Time, "Fi", IO::NO_READ, IO::NO_WRITE),
+      _computeOnBnd(false) {
 
 
     // Create eos
@@ -22,13 +23,19 @@ interactionForce::interactionForce( const string& dictName,
     eos = creator.create(dictName, eqName);
 
 
-    // Read Main interaction strenght
+    // Read Main interaction strength
 
     dictionary dict(dictName);
 
     _G = dict.lookUp<scalar>( eqName + "/Forces/Interaction/G" );
 
 
+    // Read flag
+
+    string onbnd = dict.lookUpOrDefault<string>( eqName + "/Forces/Interaction/OnBoundaries", "false" );
+
+    if( onbnd == "true" )
+    	_computeOnBnd = true;
 
 
 }

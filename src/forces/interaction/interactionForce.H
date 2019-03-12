@@ -35,6 +35,11 @@ protected:
     scalar _G;
 
 
+    /** Flag: compute on boundary nodes */
+
+    bool _computeOnBnd;
+
+
 
 public:
 
