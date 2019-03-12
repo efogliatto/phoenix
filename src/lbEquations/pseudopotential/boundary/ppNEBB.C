@@ -90,12 +90,14 @@ void ppNEBB::update( const pseudoPotEquation* ppeq ) {
 
 		ppeq->eqPS( f_eq, rhow, Uw );
 
+		
 		// _pdf[id][2] = _pdf[id][4] + (f_eq[2] - f_eq[4]);
 
 		// _pdf[id][5] = _pdf[id][7] + 0.5 * (   rhow*Uw[0] -  _pdf[id][1] + _pdf[id][3] - f_eq[7] + f_eq[5] - f_eq[8] + f_eq[6] - 0.5*Ft[0]  );
 
 		// _pdf[id][6] = _pdf[id][8] + 0.5 * (  -rhow*Uw[0] +  _pdf[id][1] - _pdf[id][3] - f_eq[7] + f_eq[5] - f_eq[8] + f_eq[6] + 0.5*Ft[0]  );
 
+		
 		_pdf[id][2] = _pdf[id][4];
 
 		_pdf[id][5] = _pdf[id][7] - 0.5 * (  _pdf[id][1] - _pdf[id][3] ) - 0.25*(Ft[0]+Ft[1])  ;

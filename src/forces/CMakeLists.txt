@@ -19,8 +19,7 @@ add_library(forces SHARED
   external/externalForce.C
   adhesive/adhesiveForce.C
   adhesive/noAds.C
-  adhesive/liAdhesive.C
-  adhesive/simpleAdhesive.C  
+  adhesive/phiBasedMod.C
   adhesive/adsForceCreator.C
   pseudopotential/pseudoPotForce.C
   surfaceTension/surfaceTension.C

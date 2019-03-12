@@ -7,14 +7,6 @@
 class singleRangeIntForce : public interactionForce {
 
 
-protected:
-
-
-    /** Interaction weights */
-
-    std::vector<scalar> _weights;
-
-
 public:
 
 

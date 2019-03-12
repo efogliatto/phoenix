@@ -38,7 +38,7 @@ pseudoPotForce::pseudoPotForce( const string& dictName,
 
     adsForceCreator adcreator;
 
-    _Fads = adcreator.create(dictName, eqName, mesh);
+    _Fads = adcreator.create(dictName, eqName, mesh, Time, _Fi);
 
 
 
@@ -64,29 +64,6 @@ pseudoPotForce::~pseudoPotForce() {}
 const vector<scalar> pseudoPotForce::total( const uint& id ) const {
 
 
-    // // Interaction
-    
-    // const scalar Fi[3] = { _Fi->force(id,0), _Fi->force(id,1), _Fi->force(id,2) };
-
-
-    // // Bouyant
-    
-    // const scalar Fb[3] = { _Fb->force( _rho.at(id), 0 ), _Fb->force( _rho.at(id), 1 ), _Fb->force( _rho.at(id), 2 ) };
-
-
-    // // Adhesion
-
-    // scalar Fads[3] = {0,0,0};
-
-    // _Fads->force(id, _rho.at(id), _T.at(id), Fads);
-
-    
-    
-    // return { Fi[0] + Fb[0] + Fads[0] + _Fe[0] * _rho.at(id),
-    // 	     Fi[1] + Fb[1] + Fads[1] + _Fe[1] * _rho.at(id),
-    // 	     Fi[2] + Fb[2] + Fads[2] + _Fe[2] * _rho.at(id) };
-
-
     scalar F[3] = {0,0,0};
 
     pseudoPotForce::total(F,id);
@@ -102,41 +79,27 @@ const vector<scalar> pseudoPotForce::total( const uint& id ) const {
 
 void pseudoPotForce::total( scalar Ft[3], const uint& id ) const {
 
-    // if( _mesh.latticePoint(id)[1] != 0 ) {
 
-
-	// Interaction
+    // Interaction
     
-	const scalar Fi[3] = { _Fi->force(id,0), _Fi->force(id,1), _Fi->force(id,2) };
+    const scalar Fi[3] = { _Fi->force(id,0), _Fi->force(id,1), _Fi->force(id,2) };
 
 
-	// Buoyant
+    // Buoyant
     
-	const scalar Fb[3] = { _Fb->force( _rho.at(id), 0 ), _Fb->force( _rho.at(id), 1 ), _Fb->force( _rho.at(id), 2 ) }; 
+    const scalar Fb[3] = { _Fb->force( _rho.at(id), 0 ), _Fb->force( _rho.at(id), 1 ), _Fb->force( _rho.at(id), 2 ) }; 
 
     
-	// Adhesion
+    // Adhesion
 
-	scalar Fads[3] = {0,0,0};
+    const scalar Fads[3] = { _Fads->force(id,0), _Fads->force(id,1), _Fads->force(id,2) };
+	
 
-	_Fads->force(id, _rho, _T, Fads);
-
+    // Total force
     
-    
-	Ft[0] = Fi[0] + Fb[0] + Fads[0] + _Fe[0] * _rho.at(id);
-	Ft[1] = Fi[1] + Fb[1] + Fads[1] + _Fe[1] * _rho.at(id);
-	Ft[2] = Fi[2] + Fb[2] + Fads[2] + _Fe[2] * _rho.at(id);
-
-    // }
-
-    // else {
-
-    // 	Ft[0] = 0;
-    // 	Ft[1] = 0;
-    // 	Ft[2] = 0;	
-
-    // }
-
+    Ft[0] = Fi[0] + Fb[0] + Fads[0] + _Fe[0] * _rho.at(id);
+    Ft[1] = Fi[1] + Fb[1] + Fads[1] + _Fe[1] * _rho.at(id);
+    Ft[2] = Fi[2] + Fb[2] + Fads[2] + _Fe[2] * _rho.at(id);
    
 }
 
@@ -170,6 +133,8 @@ void pseudoPotForce::update( scalarField& rho, scalarField& T ) {
 
     _Fb->update(rho);
 
+    _Fads->update(rho,T);
+
 }
 
 
@@ -179,6 +144,8 @@ void pseudoPotForce::update( scalarField& rho, scalarField& T ) {
 void pseudoPotForce::sync() {
 
     _Fi->sync();
+
+    _Fads->sync();
 
 }
 

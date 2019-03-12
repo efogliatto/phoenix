@@ -11,7 +11,7 @@ public:
     
     /** Constructor */
 
-    noAds( const std::string& dictName, const std::string& eqName, const latticeMesh& mesh );
+    noAds( const std::string& dictName, const std::string& eqName, const latticeMesh& mesh, const interactionForce* Fi, timeOptions& Time );
 
 
     /** Destructor */
@@ -19,9 +19,10 @@ public:
     ~noAds();
 
 
-    /** Force at specific node */
 
-    const void force( const uint& i, const scalarField& rho, const scalarField& T, scalar f[3] ) const;
+    /** Update force field */
+
+    void update( scalarField& rho, scalarField& T ) {}
 
     
 };

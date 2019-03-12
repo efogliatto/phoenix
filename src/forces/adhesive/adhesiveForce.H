@@ -7,6 +7,17 @@
 
 #include <scalarField.H>
 
+#include <vectorField.H>
+
+#include <intForce.H>
+
+
+/*
+
+  Adhesive force applies only on local nodes (like interaction force)
+
+ */
+
 
 class adhesiveForce {
 
@@ -18,9 +29,20 @@ protected:
     const latticeMesh& _mesh;
 
 
-    /** Equation of state */
+    /** Reference to related interaction force */
 
-    EOS* eos;
+    const interactionForce* _Fi;
+
+
+    /** Force field */
+
+    vectorField _force;
+
+    
+    /** Map of nodes where adhesive force applies */
+
+    std::map<uint, scalar> _Gads;
+    
 
 
 public:
@@ -28,17 +50,30 @@ public:
     
     /** Constructor */
 
-    adhesiveForce( const std::string& dictName, const std::string& eqName, const latticeMesh& mesh );
+    adhesiveForce( const std::string& dictName, const std::string& eqName, const latticeMesh& mesh, const interactionForce* Fi, timeOptions& Time );
 
 
     /** Destructor */
 
     ~adhesiveForce();
 
+    
+    /** Update force field */
+
+    virtual void update( scalarField& rho, scalarField& T ) = 0;
+
 
     /** Force at specific node */
 
-    virtual const void force( const uint& i, const scalarField& rho, const scalarField& T, scalar f[3] ) const = 0;
+    const std::vector<scalar>& force( const uint& i ) { return _force[i]; }
+
+    const scalar force( const uint& i, const uint& j ) { return _force[i][j]; }
+
+
+    /** Sync force field */
+
+    const void sync() { _force.sync(); }
+    
 
     
 

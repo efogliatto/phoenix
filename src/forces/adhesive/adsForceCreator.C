@@ -9,8 +9,17 @@ using namespace std;
     
 adhesiveForce* adsForceCreator::create( const string& dictName,
 					const string& eqName,
-					const latticeMesh& mesh ) {
+					const latticeMesh& mesh,
+					timeOptions& Time,
+					const interactionForce* Fi) {
 
+
+    // Initialize types
+
+    _adsMapType["none"]           = adsType::NONE;
+    _adsMapType["Phi-based-mod"]  = adsType::PHI_BASED_MOD;
+
+    
     
     // Load model name from dictionary
 
@@ -18,46 +27,46 @@ adhesiveForce* adsForceCreator::create( const string& dictName,
 
     string ftype = dict.lookUpOrDefault<string>( eqName + "/Forces/Adhesive/type", "none" );
 
-    
-    if( ftype == "liAdhesive" ) {
 
-    	return new liAdhesive(dictName, eqName, mesh);
+    if( _adsMapType.find(ftype) != _adsMapType.end() ) {
 
-    }
-
-    else {
-
-	if( ftype == "none" ) {
-
-	    return new noAds(dictName, eqName, mesh);
-
-	}
-
-	else {
-
-
-	    if( ftype == "simpleAdhesive" ) {
-
-		return new simpleAdhesive(dictName, eqName, mesh);
-
-	    }
+	
+    	switch( _adsMapType[ftype] ) {
 
 	    
-	    else {
+    	case adsType::NONE:
+
+    	    return new noAds(dictName, eqName, mesh, Fi, Time);
+
+    	    break;
 
 
-		// Default
+
+    	case adsType::PHI_BASED_MOD:
+
+    	    return new phiBasedMod(dictName, eqName, mesh, Fi, Time);
+
+    	    break;	   
+
+	    
+    	}
+
+	
+    }
+
     
-		cout << endl << " [ERROR]  Adhesive force type " << ftype << " not available" << endl << endl;
-
-		exit(1);
+    else {
 
 
-	    }
+    	// Default
+    
+    	cout << endl << " [ERROR]  Adhesion force type " << ftype << " not available" << endl << endl;
 
-	}
+    	exit(1);
     
     }
+
+    
 
     
     return 0;

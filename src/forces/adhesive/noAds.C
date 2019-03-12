@@ -7,23 +7,14 @@ using namespace std;
 
 noAds::noAds( const string& dictName,
 	      const string& eqName,
-	      const latticeMesh& mesh )
+	      const latticeMesh& mesh,
+	      const interactionForce* Fi,
+	      timeOptions& Time )
 
-    : adhesiveForce(dictName, eqName, mesh) {}
+    : adhesiveForce(dictName, eqName, mesh, Fi, Time) {}
 
 
 
 /** Destructor */
 
 noAds::~noAds() {}
-
-
-/** Force at specific node */
-
-const void noAds::force( const uint& i, const scalarField& rho, const scalarField& T, scalar f[3] ) const {
-
-    f[0] = 0;
-    f[1] = 0;
-    f[2] = 0;
-
-}

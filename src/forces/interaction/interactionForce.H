@@ -40,6 +40,11 @@ protected:
     bool _computeOnBnd;
 
 
+    /** Interaction weights */
+
+    std::vector<scalar> _weights;
+
+    
 
 public:
 
@@ -84,6 +89,11 @@ public:
     /** Synv force field */
 
     const void sync() { _force.sync(); }
+
+
+    /** Potential weights */
+
+    const std::vector<scalar>& weights() const { return _weights; }
     
 
 };
