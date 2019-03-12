@@ -210,8 +210,16 @@ void singleRangeIntForce::update( scalarField& rho, scalarField& T ) {
 		    for( uint j = 0 ; j < 3 ; j++ )
 			_force[i][j] = 0;
 
-		}
+		}		
 
+	    }
+
+	    
+	    else {
+	    
+		for( uint j = 0 ; j < 3 ; j++ )
+			_force[i][j] = 0;
+		
 	    }
 
 	}
