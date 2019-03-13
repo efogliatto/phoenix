@@ -518,23 +518,54 @@ const void scalarField::grad(scalar g[3], const uint& id, const bool inverse) co
 
 	}
 
+
+	// If neighbour does not exist, use virtual node
+
 	else {
 
-	    int otherNb = nb[id][reverse[k]];
+	    int first( mesh.vnode(id, reverse[k]) ),
+		second( mesh.vnode(id, reverse[k], false) );
 
-	    if( otherNb != -1 ) {
+	    scalar fval(0);
 
-		for( uint j = 0 ; j < 3 ; j++ )
-		    inverse  ?  g[j] += omega[k] * vel[reverse[k]][j] / ((2.0*field[id] - field[otherNb]) * cs2 )  :  g[j] += omega[k] * vel[reverse[k]][j] * (2.0*field[id]-field[otherNb]) / cs2;
+	    if( second != -1 ) {
+
+		inverse ? fval = 2/field[first] - 1/field[second] : fval = 2*field[first] - field[second];
 
 	    }
 
 	    else {
 
-		for( uint j = 0 ; j < 3 ; j++ )
-		    inverse  ?  g[j] += omega[k] * vel[reverse[k]][j] / (field[id] * cs2 )  :  g[j] += omega[k] * vel[reverse[k]][j] * field[id] / cs2;
+		inverse ? fval = 1/field[first] : fval = field[first];
 
 	    }
+
+
+	    // Add virtual node contribution
+
+	    for( uint j = 0 ; j < 3 ; j++ )
+		g[j] += omega[k] * vel[reverse[k]][j] * fval / cs2;
+
+
+	    
+
+	    // int otherNb = nb[id][reverse[k]];
+
+	    // if( otherNb != -1 ) {
+
+	    // 	for( uint j = 0 ; j < 3 ; j++ )
+	    // 	    inverse  ?  g[j] += omega[k] * vel[reverse[k]][j] / ((2.0*field[id] - field[otherNb]) * cs2 )  :  g[j] += omega[k] * vel[reverse[k]][j] * (2.0*field[id]-field[otherNb]) / cs2;
+
+	    // }
+
+	    // else {
+
+	    // 	for( uint j = 0 ; j < 3 ; j++ )
+	    // 	    inverse  ?  g[j] += omega[k] * vel[reverse[k]][j] / (field[id] * cs2 )  :  g[j] += omega[k] * vel[reverse[k]][j] * field[id] / cs2;
+
+	    // }
+
+	    
 
 	}
 
@@ -589,51 +620,69 @@ const scalar scalarField::laplacian(const uint& id, const bool inverse) const {
 
 	if( nbid != -1 ) {
 
-	    // inverse  ?  lap += 2.0 * omega[k] * ((1/field[nbid] - 1/field[id]) ) / cs2  :  lap += 2.0 * omega[k] * (field[nbid] - field[id]) / cs2;
-	    
-	    if(inverse) {
-		
-		lap += 2.0 * omega[k] * ((1/field[nbid] - 1/field[id]) ) / cs2;
-		
-	    }
-
-	    else {
-
-		lap += 2.0 * omega[k] * (field[nbid] - field[id]) / cs2;
-
-	    }
+	    inverse  ?  lap += 2.0 * omega[k] * ((1/field[nbid] - 1/field[id]) ) / cs2  :  lap += 2.0 * omega[k] * (field[nbid] - field[id]) / cs2;	    
 
 	}
 
+	
+	// If neighbour does not exist, use virtual node
+	
 	else {
 
-	    int otherNb = nb[id][reverse[k]];
+	    
+	    int first( mesh.vnode(id, reverse[k]) ),
+		second( mesh.vnode(id, reverse[k], false) );
 
-	    if( otherNb != -1 ) {
+	    scalar fval(0);
 
-		scalar extpNb = 2.0*field[id]-field[otherNb];
+	    if( second != -1 ) {
 
-	    	// inverse  ?  lap += 2.0 * omega[k]  * ((1.0/extpNb - 1/field[id]) ) / cs2  :  lap += 2.0 * omega[k] * (extpNb - field[id]) / cs2;
-
-		if( inverse ) {
-
-		    lap += 2.0 * omega[k]  * ((1.0/extpNb - 1/field[id]) ) / cs2;
-
-		}
-
-		else {
-
-		    lap += 2.0 * omega[k] * (extpNb - field[id]) / cs2;
-
-		}
+		inverse ? fval = 2/field[first] - 1/field[second] : fval = 2*field[first] - field[second];
 
 	    }
 
 	    else {
 
-
+		inverse ? fval = 1/field[first] : fval = field[first];
 
 	    }
+
+
+	    // Add virtual node contribution
+
+	    inverse  ?  lap += 2.0 * omega[k] * ((fval - 1/field[id]) ) / cs2  :  lap += 2.0 * omega[k] * (fval - field[id]) / cs2;	    	    
+
+
+	    
+
+	    // int otherNb = nb[id][reverse[k]];
+
+	    // if( otherNb != -1 ) {
+
+	    // 	scalar extpNb = 2.0*field[id]-field[otherNb];
+
+	    // 	// inverse  ?  lap += 2.0 * omega[k]  * ((1.0/extpNb - 1/field[id]) ) / cs2  :  lap += 2.0 * omega[k] * (extpNb - field[id]) / cs2;
+
+	    // 	if( inverse ) {
+
+	    // 	    lap += 2.0 * omega[k]  * ((1.0/extpNb - 1/field[id]) ) / cs2;
+
+	    // 	}
+
+	    // 	else {
+
+	    // 	    lap += 2.0 * omega[k] * (extpNb - field[id]) / cs2;
+
+	    // 	}
+
+	    // }
+
+	    // else {
+
+
+
+	    // }
+	    
 
 	}
 
