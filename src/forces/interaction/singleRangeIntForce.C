@@ -69,8 +69,7 @@ singleRangeIntForce::~singleRangeIntForce() {}
 
 
 
-/** Update force field */
-/** Ghost nodes */
+/** Update force field. Use of virtual nodes if requested */
 
 void singleRangeIntForce::update( scalarField& rho, scalarField& T ) {
 
@@ -121,99 +120,66 @@ void singleRangeIntForce::update( scalarField& rho, scalarField& T ) {
 
 	    if( _computeOnBnd ) {
 
-		if( _mesh.latticePoint(i)[1] == 0 ) {
 
+		// Acum force
 
-		    scalar _rho(0);
-
-		    scalar _T(0);
-
-		    vector<scalar> F = {0, 0, 0};
+		vector<scalar> F = {0, 0, 0};
 		
 
-		    for( uint k = 1 ; k < q ; k++ ) {
+
+		// Move over velocities
+		
+		for( uint k = 1 ; k < q ; k++ ) {
 
 
-			switch(k) {
+		    // Neighbour index
+
+		    int neighId = nb[i][ reverse[k] ];
+
+
+		    // Virtual node
 		    
-			case 4:
+		    if( neighId == -1 ) {
 
-			    _rho = rho.at(i);
+			neighId = _mesh.vnode(i,k);
 
-			    _T = T.at(i);
+		    }
 
-			    break;
+		    scalar _rho = rho.at( neighId );
 
-			
-			case 7:
+		    scalar _T = T.at( neighId );
 
-			    _rho = rho.at( nb[i][1] );
-
-			    _T = T.at( nb[i][1] );
-			    
-			    break;
-			    
-
-
-			case 8:
-				
-			    _rho = rho.at( nb[i][3] );
-
-			    _T = T.at( nb[i][3] );
-
-			    break;
-
-
-
-			default:
-
-			    _rho = rho.at( nb[i][reverse[k]] );
-
-			    _T = T.at( nb[i][reverse[k]] );
-
-			    break;
-			
-
-			}
-
-
+		    scalar alpha = _weights[k] * potential( _rho, _T, cs2 );
 		    
-			scalar alpha = _weights[k] * potential( _rho, _T, cs2 );
 	    
-			for( uint j = 0 ; j < 3 ; j++ ) {
+		    for( uint j = 0 ; j < 3 ; j++ ) {
 
-			    F[j] +=  alpha * (scalar)vel[k][j] ;
+			F[j] +=  alpha * (scalar)vel[k][j] ;
 
-			}		    		    		    
-    
-
-		    }
-
-		
-		
-		    // Extra constant
-		
-		    scalar beta = -_G * potential( rho[i], T[i], cs2 );
-    
-		    for( uint j = 0 ; j < 3 ; j++) {
-	
-			_force[i][j] =  F[j] * beta;
-	
-		    }
-	
-		
+		    }		    
+		    
 
 		}
 
-		else {
-	    
-		    for( uint j = 0 ; j < 3 ; j++ )
-			_force[i][j] = 0;
 
+
+		// Extra constant
+		
+		scalar beta = -_G * potential( rho.at(i), T.at(i), cs2 );
+    
+		for( uint j = 0 ; j < 3 ; j++) {
+	
+		    _force[i][j] =  F[j] * beta;
+	
 		}		
+		
 
 	    }
 
+
+
+
+	    // Do not compute on boundary if not enabled
 	    
 	    else {
 	    
@@ -221,6 +187,7 @@ void singleRangeIntForce::update( scalarField& rho, scalarField& T ) {
 			_force[i][j] = 0;
 		
 	    }
+	    
 
 	}
 

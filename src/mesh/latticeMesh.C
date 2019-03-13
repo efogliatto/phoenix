@@ -38,6 +38,11 @@ latticeMesh::latticeMesh( const int& pid, const bool& msg ) : parallel(pid) {
 
     readBoundaryNodes();
 
+
+    // Virtual nodes
+
+    readVirtualNodes();    
+
     
 
 }
@@ -315,93 +320,165 @@ const void latticeMesh::readBoundaryNodes() {
     }
 
 
-    // Create map for closests nodes
+    // // Create map for closests nodes
 
-    const uint q = lmodel()->q();    
+    // const uint q = lmodel()->q();    
     
-    for( const auto &bd : boundary ) {
+    // for( const auto &bd : boundary ) {
 
-    	for( auto id : bd.second ) {
+    // 	for( auto id : bd.second ) {
 
 
 
-	    // Dont check for periodic nodes
+    // 	    // Dont check for periodic nodes
 
-	    bool is_periodic(true);
+    // 	    bool is_periodic(true);
 	    
-    	    for( uint k = 0 ; k < q ; k++ ) {
+    // 	    for( uint k = 0 ; k < q ; k++ ) {
 
-		if(nb[id][k] == -1)
-		    is_periodic = false;
+    // 		if(nb[id][k] == -1)
+    // 		    is_periodic = false;
 
-	    }
+    // 	    }
 
 	    
 
-	    // Check neighbour of boundary node
+    // 	    // Check neighbour of boundary node
 
-	    if( !is_periodic ) {
+    // 	    if( !is_periodic ) {
 	    
-		for( uint k = 0 ; k < q ; k++ ) {
+    // 		for( uint k = 0 ; k < q ; k++ ) {
 
-		    int nbid = nb[id][k];
+    // 		    int nbid = nb[id][k];
 
 		
-		    if(  (nbid != -1)  &&  (nbid < (int)local())  ) {
+    // 		    if(  (nbid != -1)  &&  (nbid < (int)local())  ) {
 
-			bool is_on_bnd(false);
+    // 			bool is_on_bnd(false);
 		    
-			for( uint l = 0 ; l < q ; l++ ) {
+    // 			for( uint l = 0 ; l < q ; l++ ) {
 
-			    if( nb[nbid][l] == -1 ) {
+    // 			    if( nb[nbid][l] == -1 ) {
 
-				is_on_bnd = true;
+    // 				is_on_bnd = true;
 
-			    }
+    // 			    }
 
-			}
-
-
-			// Neighbour on boundary node is not on boundary
-
-			if( !is_on_bnd ) {
+    // 			}
 
 
-			    // Before adding to closestNodes, check if it is not already in the map
+    // 			// Neighbour on boundary node is not on boundary
 
-			    bool isClosest(false);
+    // 			if( !is_on_bnd ) {
+
+
+    // 			    // Before adding to closestNodes, check if it is not already in the map
+
+    // 			    bool isClosest(false);
 			
-			    for( const auto &cnbd : closestNodes ) {
+    // 			    for( const auto &cnbd : closestNodes ) {
 
-				if( std::find(cnbd.second.begin(), cnbd.second.end(), nbid) != cnbd.second.end() )
-				    isClosest = true;
+    // 				if( std::find(cnbd.second.begin(), cnbd.second.end(), nbid) != cnbd.second.end() )
+    // 				    isClosest = true;
 			    
-			    }
+    // 			    }
 
-			    if( !isClosest )
-				closestNodes[bd.first].push_back(nbid);
+    // 			    if( !isClosest )
+    // 				closestNodes[bd.first].push_back(nbid);
 			
 
-			}
+    // 			}
 
 		    
 
 
-		    }
+    // 		    }
 		
-		}
+    // 		}
 		
-    	    }
+    // 	    }
 
 	    
 
-    	}
+    // 	}
 
-    }    
+    // }    
     
     
 
 }
+
+
+
+
+
+
+
+
+
+/** Read boundary nodes */
+
+const void latticeMesh::readVirtualNodes() {
+
+
+    const int pid = parallel.id();
+
+    
+    ifstream inFile( ("processor" + to_string(pid) + "/lattice/virtualNodes").c_str() );
+
+    if( inFile.is_open() ) {
+
+	
+    	// Total number of virtual nodes
+
+    	uint nv;
+
+    	inFile >> nv;
+
+
+    	// Read virtual nodes
+
+    	for( uint i = 0 ; i < nv ; i++ ) {
+
+
+    	    uint node, vid;
+
+	    int v1, v2;
+
+	    inFile >> node;
+
+	    inFile >> vid;
+
+	    inFile >> v1;
+
+	    inFile >> v2;	    
+
+
+	    _virtualNodes[node][vid][0] = v1;
+
+	    _virtualNodes[node][vid][1] = v2;	    
+	    
+    	}
+	
+
+    	inFile.close();	
+
+    }
+
+    else {
+
+    	if( pid == 0 ) {
+
+    	    cout << endl << " [ERROR] Unable to open file" << "processor" + to_string(pid) + "/lattice/virtualNodes"  << endl << endl;
+
+    	}
+
+    }
+
+
+}
+
+
 
 
 
@@ -450,5 +527,21 @@ const string latticeMesh::nodeToBoundary( const uint id ) const {
     }
 
     return bd;
+
+}
+
+
+
+
+// Real node index related to virtual nodes at nid
+    
+const int latticeMesh::vnode(const uint& nid, const uint& vid, const bool first) const {
+
+    uint n(0);
+
+    if(!first)
+    	n = 1;
+    
+    return _virtualNodes.at(nid).at(vid)[n];
 
 }

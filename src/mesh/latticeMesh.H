@@ -56,10 +56,14 @@ protected:
     std::map<uint, std::string> nodeToBnd;
 
 
-    /** Aplicable nodes */
+    // /** Aplicable nodes */
     
-    std::map< std::string, std::vector<uint> > closestNodes;
-    
+    // std::map< std::string, std::vector<uint> > closestNodes;
+
+
+    /** Virtual nodes */
+
+    std::map< uint, std::map<uint, int[2]> > _virtualNodes;
 
 
 
@@ -81,8 +85,12 @@ protected:
     /** Read boundary nodes */
 
     const void readBoundaryNodes();
-    
 
+
+    /** Read virtual nodes */
+    
+    const void readVirtualNodes();
+    
 
 
 public:
@@ -160,9 +168,14 @@ public:
     const std::string nodeToBoundary( const uint id ) const;
 
 
-    /** Nodes close to boundaries */
+    // /** Nodes close to boundaries */
 
-    const std::map< std::string, std::vector<uint> >& nodesCloseToBoundary() const { return closestNodes; }
+    // const std::map< std::string, std::vector<uint> >& nodesCloseToBoundary() const { return closestNodes; }
+
+
+    // Real node index related to virtual nodes at nid
+    
+    const int vnode(const uint& nid, const uint& vid, const bool first = true) const;
 
 
     /** Boundary normal type */
