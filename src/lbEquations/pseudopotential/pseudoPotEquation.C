@@ -116,9 +116,7 @@ const scalar pseudoPotEquation::localDensityWithUnknowns( const uint& id, lattic
 
 	default:
 
-	    cout << "Unable to compute local density" << endl;
-
-	    exit(1);
+	    rw = rho.at(id);
 	    
 	    break;
 
