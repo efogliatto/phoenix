@@ -52,7 +52,7 @@ void ppNEBB::update( const pseudoPotEquation* ppeq ) {
 
     	uint id = _nodes[i];
 
-	scalar rhow(0);
+	// scalar rhow(0);
 	
 	scalar Ft[3] = {0,0,0};
 	
@@ -73,24 +73,31 @@ void ppNEBB::update( const pseudoPotEquation* ppeq ) {
 
 	    case latticeMesh::normalType::Y1:
 	    
-		rhow = ppeq->localDensityWithUnknowns( id, _normal[i] );
+		// rhow = ppeq->localDensityWithUnknowns( id, _normal[i] );
 
-		ppeq->eqPS( f_eq, rhow, Uw );
+		// ppeq->eqPS( f_eq, rhow, Uw );
 
-		_pdf[id][4] = _pdf[id][2] + (f_eq[4] - f_eq[2]);
+		// _pdf[id][4] = _pdf[id][2] + (f_eq[4] - f_eq[2]);
 
-		_pdf[id][7] = _pdf[id][5] + 0.5 * (  -rhow*Uw[0] +  _pdf[id][1] - _pdf[id][3] + f_eq[7] - f_eq[5] + f_eq[8] - f_eq[6] + 0.5*Ft[0]  );
+		// _pdf[id][7] = _pdf[id][5] + 0.5 * (  -rhow*Uw[0] +  _pdf[id][1] - _pdf[id][3] + f_eq[7] - f_eq[5] + f_eq[8] - f_eq[6] + 0.5*Ft[0]  );
 
-		_pdf[id][8] = _pdf[id][6] + 0.5 * (   rhow*Uw[0] -  _pdf[id][1] + _pdf[id][3] + f_eq[7] - f_eq[5] + f_eq[8] - f_eq[6] - 0.5*Ft[0]  );
+		// _pdf[id][8] = _pdf[id][6] + 0.5 * (   rhow*Uw[0] -  _pdf[id][1] + _pdf[id][3] + f_eq[7] - f_eq[5] + f_eq[8] - f_eq[6] - 0.5*Ft[0]  );
+
+
+		_pdf[id][4] = _pdf[id][2];
+
+		_pdf[id][7] = _pdf[id][5] + 0.5 * (  _pdf[id][1] - _pdf[id][3] ) + 0.25*(Ft[0]+Ft[1])  ;
+
+		_pdf[id][8] = _pdf[id][6] - 0.5 * (  _pdf[id][1] - _pdf[id][3] ) - 0.25*(Ft[0]-Ft[1]);		
 	    
 		break;
 
 
 	    case latticeMesh::normalType::Y0:
 	    
-		rhow = ppeq->localDensityWithUnknowns( id, _normal[i] );	       
+		// rhow = ppeq->localDensityWithUnknowns( id, _normal[i] );	       
 
-		ppeq->eqPS( f_eq, rhow, Uw );
+		// ppeq->eqPS( f_eq, rhow, Uw );
 
 		
 		// _pdf[id][2] = _pdf[id][4] + (f_eq[2] - f_eq[4]);
@@ -112,30 +119,46 @@ void ppNEBB::update( const pseudoPotEquation* ppeq ) {
 
 	    case latticeMesh::normalType::X0:
 
-		rhow = ppeq->localDensityWithUnknowns( id, _normal[i] );
+		// rhow = ppeq->localDensityWithUnknowns( id, _normal[i] );
 
-		ppeq->eqPS( f_eq, rhow, Uw );
+		// ppeq->eqPS( f_eq, rhow, Uw );
 
-		_pdf[id][1] = _pdf[id][3] + (f_eq[1] - f_eq[3]);
+		// _pdf[id][1] = _pdf[id][3] + (f_eq[1] - f_eq[3]);
 
-		_pdf[id][5] = _pdf[id][7] + 0.5 * (   rhow*Uw[1] -  _pdf[id][2] + _pdf[id][4] + f_eq[5] - f_eq[7] + f_eq[8] - f_eq[6] - 0.5*Ft[1]  );
+		// _pdf[id][5] = _pdf[id][7] + 0.5 * (   rhow*Uw[1] -  _pdf[id][2] + _pdf[id][4] + f_eq[5] - f_eq[7] + f_eq[8] - f_eq[6] - 0.5*Ft[1]  );
 
-		_pdf[id][8] = _pdf[id][6] + 0.5 * (  -rhow*Uw[1] +  _pdf[id][2] - _pdf[id][4] + f_eq[5] - f_eq[7] + f_eq[8] - f_eq[6] + 0.5*Ft[1]  );		
+		// _pdf[id][8] = _pdf[id][6] + 0.5 * (  -rhow*Uw[1] +  _pdf[id][2] - _pdf[id][4] + f_eq[5] - f_eq[7] + f_eq[8] - f_eq[6] + 0.5*Ft[1]  );
+
+		
+		_pdf[id][1] = _pdf[id][3];
+
+		_pdf[id][5] = _pdf[id][7] + 0.5 * (  _pdf[id][4] - _pdf[id][2] ) + 0.25*(Ft[0]+Ft[1]);
+
+		_pdf[id][8] = _pdf[id][6] - 0.5 * (  _pdf[id][4] - _pdf[id][2] ) + 0.25*(Ft[0]-Ft[1]);
+		
 	    
 	    	break;
 
 
 	    case latticeMesh::normalType::X1:
 
-		rhow = ppeq->localDensityWithUnknowns( id, _normal[i] );
+		// rhow = ppeq->localDensityWithUnknowns( id, _normal[i] );
 
-		ppeq->eqPS( f_eq, rhow, Uw );
+		// ppeq->eqPS( f_eq, rhow, Uw );
 
-		_pdf[id][3] = _pdf[id][1] + (f_eq[3] - f_eq[1]);
+		// _pdf[id][3] = _pdf[id][1] + (f_eq[3] - f_eq[1]);
 
-		_pdf[id][7] = _pdf[id][5] + 0.5 * (  -rhow*Uw[1] +  _pdf[id][2] - _pdf[id][4] - f_eq[5] + f_eq[7] - f_eq[8] + f_eq[6] + 0.5*Ft[1]  );
+		// _pdf[id][7] = _pdf[id][5] + 0.5 * (  -rhow*Uw[1] +  _pdf[id][2] - _pdf[id][4] - f_eq[5] + f_eq[7] - f_eq[8] + f_eq[6] + 0.5*Ft[1]  );
 
-		_pdf[id][6] = _pdf[id][8] + 0.5 * (   rhow*Uw[1] -  _pdf[id][2] + _pdf[id][4] - f_eq[5] + f_eq[7] - f_eq[8] + f_eq[6] - 0.5*Ft[1]  );
+		// _pdf[id][6] = _pdf[id][8] + 0.5 * (   rhow*Uw[1] -  _pdf[id][2] + _pdf[id][4] - f_eq[5] + f_eq[7] - f_eq[8] + f_eq[6] - 0.5*Ft[1]  );
+
+
+		_pdf[id][3] = _pdf[id][1];
+
+		_pdf[id][7] = _pdf[id][5] - 0.5 * (  _pdf[id][4] - _pdf[id][2] ) - 0.25*(Ft[0]+Ft[1]);
+
+		_pdf[id][6] = _pdf[id][8] + 0.5 * (  _pdf[id][4] - _pdf[id][2] ) - 0.25*(Ft[0]-Ft[1]);
+		
 	    
 	    	break;	    
 	    

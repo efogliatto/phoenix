@@ -42,12 +42,28 @@ const scalar pseudoPotEquation::localDensity( const uint& id ) const {
 
     scalar r(0);
 
-    const uint q = mesh.lmodel()->q();
+    if( mesh.latticePoint(id)[1] != 0 ) {
+
+	const uint q = mesh.lmodel()->q();
     
-    for( uint k = 0 ; k < q ; k++ )
-    	r += _pdf[id][k];
+	for( uint k = 0 ; k < q ; k++ )
+	    r += _pdf[id][k];
 
+    }
 
+    else {
+
+	const vector< vector<int> >& nb = mesh.nbArray();
+
+	int neigh = nb[ nb[id][4] ][4];
+
+	if(neigh == -1)
+	    neigh = nb[id][4];
+
+	r = rho.at(neigh) + tan( M_PI/2 - (45)*M_PI/180 ) * abs( rho.at(nb[id][7]) - rho.at(nb[id][8]) );
+
+    }
+    
     return r;    
 
 }
@@ -227,8 +243,13 @@ const void pseudoPotEquation::collision() {}
 
 const void pseudoPotEquation::updateMacroDensity() {
 
-    for( uint i = 0 ; i < mesh.npoints() ; i++ )
+    // for( uint i = 0 ; i < mesh.npoints() ; i++ )
+    // 	rho[i] = localDensity(i);
+
+    for( uint i = 0 ; i < mesh.local() ; i++ )
 	rho[i] = localDensity(i);
+
+    rho.sync();
 
 }
 
