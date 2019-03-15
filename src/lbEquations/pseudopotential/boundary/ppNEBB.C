@@ -34,9 +34,11 @@ void ppNEBB::update( const pseudoPotEquation* ppeq ) {
 
     // Lattice constants
     
-    const uint q = _mesh.lmodel()->q();
+    const uint q = _mesh.lmodel()->q();  
 
     vector<scalar> f_eq(q);
+
+
 
     
 
@@ -86,7 +88,7 @@ void ppNEBB::update( const pseudoPotEquation* ppeq ) {
 
 	    case latticeMesh::normalType::Y0:
 	    
-		rhow = ppeq->localDensityWithUnknowns( id, _normal[i] );
+		rhow = ppeq->localDensityWithUnknowns( id, _normal[i] );	       
 
 		ppeq->eqPS( f_eq, rhow, Uw );
 
