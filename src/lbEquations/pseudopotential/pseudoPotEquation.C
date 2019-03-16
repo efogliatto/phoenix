@@ -73,7 +73,6 @@ const scalar pseudoPotEquation::localDensity( const uint& id ) const {
     	if(neigh == -1)
     	    neigh = nb[id][4];
 
-	cout << neigh << endl;
 	r = rho.at(neigh) + tan( M_PI/2 - (45)*M_PI/180 ) * abs( rho.at(nb[id][7]) - rho.at(nb[id][8]) );
 
     }
