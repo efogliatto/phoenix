@@ -186,7 +186,7 @@ vector<uint> pseudoPotEqHandler::contactLine() const {
 
 	    if(  ( rhoDev[j] > rhoDev[j-1] )  &&  ( rhoDev[j] >= rhoDev[j+1] )  ) {
 
-		if(j < _mesh.local())
+		if(_mesh.latticePoint( bnodes[j] )[1] == 0)	       
 		    contactNodes.push_back( bnodes[j] );
 
 	    }
