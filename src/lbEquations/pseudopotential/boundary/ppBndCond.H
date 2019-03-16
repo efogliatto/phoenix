@@ -63,6 +63,11 @@ public:
 
     virtual const void updateIntForce( pseudoPotEquation* ppeq ) const {}
 
+
+    /** Reference to nodes */
+
+    const std::vector<uint>& bdNodes() { return _nodes; }
+
 };
 
 

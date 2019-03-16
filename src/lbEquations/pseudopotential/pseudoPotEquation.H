@@ -36,6 +36,11 @@ protected:
 
     pseudoPotForce F;
 
+
+    /** Contact points */
+
+    std::vector<uint> _contactNodes;
+
   
     
 
@@ -133,6 +138,11 @@ public:
     /** Compute and set pressure field */
 
     virtual const void pressure( const scalarField& phi, scalarField& p );
+
+
+    /** Update contact nodes */
+
+    const void updateContactNodes( const std::vector<uint>& contact );
     
 };
 

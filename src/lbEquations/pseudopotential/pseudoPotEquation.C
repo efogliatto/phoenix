@@ -1,5 +1,7 @@
 #include <pseudoPotEquation.H>
 
+#include <algorithm>
+
 using namespace std;
 
 
@@ -42,34 +44,42 @@ const scalar pseudoPotEquation::localDensity( const uint& id ) const {
 
     scalar r(0);
 
-    const uint q = mesh.lmodel()->q();
-    
-    for( uint k = 0 ; k < q ; k++ )
-	r += _pdf[id][k];
-    
 
     
-    // if( mesh.latticePoint(id)[1] != 0 ) {
-
-    // 	const uint q = mesh.lmodel()->q();
+    // const uint q = mesh.lmodel()->q();
     
-    // 	for( uint k = 0 ; k < q ; k++ )
-    // 	    r += _pdf[id][k];
+    // for( uint k = 0 ; k < q ; k++ )
+    // 	r += _pdf[id][k];
 
-    // }
 
-    // else {
 
-    // 	const vector< vector<int> >& nb = mesh.nbArray();
+    // Regular node
 
-    // 	int neigh = nb[ nb[id][4] ][4];
+    if( std::find(_contactNodes.begin(), _contactNodes.end(), id) == _contactNodes.end() ) {
 
-    // 	if(neigh == -1)
-    // 	    neigh = nb[id][4];
+	const uint q = mesh.lmodel()->q();
+    
+	for( uint k = 0 ; k < q ; k++ )
+	    r += _pdf[id][k];
 
-    // 	r = rho.at(neigh) + tan( M_PI/2 - (108)*M_PI/180 ) * abs( rho.at(nb[id][7]) - rho.at(nb[id][8]) );
+    }
 
-    // }
+    else {
+
+    	const vector< vector<int> >& nb = mesh.nbArray();
+
+    	int neigh = nb[ nb[id][4] ][4];
+
+    	if(neigh == -1)
+    	    neigh = nb[id][4];
+
+	cout << neigh << endl;
+	r = rho.at(neigh) + tan( M_PI/2 - (45)*M_PI/180 ) * abs( rho.at(nb[id][7]) - rho.at(nb[id][8]) );
+
+    }
+    
+   
+    
     
     return r;    
 
@@ -250,13 +260,15 @@ const void pseudoPotEquation::collision() {}
 
 const void pseudoPotEquation::updateMacroDensity() {
 
-    for( uint i = 0 ; i < mesh.npoints() ; i++ )
-    	rho[i] = localDensity(i);
-
-    // for( uint i = 0 ; i < mesh.local() ; i++ )
+    // for( uint i = 0 ; i < mesh.npoints() ; i++ )
     // 	rho[i] = localDensity(i);
 
-    // rho.sync();
+
+    
+    for( uint i = 0 ; i < mesh.local() ; i++ )
+    	rho[i] = localDensity(i);
+
+    rho.sync();
 
 }
 
@@ -401,5 +413,22 @@ const void pseudoPotEquation::pressure( const scalarField& phi, scalarField& p )
 	p[i] = rho.at(i) * cs2;
 
     }    
+
+}
+
+
+
+
+
+/** Update contact nodes */
+
+const void pseudoPotEquation::updateContactNodes( const std::vector<uint>& contact ) {
+
+    _contactNodes.resize(0);
+
+    _contactNodes.resize( contact.size() );
+
+    for(uint i = 0 ; i < contact.size() ; i++ )
+    	_contactNodes[i] = contact[i];
 
 }

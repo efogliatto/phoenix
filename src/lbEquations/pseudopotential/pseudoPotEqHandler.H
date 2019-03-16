@@ -10,6 +10,16 @@ class pseudoPotEqHandler {
 
 protected:
 
+
+    /** Mesh reference */
+
+    const latticeMesh& _mesh;
+    
+
+    /** Density reference */
+
+    const scalarField& _rho;
+    
     
     /** LB pseudopotential equation */
 
@@ -73,6 +83,11 @@ public:
     /** Compute and set pressure field */
 
     const void pressure( const scalarField& phi, scalarField& p );
+
+
+    /** Check for contact points over surfaces */
+
+    std::vector<uint> contactLine() const;
     
 
 };
