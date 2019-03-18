@@ -41,6 +41,16 @@ protected:
 
     std::vector<uint> _contactNodes;
 
+
+    /** Temporary: geometric contact angle */
+
+    std::map<uint, scalar> _contactAngle;
+
+
+    /** Temporary: average density for contact angle location */
+
+    scalar _rhoAvgInt;
+
   
     
 
@@ -142,7 +152,8 @@ public:
 
     /** Update contact nodes */
 
-    const void updateContactNodes( const std::vector<uint>& contact );
+    const void locateContactNodes();
+    
     
 };
 

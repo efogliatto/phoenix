@@ -85,9 +85,9 @@ public:
     const void pressure( const scalarField& phi, scalarField& p );
 
 
-    /** Check for contact points over surfaces */
+    // /** Check for contact points over surfaces */
 
-    std::vector<uint> contactLine() const;
+    // std::vector<uint> contactLine() const;
     
 
 };

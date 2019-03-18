@@ -27,6 +27,55 @@ pseudoPotEquation::pseudoPotEquation( const string& name,
 
     F.update(rho,T);
 
+
+    // Read contact angles for each boundary
+
+    dictionary dict("properties/macroProperties");
+
+    string contact = dict.lookUpOrDefault<string>( name + "/ContactAngle/type", "none");
+
+    if( contact == "geometric" ) {
+
+
+	// Density on interface
+
+	_rhoAvgInt = dict.lookUp<scalar>( name + "/ContactAngle/rhoAvg");
+
+	
+
+	// Read angles for each boundary
+
+	const map< string, vector<uint> >& boundary = mesh.boundaries();
+
+	map<string, scalar> angle;
+
+	for( const auto& bd : boundary) {
+
+	    scalar ang = dict.lookUpOrDefault<scalar>( name + "/ContactAngle/Theta/" + bd.first, -1);
+
+	    if(ang >= 0)
+		angle[bd.first] = ang;
+
+	}
+
+
+
+	// Create map for each boundary node
+
+	for( const auto& bd : angle) {
+
+	    for( const auto& id : boundary.at(bd.first) ) {
+
+		_contactAngle[id] = bd.second;
+
+	    }
+
+	}
+	
+
+    }
+    
+
 }
 
 
@@ -53,6 +102,8 @@ const scalar pseudoPotEquation::localDensity( const uint& id ) const {
 
 
 
+    
+
     // Regular node
 
     if( std::find(_contactNodes.begin(), _contactNodes.end(), id) == _contactNodes.end() ) {
@@ -73,7 +124,8 @@ const scalar pseudoPotEquation::localDensity( const uint& id ) const {
     	if(neigh == -1)
     	    neigh = nb[id][4];
 
-	r = rho.at(neigh) + tan( M_PI/2 - (45)*M_PI/180 ) * abs( rho.at(nb[id][7]) - rho.at(nb[id][8]) );
+	cout << Time.currentTime() << " " << id << " " << nb[id][7] << " " << nb[id][8] << " " << mesh.pid() << " " << mesh.npoints() << endl;
+    	r = rho.at(neigh) + tan( M_PI/2 - (45)*M_PI/180 ) * abs( rho.at(nb[id][7]) - rho.at(nb[id][8]) );
 
     }
     
@@ -421,13 +473,49 @@ const void pseudoPotEquation::pressure( const scalarField& phi, scalarField& p )
 
 /** Update contact nodes */
 
-const void pseudoPotEquation::updateContactNodes( const std::vector<uint>& contact ) {
+const void pseudoPotEquation::locateContactNodes() {
 
-    _contactNodes.resize(0);
+    
+    // Temporary contact nodes
+    
+    vector<uint> cn;
+    
+    
+    // Move over all boundary nodes and detect density change
 
-    _contactNodes.resize( contact.size() );
+    const map< string, vector<uint> >& boundary = mesh.boundaries();
 
-    for(uint i = 0 ; i < contact.size() ; i++ )
-    	_contactNodes[i] = contact[i];
+    for( const auto& bd : boundary) {
+
+	if( bd.second.size() > 0 ) {
+
+	    for( uint j = 0 ; j < bd.second.size()-1 ; j++ ) {	    
+
+		if( (rho.at(bd.second[j+1]) - _rhoAvgInt)  *  (rho.at(bd.second[j]) - _rhoAvgInt)   <= 0) {
+
+		    cn.push_back( bd.second[j] );
+
+		}
+
+	    }
+
+	}
+
+    }
+
+
+    _contactNodes = cn;
+
+    // if( Time.write() ){
+
+    // 	for(const auto& c : _contactNodes) {
+
+    // 	    cout << c << " " << mesh.pid() << endl;
+
+    // 	}
+
+    // }
+
+
 
 }

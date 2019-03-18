@@ -64,7 +64,7 @@ const void pseudoPotEqHandler::updateBoundaries() {
     // _equation->updateForces();
 
 
-    _equation->updateContactNodes( pseudoPotEqHandler::contactLine() );
+    _equation->locateContactNodes();
     
 
     // Apply boundary conditions
@@ -129,78 +129,78 @@ const void pseudoPotEqHandler::pressure( const scalarField& phi, scalarField& p 
 
 
 
-/** Check for contact points over surfaces */
+// /** Check for contact points over surfaces */
 
-vector<uint> pseudoPotEqHandler::contactLine() const {
+// vector<uint> pseudoPotEqHandler::contactLine() const {
 
 
-    // Nodes with contact points
+//     // Nodes with contact points
     
-    vector<uint> contactNodes;
+//     vector<uint> contactNodes;
 
 
-    // Move over boundaries
+//     // Move over boundaries
     
-    for(uint i = 0 ; i < _boundaries.size() ; i++) {	
+//     for(uint i = 0 ; i < _boundaries.size() ; i++) {	
 	    
 	
-	const vector<uint>& bnodes = _boundaries[i]->bdNodes();       
+// 	const vector<uint>& bnodes = _boundaries[i]->bdNodes();       
 
-	vector<scalar> rhoDev( bnodes.size() );
+// 	vector<scalar> rhoDev( bnodes.size() );
 
 
-	// Compute derivatives
+// 	// Compute derivatives
 
-	for( uint j = 0 ; j < bnodes.size() ; j++ ) {
+// 	for( uint j = 0 ; j < bnodes.size() ; j++ ) {
 
-	    if( j == 0 ) {
+// 	    if( j == 0 ) {
 
-		rhoDev[j] = _rho.at(bnodes[j+1]) - _rho.at(bnodes[j]);
+// 		rhoDev[j] = _rho.at(bnodes[j+1]) - _rho.at(bnodes[j]);
 
-	    }
+// 	    }
 
-	    else {
+// 	    else {
 
-		if( j == bnodes.size()-1 ) {
+// 		if( j == bnodes.size()-1 ) {
 
-		    rhoDev[j] = _rho.at(bnodes[j]) - _rho.at(bnodes[j-1]);
+// 		    rhoDev[j] = _rho.at(bnodes[j]) - _rho.at(bnodes[j-1]);
 
-		}
+// 		}
 
-		else {
+// 		else {
 
-		    rhoDev[j] = 0.5 * ( _rho.at(bnodes[j+1]) - _rho.at(bnodes[j-1])  );
+// 		    rhoDev[j] = 0.5 * ( _rho.at(bnodes[j+1]) - _rho.at(bnodes[j-1])  );
 
-		}
+// 		}
 
-	    }
+// 	    }
 
-	}
+// 	}
 
 
        
 
-	// Assign contact point with maximum local derivative
+// 	// Assign contact point with maximum local derivative
 
-	for( uint j = 1 ; j < bnodes.size() - 1 ; j++ ) {
+// 	for( uint j = 1 ; j < bnodes.size() - 1 ; j++ ) {
 
-	    if(  ( abs(rhoDev[j]) > abs(rhoDev[j-1]) )  &&  ( abs(rhoDev[j]) >= abs(rhoDev[j+1]) )  ) {
+// 	    if(  ( abs(rhoDev[j]) > abs(rhoDev[j-1]) )  &&  ( abs(rhoDev[j]) >= abs(rhoDev[j+1]) )  ) {
 
-		if(_mesh.latticePoint( bnodes[j] )[1] == 0)	       
-		    contactNodes.push_back( bnodes[j] );
+// 		if(_mesh.latticePoint( bnodes[j] )[1] == 0)	       
+// 		    contactNodes.push_back( bnodes[j] );
 
-	    }
+// 	    }
 
-	}
-
-
-
-    }
+// 	}
 
 
 
+//     }
 
-    return contactNodes;
+
+
+
+//     return contactNodes;
     
 
-}
+// }
