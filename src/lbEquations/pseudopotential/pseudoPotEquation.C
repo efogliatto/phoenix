@@ -51,10 +51,9 @@ pseudoPotEquation::pseudoPotEquation( const string& name,
 
 	for( const auto& bd : boundary) {
 
-	    scalar ang = dict.lookUpOrDefault<scalar>( name + "/ContactAngle/Theta/" + bd.first, -1);
-
-	    if(ang >= 0)
-		angle[bd.first] = ang;
+	    scalar ang = dict.lookUpOrDefault<scalar>( name + "/ContactAngle/Theta/" + bd.first, 90);
+	    
+	    angle[bd.first] = ang * M_PI / 180.0;
 
 	}
 
@@ -117,6 +116,13 @@ const scalar pseudoPotEquation::localDensity( const uint& id ) const {
 
     else {
 
+
+	const uint q = mesh.lmodel()->q();
+    
+	for( uint k = 0 ; k < q ; k++ )
+	    r += _pdf[id][k];
+	
+
     	const vector< vector<int> >& nb = mesh.nbArray();
 
     	int neigh = nb[ nb[id][4] ][4];
@@ -124,12 +130,15 @@ const scalar pseudoPotEquation::localDensity( const uint& id ) const {
     	if(neigh == -1)
     	    neigh = nb[id][4];
 
-	cout << Time.currentTime() << " " << id << " " << nb[id][7] << " " << nb[id][8] << " " << mesh.pid() << " " << mesh.npoints() << endl;
-    	r = rho.at(neigh) + tan( M_PI/2 - (45)*M_PI/180 ) * abs( rho.at(nb[id][7]) - rho.at(nb[id][8]) );
+	scalar delta = rho.at(nb[id][7]) - rho.at(nb[id][8]);
+
+	delta = abs(delta);       
+
+    	r = rho.at(neigh) + tan( M_PI/2 - _contactAngle.at(id) ) * delta;
 
     }
     
-   
+
     
     
     return r;    
@@ -489,11 +498,37 @@ const void pseudoPotEquation::locateContactNodes() {
 
 	if( bd.second.size() > 0 ) {
 
-	    for( uint j = 0 ; j < bd.second.size()-1 ; j++ ) {	    
+	    for( uint j = 0 ; j < bd.second.size()-1 ; j++ ) {
 
-		if( (rho.at(bd.second[j+1]) - _rhoAvgInt)  *  (rho.at(bd.second[j]) - _rhoAvgInt)   <= 0) {
+		scalar y0( rho.at(bd.second[j]) - _rhoAvgInt ),
+		    y1( rho.at(bd.second[j+1]) - _rhoAvgInt );
+
+		if( (y1 * y0)   <= 0) {
 
 		    cn.push_back( bd.second[j] );
+		    cn.push_back( bd.second[j+1] );
+		    
+		    
+		    // scalar xc = -y0 / (y1-y0);
+
+		    // uint xint(0);
+
+		    // xc <= 0.5 ?  xint = j : xint = j+1;
+
+		    // if(xint > 0)
+		    // 	cn.push_back( bd.second[xint-1] );
+
+		    // if(xint - 1 > 0)
+		    // 	cn.push_back( bd.second[xint-2] );		    
+
+		    // if(xint + 1 < bd.second.size() )
+		    // 	cn.push_back( bd.second[xint+1] );
+
+		    // if(xint + 2 < bd.second.size() )
+		    // 	cn.push_back( bd.second[xint+2] );		    
+
+		    // cn.push_back( bd.second[xint] );
+		    
 
 		}
 
@@ -506,15 +541,6 @@ const void pseudoPotEquation::locateContactNodes() {
 
     _contactNodes = cn;
 
-    // if( Time.write() ){
-
-    // 	for(const auto& c : _contactNodes) {
-
-    // 	    cout << c << " " << mesh.pid() << endl;
-
-    // 	}
-
-    // }
 
 
 
