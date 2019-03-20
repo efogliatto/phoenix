@@ -92,6 +92,12 @@ const void LiMRTEq::collision() {
 
 
     
+    // Local copy of relaxation factors
+
+    vector<scalar> localTau(_Tau);
+
+    
+    
 
     // Move over all points
 
@@ -100,9 +106,26 @@ const void LiMRTEq::collision() {
 
 	// Local velocity and density
 
-	const scalar r = rho[id];
+	const scalar r = rho.at(id);
 
 	const scalar u[3] = { U.at(id,0), U.at(id,1), U.at(id,2) };
+
+
+	// Update local values of relaxation factors
+
+	if(r < 0.13045) {
+
+	    localTau[7] = 1 / (15*(1/_Tau[7] - 0.5) + 0.5);
+	    localTau[8] = localTau[7];	    
+
+	}
+
+	else {
+
+	    localTau[7] = _Tau[7];
+	    localTau[8] = _Tau[8];
+
+	}
 	
 
 	// Velocity magnitude
@@ -144,8 +167,8 @@ const void LiMRTEq::collision() {
 
 
 	S[0] = 0;
-	S[1] =  6 * (u[0]*Ft[0] + u[1]*Ft[1]) + 12 * _sigma * (Fi[0]*Fi[0] + Fi[1]*Fi[1]) / (psi * psi * ((1/_Tau[1])-0.5));
-	S[2] = -6 * (u[0]*Ft[0] + u[1]*Ft[1]) - 12 * _sigma * (Fi[0]*Fi[0] + Fi[1]*Fi[1]) / (psi * psi * ((1/_Tau[2])-0.5));
+	S[1] =  6 * (u[0]*Ft[0] + u[1]*Ft[1]) + 12 * _sigma * (Fi[0]*Fi[0] + Fi[1]*Fi[1]) / (psi * psi * ((1/localTau[1])-0.5));
+	S[2] = -6 * (u[0]*Ft[0] + u[1]*Ft[1]) - 12 * _sigma * (Fi[0]*Fi[0] + Fi[1]*Fi[1]) / (psi * psi * ((1/localTau[2])-0.5));
 	S[3] = Ft[0];
 	S[4] = -Ft[0];
 	S[5] = Ft[1];
@@ -158,7 +181,7 @@ const void LiMRTEq::collision() {
 	
 	// Surface tension extra term
 
-	F.addSurfaceTension(id, C, _Tau);
+	F.addSurfaceTension(id, C, localTau);
 	
 
 
@@ -168,8 +191,8 @@ const void LiMRTEq::collision() {
 	for( uint k = 0 ; k < q ; k++ ) {
 
 	    m[k] = m[k]
-		-  _Tau[k]*( m[k] - m_eq[k] )
-		+  ( 1 - 0.5*_Tau[k] ) * S[k] 
+		-  localTau[k]*( m[k] - m_eq[k] )
+		+  ( 1 - 0.5*localTau[k] ) * S[k] 
 		+  C[k]
 		;
 	    
