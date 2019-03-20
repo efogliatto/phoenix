@@ -82,4 +82,7 @@ const void energyEquation::updateMacroTemperature() {
     for( uint i = 0 ; i < mesh.npoints() ; i++ )
 	T[i] = energyEquation::localTemperature(i);
 
+
+    // _hs->update(rho,T,U);    
+
 }

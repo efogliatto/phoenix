@@ -64,7 +64,7 @@ const void pseudoPotEqHandler::updateBoundaries() {
     // _equation->updateForces();
 
 
-    _equation->locateContactNodes();
+    // _equation->locateContactNodes();
     
 
     // Apply boundary conditions
