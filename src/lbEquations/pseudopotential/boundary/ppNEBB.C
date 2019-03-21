@@ -36,11 +36,10 @@ void ppNEBB::update( const pseudoPotEquation* ppeq ) {
     
     const uint q = _mesh.lmodel()->q();  
 
-    vector<scalar> f_eq(q);
+    const vector< vector<int> >& nb = _mesh.nbArray();
 
+    const vector<uint> reverse = _mesh.lmodel()->reverse();
 
-
-    
 
 
     // Move over boundary elements
@@ -115,9 +114,17 @@ void ppNEBB::update( const pseudoPotEquation* ppeq ) {
 
 	    default:
 
-		cout << "Unable to compute local density" << endl;
+		// Apply simple bounce back rule
 
-		exit(1);
+		for(uint k = 0 ; k < q ; k++) {
+
+		    if ( nb[id][k] == -1 ) {
+
+			_pdf[id][k] = _pdf[id][reverse[k]];
+
+		    }		    
+
+		}
 	    
 		break;
 
@@ -126,6 +133,8 @@ void ppNEBB::update( const pseudoPotEquation* ppeq ) {
 	
 	    break;
 
+
+	    
 
 	default:
 
