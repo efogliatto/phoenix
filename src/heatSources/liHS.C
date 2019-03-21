@@ -164,6 +164,12 @@ void liHS::update( const scalarField& rho, const scalarField& T, const vectorFie
     	// Update source at node
 	
     	_source[id] = 1.5 * (first + second) - 0.5 * _source[id];
+
+
+	
+	// _source[id] = first + second;
+	
+    	// _source[id] = 1.5 * (second) - 0.5 * _source[id];	
        
     
     }
