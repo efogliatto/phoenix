@@ -87,7 +87,7 @@ public:
 
     /** Heat source at node */
 
-    const scalar heat(const scalar& id) const { return _hs->source(id); }
+    virtual const scalar heat(const scalar& id) const { return _hs->source(id); }
     
     
 };

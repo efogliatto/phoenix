@@ -18,11 +18,19 @@ protected:
     /** Reference to lattice mesh */
 
     const latticeMesh& _mesh;
+
+    
+    /** Reference to time */
+
+    const timeOptions& _Time;
     
     
     /** Force field */
 
     scalarField _source;
+
+
+
 
     
 

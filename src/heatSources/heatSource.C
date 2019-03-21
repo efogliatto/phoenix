@@ -12,6 +12,7 @@ heatSource::heatSource( const string& dictName,
 			timeOptions& Time )
 
     : _mesh(mesh),
+      _Time(Time),
       _source(mesh, Time, "HeatSource", IO::NO_READ, IO::NO_WRITE) {    
 
 }

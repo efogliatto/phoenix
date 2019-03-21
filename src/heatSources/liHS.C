@@ -75,10 +75,6 @@ void liHS::update( const scalarField& rho, const scalarField& T, const vectorFie
 
     // Constants
 
-    scalar gradT[3]   = {0,0,0};
-
-    scalar gradLambda[3] = {0,0,0};
-
     const uint np = _mesh.local();
 
     const scalar _k = ( 1/_Tau[3] - 0.5 ) * _mesh.lmodel()->cs2();
@@ -112,6 +108,10 @@ void liHS::update( const scalarField& rho, const scalarField& T, const vectorFie
 
 	scalar first(0);
 
+	scalar gradT[3]   = {0,0,0};
+
+	scalar gradLambda[3] = {0,0,0};	
+
 
 
 	// Temperature laplacian
@@ -126,7 +126,7 @@ void liHS::update( const scalarField& rho, const scalarField& T, const vectorFie
 
 	case thmodel::constCond:
 
-	    first = lapT * ( _kappa / (_rho*_Cv) - _k );
+	    first = lapT * ( _kappa / ( _rho *_Cv) - _k );
 	    
 	    break;
 
@@ -169,7 +169,7 @@ void liHS::update( const scalarField& rho, const scalarField& T, const vectorFie
 	
 	// _source[id] = first + second;
 	
-    	// _source[id] = 1.5 * (second) - 0.5 * _source[id];	
+    	// _source[id] = 1.5 * (first + second) - 0.5 * _source[id];
        
     
     }

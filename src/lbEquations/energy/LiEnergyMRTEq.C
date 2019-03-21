@@ -112,7 +112,7 @@ const void LiEnergyMRTEq::eqMS( vector<scalar>& m, const scalar& T_, const vecto
 
 const void LiEnergyMRTEq::eqPS( vector<scalar>& n, const uint& id ) const {
 
-    LiEnergyMRTEq::eqPS( n, T.at(id), U.at(id), _hs->source(id) );
+    LiEnergyMRTEq::eqPS( n, T.at(id), U.at(id), 0 );
     
 }
 
@@ -257,7 +257,8 @@ const void LiEnergyMRTEq::updateMacroTemperature() {
     for( uint i = 0 ; i < mesh.npoints() ; i++ )
 	T[i] = LiEnergyMRTEq::localTemperature(i);
 
-    
+
+    // _hs->update(rho,T,U);    
 }
 
 
@@ -267,6 +268,10 @@ const void LiEnergyMRTEq::updateMacroTemperature() {
 
 const scalar LiEnergyMRTEq::thermalCond( const uint& id ) const {
 
+    cout << "Thermal cond not fully verified" << endl;
+
+    exit(1);
+    
     return _kappa;
 
 }

@@ -44,7 +44,7 @@ energyEquation::~energyEquation() {}
 
 
 
-/** Compute local density */
+/** Compute local temperature */
 
 const scalar energyEquation::localTemperature( const uint& id ) const {
 
