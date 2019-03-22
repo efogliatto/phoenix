@@ -57,14 +57,9 @@ pseudoPotEqHandler::~pseudoPotEqHandler() {}
 const void pseudoPotEqHandler::updateBoundaries() {
 
 
-    // // First update density and forces
-
-    // _equation->updateMacroDensity();
-
-    // _equation->updateForces();
-
-
-    // _equation->locateContactNodes();
+    // Update contact nodes if needed
+    
+    _equation->locateContactNodes();
     
 
     // Apply boundary conditions

@@ -19,7 +19,8 @@ pseudoPotEquation::pseudoPotEquation( const string& name,
       rho(rho_),
       U(U_),
       T(T_),
-      F("properties/macroProperties", name, mesh_, Time_, rho_, T_) {
+      F("properties/macroProperties", name, mesh_, Time_, rho_, T_),
+      _withGeomContact(false) {
 
 
     
@@ -35,6 +36,11 @@ pseudoPotEquation::pseudoPotEquation( const string& name,
     string contact = dict.lookUpOrDefault<string>( name + "/ContactAngle/type", "none");
 
     if( contact == "geometric" ) {
+
+
+	// Turn on flag
+
+	_withGeomContact = true;
 
 
 	// Density on interface
@@ -93,53 +99,60 @@ const scalar pseudoPotEquation::localDensity( const uint& id ) const {
     scalar r(0);
 
 
+    // No geometric contact
+
+    if( _withGeomContact == false ) {
     
-    const uint q = mesh.lmodel()->q();
+	const uint q = mesh.lmodel()->q();
     
-    for( uint k = 0 ; k < q ; k++ )
-    	r += _pdf[id][k];
+	for( uint k = 0 ; k < q ; k++ )
+	    r += _pdf[id][k];
+
+    }
 
 
+    // Geometric contact
+    
+    else {
 
     
+	// Regular node
 
-    // // Regular node
+	if( std::find(_contactNodes.begin(), _contactNodes.end(), id) == _contactNodes.end() ) {
 
-    // if( std::find(_contactNodes.begin(), _contactNodes.end(), id) == _contactNodes.end() ) {
-
-    // 	const uint q = mesh.lmodel()->q();
+	    const uint q = mesh.lmodel()->q();
     
-    // 	for( uint k = 0 ; k < q ; k++ )
-    // 	    r += _pdf[id][k];
+	    for( uint k = 0 ; k < q ; k++ )
+		r += _pdf[id][k];
 
-    // }
+	}
 
-    // else {
+	else {
 
 
-    // 	const uint q = mesh.lmodel()->q();
+	    const uint q = mesh.lmodel()->q();
     
-    // 	for( uint k = 0 ; k < q ; k++ )
-    // 	    r += _pdf[id][k];
+	    for( uint k = 0 ; k < q ; k++ )
+		r += _pdf[id][k];
 	
 
-    // 	const vector< vector<int> >& nb = mesh.nbArray();
+	    const vector< vector<int> >& nb = mesh.nbArray();
 
-    // 	int neigh = nb[ nb[id][4] ][4];
+	    int neigh = nb[ nb[id][4] ][4];
 
-    // 	if(neigh == -1)
-    // 	    neigh = nb[id][4];
+	    if(neigh == -1)
+		neigh = nb[id][4];
 
-    // 	scalar delta = rho.at(nb[id][7]) - rho.at(nb[id][8]);
+	    scalar delta = rho.at(nb[id][7]) - rho.at(nb[id][8]);
 
-    // 	delta = abs(delta);       
+	    delta = abs(delta);       
 
-    // 	r = rho.at(neigh) + tan( M_PI/2 - _contactAngle.at(id) ) * delta;
+	    r = rho.at(neigh) + tan( M_PI/2 - _contactAngle.at(id) ) * delta;
 
-    // }
+	}
     
 
-    
+    }
     
     return r;    
 
@@ -320,15 +333,22 @@ const void pseudoPotEquation::collision() {}
 
 const void pseudoPotEquation::updateMacroDensity() {
 
-    for( uint i = 0 ; i < mesh.npoints() ; i++ )
-    	rho[i] = localDensity(i);
-
-
+        
+    if( _withGeomContact == false ) {    
     
-    // for( uint i = 0 ; i < mesh.local() ; i++ )
-    // 	rho[i] = localDensity(i);
+	for( uint i = 0 ; i < mesh.npoints() ; i++ )
+	    rho[i] = localDensity(i);
 
-    // rho.sync();
+    }
+
+    else {
+    
+	for( uint i = 0 ; i < mesh.local() ; i++ )
+	    rho[i] = localDensity(i);
+
+	rho.sync();
+
+    }
 
 }
 
@@ -526,62 +546,66 @@ const void pseudoPotEquation::locateContactNodes() {
 
     const map< string, vector<uint> >& boundary = mesh.boundaries();
 
-    for( const auto& bd : boundary) {
+    // for( const auto& bd : boundary) {
 
-    	if( bd.second.size() > 0 ) {
+    // 	if( bd.second.size() > 0 ) {
 
-    	    for( uint j = 0 ; j < bd.second.size()-1 ; j++ ) {
+    // 	    for( uint j = 0 ; j < bd.second.size()-1 ; j++ ) {
 
-    		scalar y0( rho.at(bd.second[j]) - _rhoAvgInt ),
-    		    y1( rho.at(bd.second[j+1]) - _rhoAvgInt );
+    // 		scalar y0( rho.at(bd.second[j]) - _rhoAvgInt ),
+    // 		    y1( rho.at(bd.second[j+1]) - _rhoAvgInt );
 
-    		if( (y1 * y0)   <= 0) {
+    // 		if( (y1 * y0)   <= 0) {
 
-    		    // cn.push_back( bd.second[j] );
-    		    // cn.push_back( bd.second[j+1] );
+    // 		    // cn.push_back( bd.second[j] );
+    // 		    // cn.push_back( bd.second[j+1] );
 		    
 		    
-    		    scalar xc = -y0 / (y1-y0);
+    // 		    scalar xc = -y0 / (y1-y0);
 
-    		    uint xint(0);
+    // 		    uint xint(0);
 
-    		    xc <= 0.5 ?  xint = j : xint = j+1;
-
-		    
-    		    if(xint > 0)
-    		    	cn.push_back( bd.second[xint-1] );
-
-    		    if(xint - 1 > 0)
-    		    	cn.push_back( bd.second[xint-2] );
-
-    		    // if(xint - 2 > 0)
-    		    // 	cn.push_back( bd.second[xint-3] );
-		    
-
-    		    if(xint + 1 < bd.second.size() )
-    		    	cn.push_back( bd.second[xint+1] );
-
-    		    if(xint + 2 < bd.second.size() )
-    		    	cn.push_back( bd.second[xint+2] );
-
-    		    // if(xint + 3 < bd.second.size() )
-    		    // 	cn.push_back( bd.second[xint+3] );
-
+    // 		    xc <= 0.5 ?  xint = j : xint = j+1;
 
 		    
-    		    cn.push_back( bd.second[xint] );
+    // 		    if(xint > 0)
+    // 		    	cn.push_back( bd.second[xint-1] );
+
+    // 		    if(xint - 1 > 0)
+    // 		    	cn.push_back( bd.second[xint-2] );
+
+    // 		    // if(xint - 2 > 0)
+    // 		    // 	cn.push_back( bd.second[xint-3] );
 		    
 
-    		}
+    // 		    if(xint + 1 < bd.second.size() )
+    // 		    	cn.push_back( bd.second[xint+1] );
 
-    	    }
+    // 		    if(xint + 2 < bd.second.size() )
+    // 		    	cn.push_back( bd.second[xint+2] );
 
-    	}
+    // 		    // if(xint + 3 < bd.second.size() )
+    // 		    // 	cn.push_back( bd.second[xint+3] );
 
-    }
+
+		    
+    // 		    cn.push_back( bd.second[xint] );
+		    
+
+    // 		}
+
+    // 	    }
+
+    // 	}
+
+    // }
 
 
-    _contactNodes = cn;
+    // _contactNodes = cn;
+
+
+
+    _contactNodes = boundary.at("Y0");    
 
 
 

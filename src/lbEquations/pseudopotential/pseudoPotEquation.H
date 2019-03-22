@@ -51,6 +51,11 @@ protected:
 
     scalar _rhoAvgInt;
 
+    
+    /** Flag for geometric contact line location*/
+
+    bool _withGeomContact;
+
   
     
 
@@ -153,6 +158,8 @@ public:
     /** Update contact nodes */
 
     const void locateContactNodes();
+
+    const bool& withGeomContact() const { return _withGeomContact; }
     
     
 };
