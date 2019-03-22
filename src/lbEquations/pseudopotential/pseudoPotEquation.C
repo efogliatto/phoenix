@@ -57,9 +57,10 @@ pseudoPotEquation::pseudoPotEquation( const string& name,
 
 	for( const auto& bd : boundary) {
 
-	    scalar ang = dict.lookUpOrDefault<scalar>( name + "/ContactAngle/Theta/" + bd.first, 90);
-	    
-	    angle[bd.first] = ang * M_PI / 180.0;
+	    scalar ang = dict.lookUpOrDefault<scalar>( name + "/ContactAngle/Theta/" + bd.first, -1);
+
+	    if(ang >= 0)	    
+		angle[bd.first] = ang * M_PI / 180.0;
 
 	}
 
@@ -129,25 +130,38 @@ const scalar pseudoPotEquation::localDensity( const uint& id ) const {
 
 	else {
 
+	    if( _contactAngle.find(id) != _contactAngle.end() ) {
 
-	    const uint q = mesh.lmodel()->q();
+
+		const uint q = mesh.lmodel()->q();
     
-	    for( uint k = 0 ; k < q ; k++ )
-		r += _pdf[id][k];
+		for( uint k = 0 ; k < q ; k++ )
+		    r += _pdf[id][k];
 	
 
-	    const vector< vector<int> >& nb = mesh.nbArray();
+		const vector< vector<int> >& nb = mesh.nbArray();
 
-	    int neigh = nb[ nb[id][4] ][4];
+		int neigh = nb[ nb[id][4] ][4];
 
-	    if(neigh == -1)
-		neigh = nb[id][4];
+		if(neigh == -1)
+		    neigh = nb[id][4];
 
-	    scalar delta = rho.at(nb[id][7]) - rho.at(nb[id][8]);
+		scalar delta = rho.at(nb[id][7]) - rho.at(nb[id][8]);
 
-	    delta = abs(delta);       
+		delta = abs(delta);       
 
-	    r = rho.at(neigh) + tan( M_PI/2 - _contactAngle.at(id) ) * delta;
+		r = rho.at(neigh) + tan( M_PI/2 - _contactAngle.at(id) ) * delta;
+
+	    }
+
+	    else {
+
+		const uint q = mesh.lmodel()->q();
+    
+		for( uint k = 0 ; k < q ; k++ )
+		    r += _pdf[id][k];
+
+	    }
 
 	}
     
