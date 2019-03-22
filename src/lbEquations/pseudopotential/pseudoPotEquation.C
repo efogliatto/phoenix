@@ -546,66 +546,66 @@ const void pseudoPotEquation::locateContactNodes() {
 
     const map< string, vector<uint> >& boundary = mesh.boundaries();
 
-    // for( const auto& bd : boundary) {
+    for( const auto& bd : boundary) {
 
-    // 	if( bd.second.size() > 0 ) {
+    	if( bd.second.size() > 0 ) {
 
-    // 	    for( uint j = 0 ; j < bd.second.size()-1 ; j++ ) {
+    	    for( uint j = 0 ; j < bd.second.size()-1 ; j++ ) {
 
-    // 		scalar y0( rho.at(bd.second[j]) - _rhoAvgInt ),
-    // 		    y1( rho.at(bd.second[j+1]) - _rhoAvgInt );
+    		scalar y0( rho.at(bd.second[j]) - _rhoAvgInt ),
+    		    y1( rho.at(bd.second[j+1]) - _rhoAvgInt );
 
-    // 		if( (y1 * y0)   <= 0) {
+    		if( (y1 * y0)   <= 0) {
 
-    // 		    // cn.push_back( bd.second[j] );
-    // 		    // cn.push_back( bd.second[j+1] );
+    		    // cn.push_back( bd.second[j] );
+    		    // cn.push_back( bd.second[j+1] );
 		    
 		    
-    // 		    scalar xc = -y0 / (y1-y0);
+    		    scalar xc = -y0 / (y1-y0);
 
-    // 		    uint xint(0);
+    		    uint xint(0);
 
-    // 		    xc <= 0.5 ?  xint = j : xint = j+1;
-
-		    
-    // 		    if(xint > 0)
-    // 		    	cn.push_back( bd.second[xint-1] );
-
-    // 		    if(xint - 1 > 0)
-    // 		    	cn.push_back( bd.second[xint-2] );
-
-    // 		    // if(xint - 2 > 0)
-    // 		    // 	cn.push_back( bd.second[xint-3] );
-		    
-
-    // 		    if(xint + 1 < bd.second.size() )
-    // 		    	cn.push_back( bd.second[xint+1] );
-
-    // 		    if(xint + 2 < bd.second.size() )
-    // 		    	cn.push_back( bd.second[xint+2] );
-
-    // 		    // if(xint + 3 < bd.second.size() )
-    // 		    // 	cn.push_back( bd.second[xint+3] );
-
+    		    xc <= 0.5 ?  xint = j : xint = j+1;
 
 		    
-    // 		    cn.push_back( bd.second[xint] );
+    		    if(xint > 0)
+    		    	cn.push_back( bd.second[xint-1] );
+
+    		    if(xint - 1 > 0)
+    		    	cn.push_back( bd.second[xint-2] );
+
+    		    // if(xint - 2 > 0)
+    		    // 	cn.push_back( bd.second[xint-3] );
 		    
 
-    // 		}
+    		    if(xint + 1 < bd.second.size() )
+    		    	cn.push_back( bd.second[xint+1] );
 
-    // 	    }
+    		    if(xint + 2 < bd.second.size() )
+    		    	cn.push_back( bd.second[xint+2] );
 
-    // 	}
-
-    // }
-
-
-    // _contactNodes = cn;
+    		    // if(xint + 3 < bd.second.size() )
+    		    // 	cn.push_back( bd.second[xint+3] );
 
 
+		    
+    		    cn.push_back( bd.second[xint] );
+		    
 
-    _contactNodes = boundary.at("Y0");    
+    		}
+
+    	    }
+
+    	}
+
+    }
+
+
+    _contactNodes = cn;
+
+
+
+    // _contactNodes = boundary.at("Y0");    
 
 
 
