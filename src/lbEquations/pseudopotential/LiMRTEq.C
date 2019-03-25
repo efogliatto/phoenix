@@ -111,21 +111,21 @@ const void LiMRTEq::collision() {
 	const scalar u[3] = { U.at(id,0), U.at(id,1), U.at(id,2) };
 
 
-	// Update local values of relaxation factors
+	// // Update local values of relaxation factors
 
-	if(r < 0.13045) {
+	// if(r < 0.13045) {
 
-	    localTau[7] = 1 / (15*(1/_Tau[7] - 0.5) + 0.5);
-	    localTau[8] = localTau[7];	    
+	//     localTau[7] = 1 / (15*(1/_Tau[7] - 0.5) + 0.5);
+	//     localTau[8] = localTau[7];	    
 
-	}
+	// }
 
-	else {
+	// else {
 
-	    localTau[7] = _Tau[7];
-	    localTau[8] = _Tau[8];
+	//     localTau[7] = _Tau[7];
+	//     localTau[8] = _Tau[8];
 
-	}
+	// }
 	
 
 	// Velocity magnitude
