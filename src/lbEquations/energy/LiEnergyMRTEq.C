@@ -214,8 +214,8 @@ const void LiEnergyMRTEq::collision() {
     	for( uint k = 0 ; k < q ; k++ )
     	    n[k] = n[k]   -   _Tau[k] * (n[k] - n_eq[k]);
 
-	
-    	n[0] += _hs->source(id);
+	    
+    	n[0] = n[0] + _hs->source(id);
 
 
 

@@ -35,11 +35,6 @@ protected:
     enum class thmodel { constCond, constDiff };
 
     thmodel thermal;
-
-
-    /** Additional Vector field: lambda  */
-
-    scalarField _Lambda;
     
 
 

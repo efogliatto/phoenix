@@ -10,8 +10,7 @@ liHS::liHS( const string& dictName,
 	    const latticeMesh& mesh,
 	    timeOptions& Time )
 
-    : heatSource(dictName, eqName, mesh, Time),
-      _Lambda( mesh, Time, "lambda", IO::NO_READ, IO::NO_WRITE ) {
+    : heatSource(dictName, eqName, mesh, Time) {
 
 
     
@@ -78,21 +77,7 @@ void liHS::update( const scalarField& rho, const scalarField& T, const vectorFie
     const uint np = _mesh.local();
 
     const scalar _k = ( 1/_Tau[3] - 0.5 ) * _mesh.lmodel()->cs2();
-
     
-
-    // Update thermal conductivity field
-
-    if ( thermal == thmodel::constDiff ) {
-
-	for( uint id = 0 ; id < _mesh.npoints() ; id++ ) {
-
-	    _Lambda[id] = _kappa * rho.at(id) * _Cv;
-
-	}
-
-    }
-
     
 
     // Move over points
@@ -110,7 +95,7 @@ void liHS::update( const scalarField& rho, const scalarField& T, const vectorFie
 
 	scalar gradT[3]   = {0,0,0};
 
-	scalar gradLambda[3] = {0,0,0};	
+	scalar gradRho[3] = {0,0,0};
 
 
 
@@ -121,7 +106,7 @@ void liHS::update( const scalarField& rho, const scalarField& T, const vectorFie
 
 
 	// Compute first term 
-	
+
 	switch( thermal ) {
 
 	case thmodel::constCond:
@@ -135,23 +120,19 @@ void liHS::update( const scalarField& rho, const scalarField& T, const vectorFie
 
 	    T.grad(gradT, id);
 
-	    _Lambda.grad(gradLambda, id);
+	    rho.grad(gradRho, id);	    
 
 
 	    // Dot product
 	    
 	    for(uint j = 0 ; j < 3 ; j++)
-		first += gradT[j] * gradLambda[j];
+		first += gradT[j] * gradRho[j];
 
-
-	    first = ( first + _Lambda[id] * lapT ) / ( _rho * _Cv )   -   _k*lapT;
-
+	    first = (_kappa / _rho) * ( first +  _rho * lapT )   -   _k * lapT;
 	    
 	    break;
 
 	}
-	
-	
 	
 	
     	// Velocity divergence term
@@ -159,17 +140,10 @@ void liHS::update( const scalarField& rho, const scalarField& T, const vectorFie
     	scalar second = U.div(id) * _T * ( 1.0   -   eos->dp_dT(_rho, _T) / (_rho * _Cv) );
 
 
-
 	
     	// Update source at node
 	
     	_source[id] = 1.5 * (first + second) - 0.5 * _source[id];
-
-
-	
-	// _source[id] = first + second;
-	
-    	// _source[id] = 1.5 * (first + second) - 0.5 * _source[id];
        
     
     }
