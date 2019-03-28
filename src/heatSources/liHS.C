@@ -128,7 +128,7 @@ void liHS::update( const scalarField& rho, const scalarField& T, const vectorFie
 	    for(uint j = 0 ; j < 3 ; j++)
 		first += gradT[j] * gradRho[j];
 
-	    first = (_kappa / _rho) * ( first +  _rho * lapT )   -   _k * lapT;
+	    first = (_kappa / _rho) * ( first +  _rho * lapT )   -   _k * lapT;	    
 	    
 	    break;
 
@@ -138,7 +138,6 @@ void liHS::update( const scalarField& rho, const scalarField& T, const vectorFie
     	// Velocity divergence term
 
     	scalar second = U.div(id) * _T * ( 1.0   -   eos->dp_dT(_rho, _T) / (_rho * _Cv) );
-
 
 	
     	// Update source at node
