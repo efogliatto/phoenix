@@ -95,8 +95,7 @@ int main( int argc, char **argv ) {
     
     while( Time.update() ) {
 
-	
-	
+
 	// Solve Navier-Stokes equation
 
 	NS.collision();
@@ -132,6 +131,7 @@ int main( int argc, char **argv ) {
 	energy.updateMacroTemperature();
 
 	NS.updateMacroVelocity();
+
 
 	
 
