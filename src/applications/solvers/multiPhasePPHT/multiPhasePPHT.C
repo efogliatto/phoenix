@@ -95,18 +95,6 @@ int main( int argc, char **argv ) {
     
     while( Time.update() ) {
 
-
-	// Solve Navier-Stokes equation
-
-	NS.collision();
-
-	NS.streaming();
-
-	NS.updateBoundaries();
-
-	f.startSync();
-
-
 	
 	// Solve Energy equation
 
@@ -116,21 +104,66 @@ int main( int argc, char **argv ) {
 
 	energy.updateBoundaries();
 
-	g.startSync();
+	g.sync();
 
-	f.endSync();
+	energy.updateMacroTemperature();
+	
 
 	
-	
-	// Update macroscopic fields
+	// Solve Navier-Stokes equation
+
+	NS.collision();
+
+	NS.streaming();
+
+	NS.updateBoundaries();
+
+	f.sync();
 
 	NS.updateMacroDensity();
 
-	g.endSync();
-
-	energy.updateMacroTemperature();
-
 	NS.updateMacroVelocity();
+	
+
+
+
+	
+	
+	// // Solve Navier-Stokes equation
+
+	// NS.collision();
+
+	// NS.streaming();
+
+	// NS.updateBoundaries();
+
+	// f.startSync();
+
+
+	
+	// // Solve Energy equation
+
+	// energy.collision();
+
+	// energy.streaming();
+
+	// energy.updateBoundaries();
+
+	// g.startSync();
+
+	// f.endSync();
+
+	
+	
+	// // Update macroscopic fields
+
+	// NS.updateMacroDensity();
+
+	// g.endSync();
+
+	// energy.updateMacroTemperature();
+
+	// NS.updateMacroVelocity();
 
 
 	

@@ -113,9 +113,9 @@ const void LiMRTEq::collision() {
 
 	// // Update local values of relaxation factors
 
-	// if(r < 0.13045) {
+	// if(r < 3.48) {
 
-	//     localTau[7] = 1 / (15*(1/_Tau[7] - 0.5) + 0.5);
+	//     localTau[7] = 1 / ((5/3)*(1/_Tau[7] - 0.5) + 0.5);
 	//     localTau[8] = localTau[7];	    
 
 	// }

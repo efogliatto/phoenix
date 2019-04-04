@@ -57,15 +57,17 @@ const scalar PengRobinson::p_eos(const scalar& rho, const scalar& T) const {
 
 const scalar PengRobinson::dp_dT(const scalar& rho, const scalar& T) const {
 
-    scalar Tc = 0.0778 * a / (0.45724 * b);
+    // scalar Tc = 0.0778 * a / (0.45724 * b);
 
-    scalar theta = 1 + (0.37464 + 1.54226 * w - 0.26992 * w * w);
+    // scalar theta = 1 + (0.37464 + 1.54226 * w - 0.26992 * w * w);
 
-    theta = theta * theta * (1-sqrt(Tc/T)) / Tc;
+    // theta = theta * theta * (1-sqrt(Tc/T)) / Tc;
     
-
-    scalar p = rho / (1.0 - rho * b) - a * theta * rho * rho / ( 1  +  2 * b * rho  -  b * b * rho * rho );
+    // scalar p = rho / (1.0 - rho * b) - a * theta * rho * rho / ( 1  +  2 * b * rho  -  b * b * rho * rho );
     
-    return p;
+    // return p;
+
+
+    return rho / (1.0 - rho * b);
 
 }
