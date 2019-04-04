@@ -11,3 +11,8 @@ add_subdirectory (wallHeatFlux)
 # Pseudopotential pressure
 
 add_subdirectory (lbPressure)
+
+
+# Additional calculations
+
+add_subdirectory (extraFD)
