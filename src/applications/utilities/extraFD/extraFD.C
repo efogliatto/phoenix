@@ -54,7 +54,7 @@ int main( int argc, char **argv ) {
 
     // Macroscopic density
 
-    // scalarField rho( mesh, Time, "rho", IO::MUST_READ, IO::NO_WRITE );
+    scalarField rho( mesh, Time, "rho", IO::MUST_READ, IO::NO_WRITE );
 
 
     // Macroscopic temperature
@@ -79,7 +79,7 @@ int main( int argc, char **argv ) {
 
     // Temperature gradient
 
-    vectorField gradT( mesh, Time, "gradient_T", IO::NO_READ, IO::MUST_WRITE );
+    vectorField v_dot_T( mesh, Time, "vT", IO::NO_READ, IO::MUST_WRITE );
 
 
    
@@ -104,6 +104,8 @@ int main( int argc, char **argv ) {
 
 	U.update(i);
 
+	rho.update(i);
+
 
 	
 	// Compute v * T
@@ -111,11 +113,11 @@ int main( int argc, char **argv ) {
 	for( uint id = 0 ; id < mesh.local() ; id++ ) {
 
 	    for( uint j = 0 ; j < 3 ; j++ )
-		gradT[id][j] = U.at(id)[j] * T.at(id);
+		v_dot_T[id][j] = U.at(id)[j] * T.at(id);
 
 	}
 
-	gradT.sync();
+	v_dot_T.sync();
 	
 
 	
@@ -123,9 +125,29 @@ int main( int argc, char **argv ) {
 
 	for( uint id = 0 ; id < mesh.local() ; id++ ) {
 
+
+	    scalar phi(0);
+
+	    scalar gradRho[3];
+
+	    scalar gradT[3];
+
+	    T.grad(gradT, id);
+
+	    rho.grad(gradRho, id);
+
+	    
+	    for( uint j = 0 ; j < 3 ; j++ )
+		phi += gradT[j] * gradRho[j];
+
+	    phi = phi * 0.06 / rho.at(id) + 0.06 * T.laplacian(id);
+		
+
+	    
 	    residual[id] = T.at(id) - oldT.at(id)
-		         + gradT.div(id)
-		         - 0.5 * T.laplacian(id) / 3;
+		         + v_dot_T.div(id)
+		         - 0.5 * T.laplacian(id) / 3
+		         + phi;
 
 	}
 
@@ -146,8 +168,6 @@ int main( int argc, char **argv ) {
 
 	residual.write();
 	
-
-
 		    
 
     }
@@ -180,3 +200,4 @@ int main( int argc, char **argv ) {
     MPI_Finalize();
 
 }
+
