@@ -5,6 +5,8 @@
 
 #include <liHS.H>
 
+#include <noHS.H>
+
 
 class hsCreator {
 

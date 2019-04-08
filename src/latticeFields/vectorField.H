@@ -69,7 +69,11 @@ public:
     /** Write field using ensight format */
 
     const void write() const;        
+
     
+    /** Update field values from time index (not time value) */
+
+    const void update( const uint& t );
 
 };
 

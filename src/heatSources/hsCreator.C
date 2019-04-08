@@ -31,12 +31,22 @@ heatSource* hsCreator::create (const string& dictName, const string& eqName, con
 
 	else {
 
+	    if( itype == "none" ) {
 
-	    // Default
+		return new noHS(dictName, eqName, mesh, Time);
+
+	    }
+
+	    else {
+	    
+
+		// Default
     
-	    cout << endl << " [ERROR]  Heat Source type " << itype << " not available" << endl << endl;
+		cout << endl << " [ERROR]  Heat Source type " << itype << " not available" << endl << endl;
 
-	    exit(1);
+		exit(1);
+
+	    }
 	
 	}
     

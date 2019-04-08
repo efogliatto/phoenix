@@ -825,3 +825,76 @@ const scalar vectorField::div( const uint& id ) const {
 //     return d;
 
 // }
+
+
+
+
+
+
+/** Update field values from time index (not time value) */
+
+const void vectorField::update( const uint& t ) {
+       
+
+    // MPI file pointer
+
+    MPI_File file;
+
+    MPI_File_open( MPI_COMM_WORLD,
+		   ( "lattice." + name + "_" + to_string(t) ).c_str(),
+		   MPI_MODE_RDONLY,
+		   MPI_INFO_NULL,
+		   &file );
+
+
+    
+
+
+    // Allocate space
+
+    float *auxField = (float*)malloc( mesh.npoints() * sizeof(float) );
+
+
+    
+
+    // Set Offset
+
+    MPI_Offset offset = 240*sizeof(char) + sizeof(int);
+
+    for( int i = 0 ; i < mesh.pid() ; i++ ) {
+
+	offset += 3*mesh.npp(i) * sizeof(float);
+
+	offset += 160*sizeof(char) + sizeof(int);
+
+    }
+
+    MPI_File_seek(file, offset, MPI_SEEK_SET);
+
+
+
+    
+    // Read Array
+
+    MPI_Status st;
+
+    for( uint j = 0 ; j < 3 ; j++ ) {
+
+	MPI_File_read(file, auxField, mesh.npoints(), MPI_FLOAT, &st);
+
+	for( uint i = 0 ; i < mesh.npoints() ; i++ ) {
+
+	    field[i][j] = (scalar)auxField[i];
+
+	}
+    
+	MPI_Barrier(MPI_COMM_WORLD);
+
+    }
+    
+    MPI_File_close(&file);
+
+    free(auxField);
+
+
+}

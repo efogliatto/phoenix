@@ -61,15 +61,20 @@ int main( int argc, char **argv ) {
 
     scalarField T( mesh, Time, "T", IO::MUST_READ, IO::NO_WRITE );
 
+    scalarField oldT( mesh, Time, "T", IO::NO_READ, IO::NO_WRITE );
+
+    scalarField residual( mesh, Time, "residual", IO::NO_READ, IO::MUST_WRITE );
+    
+
 
     // Macroscopic velocity
 
-    // vectorField U( mesh, Time, "U", IO::NO_READ, IO::NO_WRITE );
+    vectorField U( mesh, Time, "U", IO::NO_READ, IO::NO_WRITE );
 
 
-    // Temperature laplacian
+    // // Temperature laplacian
 
-    scalarField lapT( mesh, Time, "laplacian_T", IO::NO_READ, IO::MUST_WRITE );
+    // scalarField lapT( mesh, Time, "laplacian_T", IO::NO_READ, IO::MUST_WRITE );
 
 
     // Temperature gradient
@@ -97,28 +102,40 @@ int main( int argc, char **argv ) {
 	
 	T.update(i);
 
+	U.update(i);
 
-	// Compute derivatives
+
+	
+	// Compute v * T
 
 	for( uint id = 0 ; id < mesh.local() ; id++ ) {
 
-	    lapT[id] = T.laplacian(id);
-
-
-	    scalar g[3]   = {0,0,0};
-
-	    T.grad(g, id);
-
 	    for( uint j = 0 ; j < 3 ; j++ )
-		gradT[id][j] = g[j];
+		gradT[id][j] = U.at(id)[j] * T.at(id);
 
 	}
-
-	lapT.sync();
 
 	gradT.sync();
 	
 
+	
+	// Compute residuals
+
+	for( uint id = 0 ; id < mesh.local() ; id++ ) {
+
+	    residual[id] = T.at(id) - oldT.at(id)
+		         + gradT.div(id)
+		         - 0.5 * T.laplacian(id) / 3;
+
+	}
+
+	residual.sync();
+
+
+	for( uint id = 0 ; id < mesh.local() ; id++ )
+	    oldT[id] = T.at(id);
+
+	    
 
 	
 		
@@ -126,11 +143,11 @@ int main( int argc, char **argv ) {
 
 	while( Time.currentTime() != tlist[i] )
 	    Time.update();
+
+	residual.write();
 	
 
-	lapT.write();
 
-	gradT.write();
 		    
 
     }
