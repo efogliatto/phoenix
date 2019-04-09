@@ -185,7 +185,7 @@ void singleRangeIntForce::update( scalarField& rho, scalarField& T ) {
 
 			scalar angle = 108*M_PI/180;
 			
-			_rho = rho.at(second) + tan( M_PI/2 - angle ) * abs( rho.at(nb[i][3]) - rho.at(nb[i][1]) );
+			_rho = rho.at(second) + tan( M_PI/2 - angle ) * abs( rho.at(nb[neighId][3]) - rho.at(nb[neighId][1]) );
 
 		    }
 
