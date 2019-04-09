@@ -127,6 +127,42 @@ void singleRangeIntForce::update( scalarField& rho, scalarField& T ) {
 		
 
 
+		// // Move over velocities
+		
+		// for( uint k = 1 ; k < q ; k++ ) {
+
+
+		//     // Neighbour index
+
+		//     int neighId = nb[i][ reverse[k] ];
+
+
+		//     // Virtual node
+		    
+		//     if( neighId == -1 ) {
+
+		// 	neighId = _mesh.vnode(i,k);
+
+		//     }
+
+		//     scalar _rho = rho.at( neighId );
+
+		//     scalar _T = T.at( neighId );
+
+		//     scalar alpha = _weights[k] * potential( _rho, _T, cs2 );
+		    
+	    
+		//     for( uint j = 0 ; j < 3 ; j++ ) {
+
+		// 	F[j] +=  alpha * (scalar)vel[k][j] ;
+
+		//     }		    
+		    
+
+		// }
+
+
+
 		// Move over velocities
 		
 		for( uint k = 1 ; k < q ; k++ ) {
@@ -138,14 +174,27 @@ void singleRangeIntForce::update( scalarField& rho, scalarField& T ) {
 
 
 		    // Virtual node
+
+		    scalar _rho(0);
 		    
 		    if( neighId == -1 ) {
 
 			neighId = _mesh.vnode(i,k);
 
+			int second = _mesh.vnode(i,k,false);
+
+			scalar angle = 108*M_PI/180;
+			
+			_rho = rho.at(second) + tan( M_PI/2 - angle ) * abs( rho.at(nb[i][3]) - rho.at(nb[i][1]) );
+
 		    }
 
-		    scalar _rho = rho.at( neighId );
+		    else {
+
+			_rho = rho.at( neighId );
+
+		    }
+
 
 		    scalar _T = T.at( neighId );
 
@@ -154,12 +203,12 @@ void singleRangeIntForce::update( scalarField& rho, scalarField& T ) {
 	    
 		    for( uint j = 0 ; j < 3 ; j++ ) {
 
-			F[j] +=  alpha * (scalar)vel[k][j] ;
+		    	F[j] +=  alpha * (scalar)vel[k][j] ;
 
 		    }		    
 		    
 
-		}
+		}		
 
 
 
