@@ -74,6 +74,8 @@ singleRangeIntForce::~singleRangeIntForce() {}
 void singleRangeIntForce::update( scalarField& rho, scalarField& T ) {
 
     
+
+    
     // Reference to neighbour array
 
     const vector< vector<int> >& nb = _mesh.nbArray();
@@ -127,42 +129,6 @@ void singleRangeIntForce::update( scalarField& rho, scalarField& T ) {
 		
 
 
-		// // Move over velocities
-		
-		// for( uint k = 1 ; k < q ; k++ ) {
-
-
-		//     // Neighbour index
-
-		//     int neighId = nb[i][ reverse[k] ];
-
-
-		//     // Virtual node
-		    
-		//     if( neighId == -1 ) {
-
-		// 	neighId = _mesh.vnode(i,k);
-
-		//     }
-
-		//     scalar _rho = rho.at( neighId );
-
-		//     scalar _T = T.at( neighId );
-
-		//     scalar alpha = _weights[k] * potential( _rho, _T, cs2 );
-		    
-	    
-		//     for( uint j = 0 ; j < 3 ; j++ ) {
-
-		// 	F[j] +=  alpha * (scalar)vel[k][j] ;
-
-		//     }		    
-		    
-
-		// }
-
-
-
 		// Move over velocities
 		
 		for( uint k = 1 ; k < q ; k++ ) {
@@ -198,8 +164,6 @@ void singleRangeIntForce::update( scalarField& rho, scalarField& T ) {
 
 				int second = _mesh.vnode(i,k,false);
 
-				// if(second == -1)
-				//     second = first;
 
 				
 
@@ -217,7 +181,7 @@ void singleRangeIntForce::update( scalarField& rho, scalarField& T ) {
 
 				    if( first < (int)_mesh.local() ) {
 
-					ln =  nb[first][8];
+					ln = nb[first][8];
 				
 					rn = nb[first][7];
 
@@ -225,7 +189,7 @@ void singleRangeIntForce::update( scalarField& rho, scalarField& T ) {
 
 				    else {
 
-					ln =  nb[i][8];
+					ln = nb[i][8];
 				
 					rn = nb[i][7];
 
@@ -234,15 +198,16 @@ void singleRangeIntForce::update( scalarField& rho, scalarField& T ) {
 
 				    if( rho.at(ln) != rho.at(rn) ) {
 				    
-					scalar estimated = M_PI/2 - atan( (rho.at(first) - rho.at(sn)) / abs(rho.at(rn) - rho.at(ln)) );
+					// scalar estimated = M_PI/2 - atan( -(rho.at(sn) - rho.at(first))/( rho.at(nb[first][3] - rho.at(nb[first][1])) ) );
+					scalar estimated = M_PI/2 - atan( -(rho.at(nb[i][4]) - rho.at(i))/( rho.at(nb[i][3] - rho.at(nb[i][1])) ) );					
 
-					if( estimated <= _hysteresis.at(i)[0])
-					    estimated = _hysteresis.at(i)[0];
+					// if( estimated <= _hysteresis.at(i)[0])
+					//     estimated = _hysteresis.at(i)[0];
 
-					if( estimated >= _hysteresis.at(i)[1])
-					    estimated = _hysteresis.at(i)[1];
+					// if( estimated >= _hysteresis.at(i)[1])
+					//     estimated = _hysteresis.at(i)[1];
 
-					_contactAngle[i] = estimated;
+					_contactAngle.at(i) = estimated;
 
 				    }
 					
