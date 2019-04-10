@@ -35,28 +35,7 @@ protected:
     /** Model related forces */
 
     pseudoPotForce F;
-
-
-    /** Contact points */
-
-    std::vector<uint> _contactNodes;
-
-
-    /** Temporary: geometric contact angle */
-
-    std::map<uint, scalar> _contactAngle;
-
-
-    /** Temporary: average density for contact angle location */
-
-    scalar _rhoAvgInt;
-
-    
-    /** Flag for geometric contact line location*/
-
-    bool _withGeomContact;
-
-  
+ 
     
 
 
@@ -153,13 +132,6 @@ public:
     /** Compute and set pressure field */
 
     virtual const void pressure( const scalarField& phi, scalarField& p );
-
-
-    /** Update contact nodes */
-
-    const void locateContactNodes();
-
-    const bool& withGeomContact() const { return _withGeomContact; }
     
     
 };

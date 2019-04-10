@@ -50,7 +50,7 @@ singleRangeIntForce::singleRangeIntForce( const string& dictName,
 
 	else {
 
-	    cout << " [ERROR]  Potential weights not implemented yet for " << model << endl;
+	    cout << " [ERROR]  Potential weights not yet implemented for " << model << endl;
 
 	}
 
@@ -175,28 +175,142 @@ void singleRangeIntForce::update( scalarField& rho, scalarField& T ) {
 
 		    // Virtual node
 
-		    scalar _rho(0);
-		    
+		    scalar _rho(0), _T(0);
+
+
 		    if( neighId == -1 ) {
 
-			neighId = _mesh.vnode(i,k);
 
-			int second = _mesh.vnode(i,k,false);
+			// With geometric contact
+		    
+			if( _withGeomContact ) {
 
-			scalar angle = 108*M_PI/180;
+
+
+			    // Compute only if node index is on angles list
+
+			    if( _contactAngle.find(i) != _contactAngle.end() ) {
+
+
+				// Normal nodes
+
+				int first = _mesh.vnode(i,k);
+
+				int second = _mesh.vnode(i,k,false);
+
+				// if(second == -1)
+				//     second = first;
+
+				
+
+				// Compute apparent angle first
+				
+				if( _hysteresis.at(i)[0] != _hysteresis.at(i)[1] ) {
+				    
+				    int sn = nb[second][4];
+
+				    if (sn == -1)
+					sn = second;
+
+
+				    int ln, rn;
+
+				    if( first < (int)_mesh.local() ) {
+
+					ln =  nb[first][8];
+				
+					rn = nb[first][7];
+
+				    }
+
+				    else {
+
+					ln =  nb[i][8];
+				
+					rn = nb[i][7];
+
+				    }				    
+
+
+				    if( rho.at(ln) != rho.at(rn) ) {
+				    
+					scalar estimated = M_PI/2 - atan( (rho.at(first) - rho.at(sn)) / abs(rho.at(rn) - rho.at(ln)) );
+
+					_contactAngle[i] = estimated;
+
+				    }
+					
+
+				}
+
+
+
+				// Neigbour over wall. Needs changes for parallel computation
+
+				int ln, rn;
+
+				if( first < (int)_mesh.local() ) {
+
+				    ln =  nb[first][3];
+				
+				    rn = nb[first][1];
+
+				}
+
+				else {
+
+				    ln =  nb[i][3];
+				
+				    rn = nb[i][1];
+
+				}
+							
+				_rho = rho.at(second) + tan( M_PI/2 - _contactAngle.at(i) ) * abs( rho.at(ln) - rho.at(rn) );
+
+				_T = T.at( first );
+
+
+			    }
+
+			    else {
+
+				neighId = _mesh.vnode(i,k);
+
+				_rho = rho.at( neighId );
+			    
+				_T = T.at( neighId );
+
+			    }
+
+			}
+
 			
-			_rho = rho.at(second) + tan( M_PI/2 - angle ) * abs( rho.at(nb[neighId][3]) - rho.at(nb[neighId][1]) );
+			else {
+
+			    neighId = _mesh.vnode(i,k);
+
+			    _rho = rho.at( neighId );
+			    
+			    _T = T.at( neighId );			    
+
+			}
+			
 
 		    }
 
 		    else {
 
 			_rho = rho.at( neighId );
+			    
+			_T = T.at( neighId );
 
 		    }
 
 
-		    scalar _T = T.at( neighId );
+		    
+		    
+
+		    // Complete force
 
 		    scalar alpha = _weights[k] * potential( _rho, _T, cs2 );
 		    

@@ -62,9 +62,8 @@ void ppNEBB::update( const pseudoPotEquation* ppeq ) {
 
 
 	    // Total force at node
-
-	    if( ppeq->withGeomContact() == false )	
-		ppeq->totalForce(Ft, id);
+	
+	    ppeq->totalForce(Ft, id);
 	
 
 	    switch( _normal[i] ) {

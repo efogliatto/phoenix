@@ -44,6 +44,25 @@ protected:
 
     std::vector<scalar> _weights;
 
+
+    /** Geometric contact angle */
+
+    std::map< uint, scalar > _contactAngle;
+
+    std::map< uint, std::vector<scalar> > _hysteresis;
+
+    
+    /** Flag for geometric contact line location*/
+
+    bool _withGeomContact;
+
+
+
+    /** Read geometric contact angle properties */
+
+    const void readGeometricContact( const std::string& eqname );
+    
+
     
 
 public:

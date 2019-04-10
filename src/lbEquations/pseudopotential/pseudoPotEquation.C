@@ -19,69 +19,14 @@ pseudoPotEquation::pseudoPotEquation( const string& name,
       rho(rho_),
       U(U_),
       T(T_),
-      F("properties/macroProperties", name, mesh_, Time_, rho_, T_),
-      _withGeomContact(false) {
+      F("properties/macroProperties", name, mesh_, Time_, rho_, T_) {
 
 
     
     // Update Forces
 
     F.update(rho,T);
-
-
-    // Read contact angles for each boundary
-
-    dictionary dict("properties/macroProperties");
-
-    string contact = dict.lookUpOrDefault<string>( name + "/ContactAngle/type", "none");
-
-    if( contact == "geometric" ) {
-
-
-	// Turn on flag
-
-	_withGeomContact = true;
-
-
-	// Density on interface
-
-	_rhoAvgInt = dict.lookUp<scalar>( name + "/ContactAngle/rhoAvg");
-
-	
-
-	// Read angles for each boundary
-
-	const map< string, vector<uint> >& boundary = mesh.boundaries();
-
-	map<string, scalar> angle;
-
-	for( const auto& bd : boundary) {
-
-	    scalar ang = dict.lookUpOrDefault<scalar>( name + "/ContactAngle/Theta/" + bd.first, -1);
-
-	    if(ang >= 0)	    
-		angle[bd.first] = ang * M_PI / 180.0;
-
-	}
-
-
-
-	// Create map for each boundary node
-
-	for( const auto& bd : angle) {
-
-	    for( const auto& id : boundary.at(bd.first) ) {
-
-		_contactAngle[id] = bd.second;
-
-	    }
-
-	}
-	
-
-    }
-    
-
+   
 }
 
 
@@ -99,74 +44,10 @@ const scalar pseudoPotEquation::localDensity( const uint& id ) const {
 
     scalar r(0);
 
-
-    // No geometric contact
-
-    if( _withGeomContact == false ) {
+    const uint q = mesh.lmodel()->q();
     
-	const uint q = mesh.lmodel()->q();
-    
-	for( uint k = 0 ; k < q ; k++ )
-	    r += _pdf[id][k];
-
-    }
-
-
-    // Geometric contact
-    
-    else {
-
-    
-	// Regular node
-
-	if( std::find(_contactNodes.begin(), _contactNodes.end(), id) == _contactNodes.end() ) {
-
-	    const uint q = mesh.lmodel()->q();
-    
-	    for( uint k = 0 ; k < q ; k++ )
-		r += _pdf[id][k];
-
-	}
-
-	else {
-
-	    if( _contactAngle.find(id) != _contactAngle.end() ) {
-
-
-		const uint q = mesh.lmodel()->q();
-    
-		for( uint k = 0 ; k < q ; k++ )
-		    r += _pdf[id][k];
-	
-
-		const vector< vector<int> >& nb = mesh.nbArray();
-
-		int neigh = nb[ nb[id][4] ][4];
-
-		if(neigh == -1)
-		    neigh = nb[id][4];
-
-		scalar delta = rho.at(nb[id][7]) - rho.at(nb[id][8]);
-
-		delta = abs(delta);       
-
-		r = rho.at(neigh) + tan( M_PI/2 - _contactAngle.at(id) ) * delta;
-
-	    }
-
-	    else {
-
-		const uint q = mesh.lmodel()->q();
-    
-		for( uint k = 0 ; k < q ; k++ )
-		    r += _pdf[id][k];
-
-	    }
-
-	}
-    
-
-    }
+    for( uint k = 0 ; k < q ; k++ )
+	r += _pdf[id][k];     
     
     return r;    
 
@@ -346,24 +227,10 @@ const void pseudoPotEquation::collision() {}
 /** Update macroscopic density */
 
 const void pseudoPotEquation::updateMacroDensity() {
-
-        
-    if( _withGeomContact == false ) {    
+           
+    for( uint i = 0 ; i < mesh.npoints() ; i++ )
+	rho[i] = localDensity(i);
     
-	for( uint i = 0 ; i < mesh.npoints() ; i++ )
-	    rho[i] = localDensity(i);
-
-    }
-
-    else {
-    
-	for( uint i = 0 ; i < mesh.local() ; i++ )
-	    rho[i] = localDensity(i);
-
-	rho.sync();
-
-    }
-
 }
 
 
@@ -432,38 +299,7 @@ const void pseudoPotEquation::updateMacroVelocity() {
 	
     }
 
-
-
-    // for( uint i = 0 ; i < mesh.local() ; i++ ) {
-
-
-    // 	// Compute first moment
     
-    // 	for( uint j = 0 ; j < 3 ; j++ ) {
-
-    // 	    lv[j] = 0;
-	    
-    // 	    for( uint k = 0 ; k < q ; k++ ) {
-
-    // 		lv[j] += vel[k][j] * _pdf[i][k];
-		    
-    // 	    }
-	    
-    // 	}
-
-
-    // 	// Add interaction force and divide by density
-
-    // 	F.total(Ft, i);
-    
-    // 	for( uint j = 0 ; j < 3 ; j++ )
-    // 	    U[i][j] = ( lv[j]   +   0.5 * Ft[j]   ) / localDensity(i);
-
-	
-    // }
-
-    // U.sync();
-
 }
 
 
@@ -539,89 +375,5 @@ const void pseudoPotEquation::pressure( const scalarField& phi, scalarField& p )
 	p[i] = rho.at(i) * cs2;
 
     }    
-
-}
-
-
-
-
-
-/** Update contact nodes */
-
-const void pseudoPotEquation::locateContactNodes() {
-
-    
-    // Temporary contact nodes
-    
-    vector<uint> cn;
-    
-    
-    // Move over all boundary nodes and detect density change
-
-    const map< string, vector<uint> >& boundary = mesh.boundaries();
-
-    for( const auto& bd : boundary) {
-
-    	if( bd.second.size() > 0 ) {
-
-    	    for( uint j = 0 ; j < bd.second.size()-1 ; j++ ) {
-
-    		scalar y0( rho.at(bd.second[j]) - _rhoAvgInt ),
-    		    y1( rho.at(bd.second[j+1]) - _rhoAvgInt );
-
-    		if( (y1 * y0)   <= 0) {
-
-    		    // cn.push_back( bd.second[j] );
-    		    // cn.push_back( bd.second[j+1] );
-		    
-		    
-    		    scalar xc = -y0 / (y1-y0);
-
-    		    uint xint(0);
-
-    		    xc <= 0.5 ?  xint = j : xint = j+1;
-
-		    
-    		    if(xint > 0)
-    		    	cn.push_back( bd.second[xint-1] );
-
-    		    if(xint - 1 > 0)
-    		    	cn.push_back( bd.second[xint-2] );
-
-    		    // if(xint - 2 > 0)
-    		    // 	cn.push_back( bd.second[xint-3] );
-		    
-
-    		    if(xint + 1 < bd.second.size() )
-    		    	cn.push_back( bd.second[xint+1] );
-
-    		    if(xint + 2 < bd.second.size() )
-    		    	cn.push_back( bd.second[xint+2] );
-
-    		    // if(xint + 3 < bd.second.size() )
-    		    // 	cn.push_back( bd.second[xint+3] );
-
-
-		    
-    		    cn.push_back( bd.second[xint] );
-		    
-
-    		}
-
-    	    }
-
-    	}
-
-    }
-
-
-    _contactNodes = cn;
-
-
-
-    // _contactNodes = boundary.at("Y0");    
-
-
-
 
 }

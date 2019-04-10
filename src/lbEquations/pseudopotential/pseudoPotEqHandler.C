@@ -55,12 +55,7 @@ pseudoPotEqHandler::~pseudoPotEqHandler() {}
 /** Update boundaries */
 
 const void pseudoPotEqHandler::updateBoundaries() {
-
-
-    // Update contact nodes if needed
-    
-    _equation->locateContactNodes();
-    
+   
 
     // Apply boundary conditions
 
