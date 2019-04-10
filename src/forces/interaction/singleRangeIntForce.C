@@ -236,6 +236,12 @@ void singleRangeIntForce::update( scalarField& rho, scalarField& T ) {
 				    
 					scalar estimated = M_PI/2 - atan( (rho.at(first) - rho.at(sn)) / abs(rho.at(rn) - rho.at(ln)) );
 
+					if( estimated <= _hysteresis.at(i)[0])
+					    estimated = _hysteresis.at(i)[0];
+
+					if( estimated >= _hysteresis.at(i)[1])
+					    estimated = _hysteresis.at(i)[1];
+
 					_contactAngle[i] = estimated;
 
 				    }
