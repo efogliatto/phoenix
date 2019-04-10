@@ -61,6 +61,8 @@ protected:
     /** Read geometric contact angle properties */
 
     const void readGeometricContact( const std::string& eqname );
+
+    const scalar apparentContactAngle( const scalarField& rho, const std::string& bname );    
     
 
     

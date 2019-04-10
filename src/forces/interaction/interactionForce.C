@@ -1,5 +1,7 @@
 #include <interactionForce.H>
 
+#include <numeric>
+
 using namespace std;
 
 
@@ -164,5 +166,62 @@ const void interactionForce::readGeometricContact( const string& eqname ) {
 	
 
     }
+
+}
+
+
+
+/** Update contact nodes */
+
+const scalar interactionForce::apparentContactAngle( const scalarField& rho, const std::string& bname ) {
+
+    
+    // Temporary contact nodes
+    
+    vector<scalar> cn;
+
+    scalar _rhoAvgInt(3.484);
+
+    const vector< vector<int> >& nb = _mesh.nbArray();
+    
+    
+    
+    // Move over all boundary nodes and detect density change
+
+    const map< string, vector<uint> >& boundary = _mesh.boundaries();
+
+    if( boundary.at(bname).size() > 0 ) {
+
+	for( uint j = 0 ; j < boundary.at(bname).size()-1 ; j++ ) {
+
+	    scalar y0( rho.at( boundary.at(bname)[j] ) - _rhoAvgInt ),
+		   y1( rho.at( boundary.at(bname)[j+1] ) - _rhoAvgInt );
+
+	    if( (y1 * y0)   <= 0) {
+
+		int id = boundary.at(bname)[j];
+
+		scalar angle = M_PI/2 - atan( -(rho.at(nb[id][4]) - rho.at(id)) / abs(rho.at(nb[id][3]) - rho.at(nb[id][1])) );
+		
+		cn.push_back( angle );
+
+
+		
+		id = boundary.at(bname)[j+1];
+
+		angle = M_PI/2 - atan( - 2 * (rho.at(nb[id][4]) - rho.at(id)) / abs(rho.at(nb[id][3]) - rho.at(nb[id][1])) );
+		
+		cn.push_back( angle );
+		
+	    }
+
+	}
+
+    }
+
+    
+
+    return accumulate(cn.begin(), cn.end(), 0.0) / cn.size();
+ 
 
 }
