@@ -6,6 +6,8 @@
 
 #include <energyEqHandler.H>
 
+#define ARMA_NO_DEBUG
+
 #include <armadillo>
 
 
@@ -126,9 +128,7 @@ int main( int argc, char **argv ) {
 
     // Energy equation matrix and vector
 
-    const uint armaSize( (Nx * Ny) - 2*Nx );
-        
-    arma::sp_mat TMat(armaSize, armaSize);    
+    const uint armaSize( (Nx * Ny) - 2*Nx );   
     
     arma::vec TVec(armaSize);
 
@@ -149,9 +149,13 @@ int main( int argc, char **argv ) {
 
    
 
+    // Get matrix structure using all neighbours
 
+    vector<uint> locX;
 
-    // Get matrix structure
+    vector<uint> locY;
+
+    arma::vec val;        
 
     for( uint i = 0 ; i < armaSize ; i++ ) {
 
@@ -162,10 +166,7 @@ int main( int argc, char **argv ) {
 
         const uint q(9);
 
-	    
-	    
-
-        // Convective term: -U \dot \nabla T
+	   	   
 
         for( uint k = 1 ; k < q ; k++ ) {
 
@@ -173,66 +174,59 @@ int main( int argc, char **argv ) {
 
     	    if(  ( (nbid - (int)Nx) > 0 )  &&  ( nbid < (int)(armaSize + Nx) )  ){
 
-    		for( uint j = 0 ; j < 3 ; j++ )
-    		    TMat(i, nbid - Nx) = 1;
+		locX.push_back(i);
+
+		locY.push_back(nbid - Nx);
+
+		val << 1;
+		
+		// TMat_1(i, nbid - Nx) = 1;
+
+		// TMat_2(i, nbid - Nx) = 1;
+
+		// TMat_3(i, nbid - Nx) = 1;
+
+		// TMat_4(i, nbid - Nx) = 1;
 
     	    }
 
         }
 
-
-
-
-
-        // Diffusive term: chi \nabla^2 T
-
-        for( uint k = 1 ; k < q ; k++ ) {
-
-    	    int nbid = nb[lbid][reverse[k]];
-
-    	    if(  ( (nbid - (int)Nx) > 0 )  &&  ( nbid < (int)(armaSize + Nx) )  ){
-
-    		TMat(i, nbid - Nx) = 1;
-
-    		TMat(i, i) = 1;		    
-
-    	    }
-
-        }
-
-
-
-
-
-        // Diffusive term: chi (\nabla rho) \cdot (\nabla T) / \rho
-
-
-        // Density gradient
-	        	   
-        for( uint k = 1 ; k < q ; k++ ) {
-
-    	    int nbid = nb[lbid][reverse[k]];
-
-    	    if(  ( (nbid - (int)Nx) > 0 )  &&  ( nbid < (int)(armaSize + Nx) )  ){
-
-    		for( uint j = 0 ; j < 3 ; j++ )
-    		    TMat(i, nbid - Nx) = 1;
-
-    	    }
-
-        }
-
-
-
-        // Extra term
-    
-        TMat(i,i) = 1;	   	    
-	    
 
     }
 
+    // val << endr;
+    
+    arma::umat locMat;
+    
+    for(uint i = 0 ; i < locX.size() ; i++)
+	locMat << locX[i];
 
-  
+    locMat << endr;
+
+    
+    for(uint i = 0 ; i < locY.size() ; i++)	
+	locMat << locY[i];
+
+    locMat << endr;    
+	
+	
+
+    arma::sp_mat TMat(locMat, val);
+    
+    // arma::sp_mat TMat_1(armaSize, armaSize);
+
+    // arma::sp_mat TMat_2(armaSize, armaSize);
+
+    // arma::sp_mat TMat_3(armaSize, armaSize);
+
+    // arma::sp_mat TMat_4(armaSize, armaSize);  
+    
+
+    // TMat = TMat_1 + TMat_2 + TMat_3 + TMat_4;
+
+
+    
 
     
 
@@ -240,286 +234,279 @@ int main( int argc, char **argv ) {
     
     for( uint i = 0 ; i < armaSize ; i++ )
     	TVec[i] = Tsat;
-    
 
     
     
-    // Advance in time. Collide, stream, update and write
     
-    while( Time.update() ) {
+    // // Advance in time. Collide, stream, update and write
+    
+    // while( Time.update() ) {
 
 	
        
-	
-    	// Solve Navier-Stokes equation
+       
 
-    	NS.collision();
+    // 	// Need to initialize coefficients to zero
 
-    	NS.streaming();
-
-    	NS.updateBoundaries();
-
-    	f.sync();
-
-    	NS.updateMacroDensity();
-
-    	NS.updateMacroVelocity();
-	
-
+    // 	for( vec::iterator it = BVec.begin() ; it != BVec.end() ; ++it )	    	
+    // 	    *it = 0;
 
 	
 
-    	// Need to initialize coefficients to zero
+    //     // Update TMat	
 
-    	for( vec::iterator it = BVec.begin() ; it != BVec.end() ; ++it )	    	
-    	    *it = 0;
-
-    	for( sp_mat::iterator it = TMat.begin() ; it != TMat.end() ; ++it )	    	
-    	    *it = 1;	
-
-
-	
-
-        // Update TMat	
-
-    	for( uint i = 0 ; i < armaSize ; i++ ) {
+    // 	for( uint i = 0 ; i < armaSize ; i++ ) {
 
 	    
-    	    // LB element id
+    // 	    // LB element id
 
-    	    int lbid = i + Nx;
+    // 	    int lbid = i + Nx;
 
-    	    const uint q(9);
+    // 	    const uint q(9);
 
 	    
 	    
 
-    	    // Convective term: -U \dot \nabla T
+    // 	    // Convective term: -U \dot \nabla T
 
-    	    for( uint k = 1 ; k < q ; k++ ) {
+    // 	    for( uint k = 1 ; k < q ; k++ ) {
 
-    	    	int nbid = nb[lbid][reverse[k]];
+    // 	    	int nbid = nb[lbid][reverse[k]];
 
-    	    	if(  ( (nbid - (int)Nx) > 0 )  &&  ( nbid < (int)(armaSize + Nx) )  ){
+    // 	    	if(  ( (nbid - (int)Nx) > 0 )  &&  ( nbid < (int)(armaSize + Nx) )  ){
+    	    	    
+    // 		    TMat_1(i, nbid - Nx) = -omega[k] * vel[k][0] * U.at(lbid)[0] / cs2
+    // 			                   -omega[k] * vel[k][1] * U.at(lbid)[1] / cs2
+    // 			                   -omega[k] * vel[k][2] * U.at(lbid)[2] / cs2;
 
-    	    	    for( uint j = 0 ; j < 3 ; j++ )
-    	    	    	TMat(i, nbid - Nx) -= omega[k] * vel[k][j] * U.at(lbid)[j] / cs2;
+    // 	    	}
 
-    	    	}
+    // 	    	else {
 
-    	    	else {
-
-    	    	    scalar Tb(Tsat);
+    // 	    	    scalar Tb(Tsat);
 		    
-    	    	    if(   ( mesh.latticePoint(lbid)[0] >= spmin )  &&  ( mesh.latticePoint(lbid)[0] <= spmax )  )
-    	    	    	Tb = Tw;
+    // 	    	    if(   ( mesh.latticePoint(lbid)[0] >= spmin )  &&  ( mesh.latticePoint(lbid)[0] <= spmax )  )
+    // 	    	    	Tb = Tw;
 
-    	    	    for( uint j = 0 ; j < 3 ; j++ )		    
-    	    	    	BVec(i) -= Tb * omega[k] * vel[k][j] * U.at(lbid)[j] / cs2;
+    // 	    	    for( uint j = 0 ; j < 3 ; j++ )		    
+    // 	    	    	BVec(i) -= Tb * omega[k] * vel[k][j] * U.at(lbid)[j] / cs2;
 
-    	    	}
+    // 	    	}
 
-    	    }
-
-
-
-
-
-    	    // Diffusive term: chi \nabla^2 T
-
-    	    for( uint k = 1 ; k < q ; k++ ) {
-
-    	    	int nbid = nb[lbid][reverse[k]];
-
-    	    	if(  ( (nbid - (int)Nx) > 0 )  &&  ( nbid < (int)(armaSize + Nx) )  ){
-
-    	    	    TMat(i, nbid - Nx) += 2 * omega[k] * chi / cs2;
-
-    	    	    TMat(i, i) -= 2 * omega[k] * chi / cs2;		    
-
-    	    	}
-
-    	    	else {
-
-    	    	    scalar Tb(Tsat);
-
-    	    	    if(   ( mesh.latticePoint(lbid)[0] >= spmin )  &&  ( mesh.latticePoint(lbid)[0] <= spmax )  )
-    	    	    	Tb = Tw;
-
-    	    	    BVec(i) += 2 * Tb * omega[k] * chi / cs2;
-
-    	    	}
-
-    	    }
+    // 	    }
 
 
 
 
 
-    	    // Diffusive term: chi (\nabla rho) \cdot (\nabla T) / \rho
+    // 	    // Diffusive term: chi \nabla^2 T
+
+    // 	    for( uint k = 1 ; k < q ; k++ ) {
+
+    // 	    	int nbid = nb[lbid][reverse[k]];
+
+    // 	    	if(  ( (nbid - (int)Nx) > 0 )  &&  ( nbid < (int)(armaSize + Nx) )  ){
+
+    // 	    	    TMat_2.at(i, nbid - Nx) = 2 * omega[k] * chi / cs2;
+
+    // 	    	    TMat_2.at(i, i) = -2 * omega[k] * chi / cs2;		    
+
+    // 	    	}
+
+    // 	    	else {
+
+    // 	    	    scalar Tb(Tsat);
+
+    // 	    	    if(   ( mesh.latticePoint(lbid)[0] >= spmin )  &&  ( mesh.latticePoint(lbid)[0] <= spmax )  )
+    // 	    	    	Tb = Tw;
+
+    // 	    	    BVec(i) += 2 * Tb * omega[k] * chi / cs2;
+
+    // 	    	}
+
+    // 	    }
 
 
-    	    // Density gradient
+
+
+
+    // 	    // Diffusive term: chi (\nabla rho) \cdot (\nabla T) / \rho
+
+
+    // 	    // Density gradient
 	    
-    	    scalar gradRho[3] = {0,0,0};
+    // 	    scalar gradRho[3] = {0,0,0};
 
-    	    for( uint k = 1 ; k < q ; k++ ) {
+    // 	    for( uint k = 1 ; k < q ; k++ ) {
 
-    	    	int nbid = nb[lbid][reverse[k]];
+    // 	    	int nbid = nb[lbid][reverse[k]];
 
-    	    	for( uint j = 0 ; j < 3 ; j++ )
-    	    	    gradRho[j] += omega[k] * rho.at(nbid) * vel[k][j] / cs2; 
+    // 	    	for( uint j = 0 ; j < 3 ; j++ )
+    // 	    	    gradRho[j] += omega[k] * rho.at(nbid) * vel[k][j] / cs2; 
 		
 
-    	    }
+    // 	    }
 	    
 	   
-    	    for( uint k = 1 ; k < q ; k++ ) {
+    // 	    for( uint k = 1 ; k < q ; k++ ) {
 
-    	    	int nbid = nb[lbid][reverse[k]];
+    // 	    	int nbid = nb[lbid][reverse[k]];
 
-    	    	if(  ( (nbid - (int)Nx) > 0 )  &&  ( nbid < (int)(armaSize + Nx) )  ){
+    // 	    	if(  ( (nbid - (int)Nx) > 0 )  &&  ( nbid < (int)(armaSize + Nx) )  ){
+    	    	   
+    // 		    TMat_3.at(i, nbid - Nx) = chi * omega[k] * vel[k][0] * gradRho[0] / (cs2 * rho.at(lbid))
+    // 			                    + chi * omega[k] * vel[k][1] * gradRho[1] / (cs2 * rho.at(lbid))
+    // 			                    + chi * omega[k] * vel[k][2] * gradRho[2] / (cs2 * rho.at(lbid));
 
-    	    	    for( uint j = 0 ; j < 3 ; j++ )
-    	    	    	TMat(i, nbid - Nx) += chi * omega[k] * vel[k][j] * gradRho[j] / (cs2 * rho.at(lbid));
+    // 	    	}
 
-    	    	}
+    // 	    	else {
 
-    	    	else {
+    // 	    	    scalar Tb(Tsat);
 
-    	    	    scalar Tb(Tsat);
+    // 	    	    if(   ( mesh.latticePoint(lbid)[0] >= spmin )  &&  ( mesh.latticePoint(lbid)[0] <= spmax )  )
+    // 	    	    	Tb = Tw;
 
-    	    	    if(   ( mesh.latticePoint(lbid)[0] >= spmin )  &&  ( mesh.latticePoint(lbid)[0] <= spmax )  )
-    	    	    	Tb = Tw;
+    // 	    	    for( uint j = 0 ; j < 3 ; j++ )		    
+    // 	    	    	BVec(i) += chi * Tb * omega[k] * vel[k][j] * gradRho[j] /  (cs2 * rho.at(lbid));
 
-    	    	    for( uint j = 0 ; j < 3 ; j++ )		    
-    	    	    	BVec(i) += chi * Tb * omega[k] * vel[k][j] * gradRho[j] /  (cs2 * rho.at(lbid));
+    // 	    	}
 
-    	    	}
-
-    	    }
-
-
-
+    // 	    }
 
 
 
-    	    // Extra term
 
-    	    scalar divU = 0.5 * U.at( nb[lbid][3] )[0]
-    	    	        - 0.5 * U.at( nb[lbid][1] )[0]
-    	    	        + 0.5 * U.at( nb[lbid][4] )[1]
-    	    	        - 0.5 * U.at( nb[lbid][2] )[1];
 
-    	    scalar dpdT( rho.at(lbid) / (1 - rho.at(lbid) * b_eos) );
+
+    // 	    // Extra term
+
+    // 	    scalar divU = 0.5 * U.at( nb[lbid][3] )[0]
+    // 	    	        - 0.5 * U.at( nb[lbid][1] )[0]
+    // 	    	        + 0.5 * U.at( nb[lbid][4] )[1]
+    // 	    	        - 0.5 * U.at( nb[lbid][2] )[1];
+
+    // 	    scalar dpdT( rho.at(lbid) / (1 - rho.at(lbid) * b_eos) );
 	    
 
-    	    TMat(i,i) -= dpdT * divU / ( rho.at(lbid) * Cv );
+    // 	    TMat_4(i,i) = -dpdT * divU / ( rho.at(lbid) * Cv );
 	   	    
-
 	    
 
-    	}
+    // 	}
 
-
-    	for( sp_mat::iterator it = TMat.begin() ; it != TMat.end() ; ++it )	    	
-    	    *it -= 1;	
-
-	
-	
-    	TMat.print();
-	
-
-    	// Construct RK vectors and advance in time
-
-    	K1 = TMat * TVec + BVec;
-
-    	K2 = TMat * ( TVec + 0.5*K1 ) + BVec;
-
-    	K3 = TMat * ( TVec + 0.5*K2 ) + BVec;
-
-    	K4 = TMat * ( TVec + K3 )     + BVec;
-
-    	TVec = TVec + (1/6)*K1 + (1/3)*(K2+K3) + (1/6)*K4;
-
-    	// TVec = newTVec;
-
-
-	
-	
-	
 
 
 	
 
-    	// Write fields
+    // 	// Construct RK vectors and advance in time
+
+    // 	TMat = TMat_1 + TMat_2 + TMat_3 + TMat_4;
+
+    // 	K1 = (TMat * TVec) + BVec;
+
+    // 	K2 = TMat * ( TVec + 0.5*K1 ) + BVec;
+
+    // 	K3 = TMat * ( TVec + 0.5*K2 ) + BVec;
+
+    // 	K4 = TMat * ( TVec + K3 )     + BVec;
+
+    // 	newTVec = TVec + (1/6)*K1 + (1/3)*(K2+K3) + (1/6)*K4;
+
+    // 	// (newTVec-TVec).print();
+
+    // 	TVec = newTVec;
+
+
 	
-    	if( Time.write() ) {
+	
+    // 	// Update T field
 
+    // 	for( uint i = 0 ; i < mesh.npoints() ; i++ ) {
 
-    	    // Update T field
+    // 	    if( mesh.latticePoint(i)[1] == 0 ) {
 
-    	    for( uint i = 0 ; i < mesh.local() ; i++ ) {
+    // 		if(   ( mesh.latticePoint(i)[0] >= spmin )  &&  ( mesh.latticePoint(i)[0] <= spmax )  ) {
 
-    		if( mesh.latticePoint(i)[1] == 0 ) {
+    // 		    T[i] = Tw;
 
-    		    if(   ( mesh.latticePoint(i)[0] >= spmin )  &&  ( mesh.latticePoint(i)[0] <= spmax )  ) {
+    // 		}
 
-    			T[i] = Tw;
+    // 		else {
 
-    		    }
+    // 		    T[i] = Tsat;
 
-    		    else {
-
-    			T[i] = Tsat;
-
-    		    }
+    // 		}
 			
 
-    		}
+    // 	    }
 
-    		else {
+    // 	    else {
 
-    		    if( mesh.latticePoint(i)[1] == (int)(Ny - 1) ) {
+    // 		if( mesh.latticePoint(i)[1] == (int)(Ny - 1) ) {
 
-    			T[i] = Tsat;
+    // 		    T[i] = Tsat;
 
-    		    }
+    // 		}
 
-    		    else {
+    // 		else {
 
-    			T[i] = TVec(i-Nx);
+    // 		    T[i] = TVec.at(i-Nx);
 
-    		    }
+    // 		}
 
-    		}
+    // 	    }
 
-    	    }
+    // 	}	
 
+
+
+
+
+    // 	// Solve Navier-Stokes equation
+
+    // 	NS.collision();
+
+    // 	NS.streaming();
+
+    // 	NS.updateBoundaries();
+
+    // 	f.sync();
+
+    // 	NS.updateMacroDensity();
+
+    // 	NS.updateMacroVelocity();
+
+
+	
+
+    // 	// Write fields
+	
+    // 	if( Time.write() ) {
 	    
 
-    	    rho.write();
+    // 	    rho.write();
 
-    	    U.write();
+    // 	    U.write();
 
-    	    T.write();
+    // 	    T.write();
 
-    	    f.write();
+    // 	    f.write();
 
 
 	    
-    	    if(pid == 0) {
+    // 	    if(pid == 0) {
 		
-    		cout << "Time = " << Time.currentTime() << endl;
+    // 		cout << "Time = " << Time.currentTime() << endl;
 		
-    		cout << "Elapsed time = " << std::fixed << std::setprecision(2) << Time.elapsed() << " seconds" << endl << endl;
+    // 		cout << "Elapsed time = " << std::fixed << std::setprecision(2) << Time.elapsed() << " seconds" << endl << endl;
 		
-    	    }
+    // 	    }
 	    
 
-    	}
+    // 	}
 
-    }
+    // }
 
 
 
