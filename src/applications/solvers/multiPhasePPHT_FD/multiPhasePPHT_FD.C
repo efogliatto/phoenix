@@ -202,8 +202,6 @@ int main( int argc, char **argv ) {
     arma::sp_mat TMat_2(locMat, values);
 
     arma::sp_mat TMat_3(locMat, values);
-
-    arma::sp_mat TMat_4(locMat, values);
     
        
 
@@ -325,66 +323,73 @@ int main( int argc, char **argv ) {
 
 
 
-    	    // // Diffusive term: chi (\nabla rho) \cdot (\nabla T) / \rho
+    	    // Diffusive term: chi (\nabla rho) \cdot (\nabla T) / \rho
 
 
-    	    // // Density gradient
+    	    // Density gradient
 	    
-    	    // scalar gradRho[3] = {0,0,0};
+    	    scalar gradRho[3] = {0,0,0};
 
-    	    // for( uint k = 1 ; k < q ; k++ ) {
+    	    for( uint k = 1 ; k < q ; k++ ) {
 
-    	    // 	int nbid = nb[lbid][reverse[k]];
+    	    	int nbid = nb[lbid][reverse[k]];
 
-    	    // 	for( uint j = 0 ; j < 3 ; j++ )
-    	    // 	    gradRho[j] += omega[k] * rho.at(nbid) * vel[k][j] / cs2; 
+    	    	for( uint j = 0 ; j < 3 ; j++ )
+    	    	    gradRho[j] += omega[k] * rho.at(nbid) * vel[k][j] / cs2; 
 		
 
-    	    // }
+    	    }
 	    
 	   
-    	    // for( uint k = 1 ; k < q ; k++ ) {
+    	    for( uint k = 1 ; k < q ; k++ ) {
 
-    	    // 	int nbid = nb[lbid][reverse[k]];
+    	    	int nbid = nb[lbid][reverse[k]];
 
-    	    // 	if(  ( (nbid - (int)Nx) > 0 )  &&  ( nbid < (int)(armaSize + Nx) )  ){
+    	    	if(  ( (nbid - (int)Nx) > 0 )  &&  ( nbid < (int)(armaSize + Nx) )  ){
     	    	   
-    	    // 	    TMat_3.at(i, nbid - Nx) = chi * omega[k] * vel[k][0] * gradRho[0] / (cs2 * rho.at(lbid))
-    	    // 		                    + chi * omega[k] * vel[k][1] * gradRho[1] / (cs2 * rho.at(lbid))
-    	    // 		                    + chi * omega[k] * vel[k][2] * gradRho[2] / (cs2 * rho.at(lbid));
+    	    	    TMat_3.at(i, nbid - Nx) = chi * omega[k] * vel[k][0] * gradRho[0] / (cs2 * rho.at(lbid))
+    	    		                    + chi * omega[k] * vel[k][1] * gradRho[1] / (cs2 * rho.at(lbid))
+    	    		                    + chi * omega[k] * vel[k][2] * gradRho[2] / (cs2 * rho.at(lbid));
 
-    	    // 	}
+    	    	}
 
-    	    // 	else {
+    	    	else {
 
-    	    // 	    scalar Tb(Tsat);
+    	    	    scalar Tb(Tsat);
 
-    	    // 	    if(   ( mesh.latticePoint(lbid)[0] >= spmin )  &&  ( mesh.latticePoint(lbid)[0] <= spmax )  )
-    	    // 	    	Tb = Tw;
+		    if( mesh.latticePoint(nbid)[1] == 0 ) {
 
-    	    // 	    for( uint j = 0 ; j < 3 ; j++ )		    
-    	    // 	    	BVec(i) += chi * Tb * omega[k] * vel[k][j] * gradRho[j] /  (cs2 * rho.at(lbid));
+			if(   ( mesh.latticePoint(nbid)[0] >= spmin )  &&  ( mesh.latticePoint(nbid)[0] <= spmax )  ) {
+			    
+			    Tb = Tw;
 
-    	    // 	}
+			}
 
-    	    // }
+		    }
+
+    	    	    for( uint j = 0 ; j < 3 ; j++ )		    
+    	    	    	BVec(i) += chi * Tb * omega[k] * vel[k][j] * gradRho[j] /  (cs2 * rho.at(lbid));
+
+    	    	}
+
+    	    }
 
 
 
 
 
 
-    	    // // Extra term
+    	    // Extra term
 
-    	    // scalar divU = 0.5 * U.at( nb[lbid][3] )[0]
-    	    // 	        - 0.5 * U.at( nb[lbid][1] )[0]
-    	    // 	        + 0.5 * U.at( nb[lbid][4] )[1]
-    	    // 	        - 0.5 * U.at( nb[lbid][2] )[1];
+    	    scalar divU = 0.5 * U.at( nb[lbid][3] )[0]
+    	    	        - 0.5 * U.at( nb[lbid][1] )[0]
+    	    	        + 0.5 * U.at( nb[lbid][4] )[1]
+    	    	        - 0.5 * U.at( nb[lbid][2] )[1];
 
-    	    // scalar dpdT( rho.at(lbid) / (1 - rho.at(lbid) * b_eos) );
+    	    scalar dpdT( rho.at(lbid) / (1 - rho.at(lbid) * b_eos) );
 	    
 
-    	    // TMat_4(i,i) = -dpdT * divU / ( rho.at(lbid) * Cv );
+    	    TMat_1(i,i) -= dpdT * divU / ( rho.at(lbid) * Cv );
 	   	    
 	    
 
@@ -396,7 +401,7 @@ int main( int argc, char **argv ) {
 
     	// Construct RK vectors and advance in time
 
-    	TMat = TMat_1 + TMat_2;// + TMat_3 + TMat_4;
+    	TMat = TMat_1 + TMat_2 + TMat_3;
 	
     	K1 = (TMat * TVec) + BVec;
 
@@ -407,8 +412,6 @@ int main( int argc, char **argv ) {
     	K4 = TMat * ( TVec + K3 )     + BVec;
 
     	TVec = TVec + (1.0/6.0)*K1 + (1.0/3.0)*(K2+K3) + (1.0/6.0)*K4;
-
-    	// TVec += newTVec;
 
 
 	
