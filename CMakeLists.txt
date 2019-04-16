@@ -117,6 +117,13 @@ endif()
 
 
 
+# Armadillo
+
+set(ARMADILLO_LIBRARY "/users/fogliate/Programas/armadillo-9.300.2/install/lib")
+
+set(ARMADILLO_INCLUDE_DIR "/users/fogliate/Programas/armadillo-9.300.2/install/include")
+
+
 
 
 # # Optional: CUDA
