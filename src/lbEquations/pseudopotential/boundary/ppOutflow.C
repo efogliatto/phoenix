@@ -116,6 +116,30 @@ ppOutflow::ppOutflow( const string& eqName,
 
     }
 
+
+
+
+
+
+    // Resize old pdf values
+
+    _oldPdf.resize( _nodes.size() );
+
+    for( uint i = 0 ; i < _nodes.size() ; i++ )
+	_oldPdf[i].resize( mesh.lmodel()->q() );
+
+    for( uint i = 0 ; i < _nodes.size() ; i++ ) {
+
+	for( uint k = 0 ; k < mesh.lmodel()->q() ; k++ ) {
+
+	    _oldPdf[i][k] = pdf[_nodes[i]][k];
+
+	}
+
+	    
+
+    }
+
     
 
 }
@@ -164,17 +188,17 @@ void ppOutflow::update( const pseudoPotEquation* ppeq ) {
 	// Update unknowun distributions for f
 	    
 	for( uint k = 0 ; k < q ; k++ ) {
-
-	    // if( nb[id][k] == -1 ) {
 		
-		_pdf.set( id,
-			  k,
-			  ( _pdf[id][k] + uAdv*_pdf[nid][k] ) / (1+uAdv)
-		    );
-
-	    // }
+	    _pdf.set( id,
+	  	      k,
+		      ( _oldPdf[i][k] + uAdv*_pdf[nid][k] ) / (1+uAdv)
+		);
 
 	}
+
+	for( uint k = 0 ; k < q ; k++ )		
+	    _oldPdf[i][k] = _pdf[id][k];
+
 
 	
     }

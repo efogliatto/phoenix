@@ -18,6 +18,11 @@ protected:
 
     std::vector< std::vector<int> > _normal;
 
+    
+    /** Old values of pdf */
+
+    std::vector< std::vector<scalar> > _oldPdf;
+
 
 public:
 

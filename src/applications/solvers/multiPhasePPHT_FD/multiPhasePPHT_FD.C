@@ -147,6 +147,35 @@ int main( int argc, char **argv ) {
 	T.sync();
 
 
+
+
+
+
+	// // Energy equation. RK-2 scheme
+
+	
+	// // K1
+	
+	// Teq.rval(K1, rho, U, T);
+
+
+	// // K2
+
+	// for( uint id = 0 ; id < mesh.local() ; id++ )
+	//     K0[id] = T.at(id) + 0.5*K1.at(id);
+
+	// K0.sync();
+
+	// Teq.rval(K2, rho, U, K0);
+
+
+	// // Update T
+
+	// for( uint id = 0 ; id < mesh.local() ; id++ )
+	//     T[id] = T.at(id) + (1.0/2.0)*K1.at(id) + (1.0/2.0)*K2.at(id);
+
+	// T.sync();
+	
 	
 
     	// Solve Navier-Stokes equation
