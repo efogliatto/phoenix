@@ -314,8 +314,20 @@ const void latticeMesh::readBoundaryNodes() {
 
     for(uint i = 0 ; i < local() ; i++) {
 
-	if( nodeToBnd.find(i) != nodeToBnd.end() )
-	    isOnBnd[i] = 1;
+	// if( nodeToBnd.find(i) != nodeToBnd.end() )
+	//     isOnBnd[i] = 1;
+
+
+	const uint q = lmodel()->q();
+	
+	for(uint k = 1 ; k < q ; k++) {
+
+	    if( nb[i][k] == -1 )
+		isOnBnd[i] = 1;
+
+	}
+
+	
 
     }
 

@@ -5,6 +5,8 @@
 
 #include <vectorField.H>
 
+#include <EOSCreator.H>
+
 
 
 class TEquation {
@@ -20,6 +22,28 @@ protected:
     /** Reference to time options */
 
     timeOptions& _Time;
+
+
+    /** Specific Heat */
+
+    scalar _Cv;
+
+
+    /** Diffisivity or conductivity*/
+
+    scalar _lambda;
+
+    
+    /** Conductivity model type */
+
+    enum class thmodel { CC, CD };
+
+    thmodel thermal;
+
+
+    /** Equation of state */
+
+    EOS* eos;
     
  
 
@@ -35,6 +59,11 @@ public:
     /** Default destructor */
 
     ~TEquation();
+
+
+    /** Update scalar field using equation info */
+
+    const void rval( scalarField& field, const scalarField& rho, const vectorField& U, const scalarField& T );
 
 
 

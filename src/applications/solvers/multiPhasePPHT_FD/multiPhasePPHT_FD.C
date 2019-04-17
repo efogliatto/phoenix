@@ -78,7 +78,20 @@ int main( int argc, char **argv ) {
     // Finite-difference T equation
 
     TEquation Teq( mesh, Time, T);    
-   
+
+
+    // Runge-Kutta fields
+
+    scalarField K0( mesh, Time, "K0", IO::NO_READ, IO::NO_WRITE );
+
+    scalarField K1( mesh, Time, "K1", IO::NO_READ, IO::NO_WRITE );
+
+    scalarField K2( mesh, Time, "K2", IO::NO_READ, IO::NO_WRITE );
+
+    scalarField K3( mesh, Time, "K3", IO::NO_READ, IO::NO_WRITE );
+
+    scalarField K4( mesh, Time, "K4", IO::NO_READ, IO::NO_WRITE );        
+    
     
     
     
@@ -87,12 +100,54 @@ int main( int argc, char **argv ) {
     while( Time.update() ) {
               
        
+	// Energy equation. RK-4 scheme
+
+	
+	// K1
+	
+	Teq.rval(K1, rho, U, T);
+
+
+	// K2
+
+	for( uint id = 0 ; id < mesh.local() ; id++ )
+	    K0[id] = T.at(id) + 0.5*K1.at(id);
+
+	K0.sync();
+
+	Teq.rval(K2, rho, U, K0);
+
+
+	// K3
+
+	for( uint id = 0 ; id < mesh.local() ; id++ )
+	    K0[id] = T.at(id) + 0.5*K2.at(id);
+
+	K0.sync();
+
+	Teq.rval(K3, rho, U, K0);
+
+
+	// K4
+
+	for( uint id = 0 ; id < mesh.local() ; id++ )
+	    K0[id] = T.at(id) + K3.at(id);
+
+	K0.sync();
+
+	Teq.rval(K4, rho, U, K0);
 
 
 
+	// Update T
+
+	for( uint id = 0 ; id < mesh.local() ; id++ )
+	    T[id] = T.at(id) + (1.0/6.0)*K1.at(id) + (1.0/3.0)*K2.at(id) + (1.0/3.0)*K3.at(id) + (1.0/6.0)*K4.at(id);
+
+	T.sync();
 
 
-
+	
 
     	// Solve Navier-Stokes equation
 
