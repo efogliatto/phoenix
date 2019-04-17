@@ -38,6 +38,11 @@ add_subdirectory (latticeFields)
 add_subdirectory (lbEquations)
 
 
+# Finite - difference equations
+
+add_subdirectory (fdEquations)
+
+
 # Forces
 
 add_subdirectory (forces)

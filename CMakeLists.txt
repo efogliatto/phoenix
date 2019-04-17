@@ -48,6 +48,7 @@ set ( PROJECT_LINK_LIBS
   libmesh.so
   liblatticefields.so
   liblbequations.so
+  libtequations.so
   libforces.so
   libheatsources.so
   m
