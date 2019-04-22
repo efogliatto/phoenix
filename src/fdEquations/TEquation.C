@@ -165,21 +165,13 @@ TEquation::~TEquation() {}
 const void TEquation::rval( scalarField& field, const scalarField& rho, const vectorField& U, const scalarField& T ) {
 
 
-    // Lattice constants
+    // Cached variables
     
-    const uint q( _mesh.lmodel()->q() );
-
-    const vector< vector<int> >& nb = _mesh.nbArray();
-
-    const vector<uint>& reverse = _mesh.lmodel()->reverse();
-
-    const vector< vector<int> >& vel = _mesh.lmodel()->lvel();
-
-    const scalar cs2 = _mesh.lmodel()->cs2();
-
-    const vector<scalar>& omega = _mesh.lmodel()->omega();
-
     scalar gradRho[3] = {0,0,0};
+
+    scalar gradT[3] = {0,0,0};
+
+    scalar lapT(0);
     
     
 
@@ -194,19 +186,24 @@ const void TEquation::rval( scalarField& field, const scalarField& rho, const ve
 	
 
 	if( !_mesh.isOnBoundary(id) ) {
-	
+
+
+	    // \nabla^2 T
+
+	    lapT = T.laplacian(id);
+	    
+
+	    
 
     	    // Convective term: -U \dot \nabla T
 
-    	    for( uint k = 1 ; k < q ; k++ ) {
+	    T.grad(gradT, id);
 
-    	    	int nbid = nb[id][reverse[k]];
+	    for( uint j = 0 ; j < 3 ; j++ )
+		field[id] -= U.at(id)[j] * gradT[j];
+		
 
-		for( uint j = 0 ; j < 3 ; j++ )
-		    field[id] -= T.at(nbid) * omega[k] * vel[k][j] * U.at(id)[j] / cs2;		
-
-    	    }
-
+	    
 
 	    // Diffusive term
 	    
@@ -217,32 +214,19 @@ const void TEquation::rval( scalarField& field, const scalarField& rho, const ve
 		
 		// Diffusive term: chi \nabla^2 T
 
-		for( uint k = 1 ; k < q ; k++ ) {
-
-		    int nbid = nb[id][reverse[k]];
-		
-		    field[id] += 2 * omega[k] * _lambda * ( T.at(nbid) - T.at(id) ) / cs2;
-
-		}
+		field[id] += _lambda * lapT;
 
 
 
-		// Diffusive term: chi (\nabla rho) \cdot (\nabla T) / \rho
+		// // Diffusive term: chi (\nabla rho) \cdot (\nabla T) / \rho
 	    
-		rho.grad(gradRho, id);
+		// rho.grad(gradRho, id);
+
+		// for( uint j = 0 ; j < 3 ; j++ )
+		//     field[id] += ( _lambda / rho.at(id) ) * gradRho[j] * gradT[j];
+		    
+		    
 	    	   
-		for( uint k = 1 ; k < q ; k++ ) {
-
-		    int nbid = nb[id][reverse[k]];
-
-		    for( uint j = 0 ; j < 3 ; j++ )    	    	   
-			field[id] += _lambda * omega[k] * vel[k][j] * gradRho[j] * T.at(nbid) / (cs2 * rho.at(id));
-
-		}
-
-	    
-
-
 		break;
 
 
@@ -252,15 +236,8 @@ const void TEquation::rval( scalarField& field, const scalarField& rho, const ve
 		
 		// Diffusive term: chi \nabla^2 T
 
-		for( uint k = 1 ; k < q ; k++ ) {
-
-		    int nbid = nb[id][reverse[k]];
+		field[id] += _lambda * lapT;
 		
-		    field[id] += 2 * omega[k] * _lambda * ( T.at(nbid) - T.at(id) ) / (rho.at(id) * cs2 * _Cv);
-
-		}   
-
-
 		break;		
 
 
@@ -269,14 +246,7 @@ const void TEquation::rval( scalarField& field, const scalarField& rho, const ve
 
 
 
-
-
-    	    // Extra term
-
-    	    // scalar divU = 0.5 * U.at( nb[id][3] )[0]
-    	    // 	        - 0.5 * U.at( nb[id][1] )[0]
-    	    // 	        + 0.5 * U.at( nb[id][4] )[1]
-    	    // 	        - 0.5 * U.at( nb[id][2] )[1];	  
+    	    // Extra term  
 	    
 	    scalar divU( U.div(id) );
 	    

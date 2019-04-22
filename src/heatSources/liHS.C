@@ -76,7 +76,7 @@ void liHS::update( const scalarField& rho, const scalarField& T, const vectorFie
 
     const uint np = _mesh.local();
 
-    const scalar _k = ( 1/_Tau[3] - 0.5 ) * _mesh.lmodel()->cs2();
+    const scalar _k( ( 1/_Tau[3] - 0.5 ) * _mesh.lmodel()->cs2() );
     
     
 
@@ -118,17 +118,23 @@ void liHS::update( const scalarField& rho, const scalarField& T, const vectorFie
 
 	case thmodel::constDiff:
 
+	    // first = -_k * lapT;
+	    
+	    first = 0;
+	    
 	    T.grad(gradT, id);
 
-	    rho.grad(gradRho, id);	    
+	    rho.grad(gradRho, id);
+
 
 
 	    // Dot product
 	    
 	    for(uint j = 0 ; j < 3 ; j++)
-		first += gradT[j] * gradRho[j];
+	    	first += gradT[j] * gradRho[j];
 
-	    first = (_kappa / _rho) * ( first +  _rho * lapT )   -   _k * lapT;	    
+	    first = (_kappa / _rho) * ( first +  _rho * lapT )   -   _k * lapT;
+	    
 	    
 	    break;
 
@@ -137,7 +143,8 @@ void liHS::update( const scalarField& rho, const scalarField& T, const vectorFie
 	
     	// Velocity divergence term
 
-    	scalar second = U.div(id) * _T * ( 1.0   -   eos->dp_dT(_rho, _T) / (_rho * _Cv) );
+    	scalar second = U.div(id) * T.at(id) * ( 1.0   -   eos->dp_dT(_rho, _T) / (_rho * _Cv) );
+
 
 	
     	// Update source at node

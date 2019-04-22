@@ -197,7 +197,18 @@ const void LiEnergyMRTEq::collision() {
 	
     	// Compute equilibrium in moment space
 
-    	eqMS(n_eq,id);
+	n_eq[0] = T.at(id);	
+    	n_eq[1] = -2 * T.at(id);	
+    	n_eq[2] = 2 * T.at(id);	
+    	n_eq[3] = T.at(id) * U.at(id)[0];	
+    	n_eq[4] = T.at(id) * (-U.at(id)[0]);	
+    	n_eq[5] = T.at(id) * U.at(id)[1];	
+    	n_eq[6] = T.at(id) * (-U.at(id)[1]);	
+    	n_eq[7] = 0;	
+    	n_eq[8] = 0;	
+
+	
+    	// eqMS(n_eq,id);
 
 
     	// Distribution in moment space
