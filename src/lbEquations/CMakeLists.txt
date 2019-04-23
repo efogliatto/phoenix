@@ -18,6 +18,7 @@ add_library(lbequations SHARED
   pseudopotential/boundary/ppBndCreator.C
   energy/energyEquation.C
   energy/myMRTEq.C
+  energy/GongSRTEq.C
   energy/LiEnergyMRTEq.C
   energy/EEquation.C
   energy/energyEqHandler.C

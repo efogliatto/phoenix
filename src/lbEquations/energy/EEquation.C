@@ -36,12 +36,22 @@ energyEquation* EEquation::create( const std::string& name,
 
 	else {
 
-	
-	    // Default
-    
-	    cout << endl << " [ERROR]  LB equation type " << etype << " not available as energy model" << endl << endl;
+	    if( etype == "GongSRTRT" ) {
 
-	    exit(1);
+		return new GongSRTEq(name, mesh_, Time_, pdf_, rho_, U_, T_);
+
+	    }
+
+	    else {
+		
+	
+		// Default
+    
+		cout << endl << " [ERROR]  LB equation type " << etype << " not available as energy model" << endl << endl;
+
+		exit(1);
+
+	    }
 
 	}
     
