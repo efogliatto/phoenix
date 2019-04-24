@@ -36,7 +36,7 @@ energyEquation* EEquation::create( const std::string& name,
 
 	else {
 
-	    if( etype == "GongSRTRT" ) {
+	    if( etype == "GongEnergySRT" ) {
 
 		return new GongSRTEq(name, mesh_, Time_, pdf_, rho_, U_, T_);
 

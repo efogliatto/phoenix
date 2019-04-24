@@ -235,7 +235,7 @@ void energyFixedT::update( const energyEquation* eeq ) {
 
     	for( uint k = 0 ; k < q ; k++ ) {	    	    		       		   		    
 			
-	    _pdf.set(id, k, f_eq_bnd[k] + (_pdf[nbid][k] - f_eq_nb[k] ) );
+	    _pdf[id][k] = f_eq_bnd[k] + _pdf[nbid][k] - f_eq_nb[k];
 
     	}
 	

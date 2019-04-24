@@ -117,8 +117,6 @@ void liHS::update( const scalarField& rho, const scalarField& T, const vectorFie
 
 
 	case thmodel::constDiff:
-
-	    // first = -_k * lapT;
 	    
 	    first = 0;
 	    

@@ -14,19 +14,25 @@ protected:
     
     /** Constants */
 
-    scalar _a1;
-
-    scalar _a2;
+    scalar _kappa;
 
     scalar _Cv;
 
+    
 
-    /** Equilibrium in moment space */
+    /** Equation of state */
 
-    const void eqMS( std::vector<scalar>& m, const uint& id ) const;
+    EOS* eos;
 
-    const void eqMS( std::vector<scalar>& n, const scalar& T_, const std::vector<scalar>& U_ ) const;    
 
+    
+    /** Thermal conductivity model */
+
+    enum class thmodel { constCond, constDiff };
+
+    thmodel thermal;
+
+    
 
     /** Equilibrium in population space */
 
@@ -64,11 +70,6 @@ public:
 
     const void setEquilibrium();
 
-
-    /** Compute local temperature */
-
-    const scalar localTemperature( const uint& id ) const { return energyEquation::localTemperature(id) + 0.5*_hs->source(id); }
-
     
     /** Update macroscopic temperature */
 
@@ -82,7 +83,7 @@ public:
     
     /** Thermal conductivity at node */
 
-    virtual const scalar thermalCond( const uint& id ) const;
+    const scalar thermalCond( const uint& id ) const;
     
 };
 
