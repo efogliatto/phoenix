@@ -70,9 +70,9 @@ const void LiEnergyMRTEq::eqMS( vector<scalar>& m, const scalar& T_, const vecto
 
 	m[0] = T_;
 	
-    	m[1] = -2 * T_;
+    	m[1] = -2.0 * T_;
 	
-    	m[2] = 2 * T_;
+    	m[2] = 2.0 * T_;
 	
     	m[3] = T_ * _U[0];
 	
@@ -196,19 +196,8 @@ const void LiEnergyMRTEq::collision() {
 
 	
     	// Compute equilibrium in moment space
-
-	n_eq[0] = T.at(id);	
-    	n_eq[1] = -2 * T.at(id);	
-    	n_eq[2] = 2 * T.at(id);	
-    	n_eq[3] = T.at(id) * U.at(id)[0];	
-    	n_eq[4] = T.at(id) * (-U.at(id)[0]);	
-    	n_eq[5] = T.at(id) * U.at(id)[1];	
-    	n_eq[6] = T.at(id) * (-U.at(id)[1]);	
-    	n_eq[7] = 0;	
-    	n_eq[8] = 0;	
-
 	
-    	// eqMS(n_eq,id);
+    	eqMS(n_eq,id);
 
 
     	// Distribution in moment space
@@ -232,9 +221,9 @@ const void LiEnergyMRTEq::collision() {
 
 	// Correction terms
 
-	n[3] = n[3]   +   ( 1 - 0.5*_Tau[3] ) * _Tau[4] * (n4 - n_eq[4]);
+	n[3] = n[3]   +   ( 1.0 - 0.5*_Tau[3] ) * _Tau[4] * (n4 - n_eq[4]);
 
-	n[5] = n[5]   +   ( 1 - 0.5*_Tau[5] ) * _Tau[6] * (n6 - n_eq[6]);
+	n[5] = n[5]   +   ( 1.0 - 0.5*_Tau[5] ) * _Tau[6] * (n6 - n_eq[6]);
 	
 
 

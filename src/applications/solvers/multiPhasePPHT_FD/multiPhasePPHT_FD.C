@@ -100,58 +100,7 @@ int main( int argc, char **argv ) {
     while( Time.update() ) {
               
        
-	// Energy equation. RK-4 scheme
-
-	
-	// K1
-	
-	Teq.rval(K1, rho, U, T);
-
-
-	// K2
-
-	for( uint id = 0 ; id < mesh.local() ; id++ )
-	    K0[id] = T.at(id) + 0.5*K1.at(id);
-
-	K0.sync();
-
-	Teq.rval(K2, rho, U, K0);
-
-
-	// K3
-
-	for( uint id = 0 ; id < mesh.local() ; id++ )
-	    K0[id] = T.at(id) + 0.5*K2.at(id);
-
-	K0.sync();
-
-	Teq.rval(K3, rho, U, K0);
-
-
-	// K4
-
-	for( uint id = 0 ; id < mesh.local() ; id++ )
-	    K0[id] = T.at(id) + K3.at(id);
-
-	K0.sync();
-
-	Teq.rval(K4, rho, U, K0);
-
-
-
-	// Update T
-
-	for( uint id = 0 ; id < mesh.local() ; id++ )
-	    T[id] = T.at(id) + (1.0/6.0)*K1.at(id) + (1.0/3.0)*K2.at(id) + (1.0/3.0)*K3.at(id) + (1.0/6.0)*K4.at(id);
-
-	T.sync();
-
-
-
-
-
-
-	// // Energy equation. RK-2 scheme
+	// // Energy equation. RK-4 scheme
 
 	
 	// // K1
@@ -169,12 +118,85 @@ int main( int argc, char **argv ) {
 	// Teq.rval(K2, rho, U, K0);
 
 
+	// // K3
+
+	// for( uint id = 0 ; id < mesh.local() ; id++ )
+	//     K0[id] = T.at(id) + 0.5*K2.at(id);
+
+	// K0.sync();
+
+	// Teq.rval(K3, rho, U, K0);
+
+
+	// // K4
+
+	// for( uint id = 0 ; id < mesh.local() ; id++ )
+	//     K0[id] = T.at(id) + K3.at(id);
+
+	// K0.sync();
+
+	// Teq.rval(K4, rho, U, K0);
+
+
+
 	// // Update T
 
 	// for( uint id = 0 ; id < mesh.local() ; id++ )
-	//     T[id] = T.at(id) + (1.0/2.0)*K1.at(id) + (1.0/2.0)*K2.at(id);
+	//     T[id] = T.at(id) + (1.0/6.0)*K1.at(id) + (1.0/3.0)*K2.at(id) + (1.0/3.0)*K3.at(id) + (1.0/6.0)*K4.at(id);
 
 	// T.sync();
+
+
+
+
+	
+
+
+	// Energy equation. RK-2 scheme
+
+	
+	// K1
+	
+	Teq.rval(K1, rho, U, T);
+
+
+	// K2
+
+	for( uint id = 0 ; id < mesh.local() ; id++ )
+	    K0[id] = T.at(id) + 0.5*K1.at(id);
+
+	K0.sync();
+
+	Teq.rval(K2, rho, U, K0);
+
+
+	// Update T
+
+	for( uint id = 0 ; id < mesh.local() ; id++ )
+	    T[id] = T.at(id) + (1.0/2.0)*K1.at(id) + (1.0/2.0)*K2.at(id);
+
+	T.sync();
+
+
+
+	
+
+	// // Energy equation. Explicit Euler scheme
+
+	
+	// // K1
+	
+	// Teq.rval(K1, rho, U, T);
+
+
+	// // Update T
+
+	// for( uint id = 0 ; id < mesh.local() ; id++ )
+	//     T[id] = T.at(id) + K1.at(id);
+
+	// T.sync();
+
+	
 	
 	
 

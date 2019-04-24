@@ -212,7 +212,7 @@ void energyFixedT::update( const energyEquation* eeq ) {
 			
 	    Unbid[j] = _U.at(nbid,j);
 
-	    Uw[j] = _U.at(id,j);
+	    // Uw[j] = _U.at(id,j);
 
 	}
 

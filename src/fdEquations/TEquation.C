@@ -203,6 +203,11 @@ const void TEquation::rval( scalarField& field, const scalarField& rho, const ve
 		field[id] -= U.at(id)[j] * gradT[j];
 		
 
+
+	    // Only for tests: -T \nabla \cdot U
+
+	    field[id] -= T.at(id) * U.div(id);
+	    
 	    
 
 	    // Diffusive term
@@ -218,12 +223,12 @@ const void TEquation::rval( scalarField& field, const scalarField& rho, const ve
 
 
 
-		// Diffusive term: chi (\nabla rho) \cdot (\nabla T) / \rho
+		// // Diffusive term: chi (\nabla rho) \cdot (\nabla T) / \rho
 	    
-		rho.grad(gradRho, id);
+		// rho.grad(gradRho, id);
 
-		for( uint j = 0 ; j < 3 ; j++ )
-		    field[id] += ( _lambda / rho.at(id) ) * gradRho[j] * gradT[j];
+		// for( uint j = 0 ; j < 3 ; j++ )
+		//     field[id] += ( _lambda / rho.at(id) ) * gradRho[j] * gradT[j];
 		    
 		    
 	    	   
@@ -246,11 +251,11 @@ const void TEquation::rval( scalarField& field, const scalarField& rho, const ve
 
 
 
-    	    // Extra term  
+    	    // // Extra term  
 	    
-	    scalar divU( U.div(id) );
+	    // scalar divU( U.div(id) );
 	    
-    	    field[id] -= T.at(id) * eos->dp_dT(rho.at(id), T.at(id)) * divU / ( rho.at(id) * _Cv );
+    	    // field[id] -= T.at(id) * eos->dp_dT(rho.at(id), T.at(id)) * divU / ( rho.at(id) * _Cv );
 	    	   
 
 	    
