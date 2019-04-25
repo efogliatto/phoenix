@@ -204,9 +204,9 @@ const void TEquation::rval( scalarField& field, const scalarField& rho, const ve
 		
 
 
-	    // Only for tests: -T \nabla \cdot U
+	    // // Only for tests: -T \nabla \cdot U
 
-	    field[id] -= T.at(id) * U.div(id);
+	    // field[id] -= T.at(id) * U.div(id);
 	    
 	    
 
@@ -251,11 +251,11 @@ const void TEquation::rval( scalarField& field, const scalarField& rho, const ve
 
 
 
-    	    // // Extra term  
+    	    // Extra term  
 	    
-	    // scalar divU( U.div(id) );
+	    scalar divU( U.div(id) );
 	    
-    	    // field[id] -= T.at(id) * eos->dp_dT(rho.at(id), T.at(id)) * divU / ( rho.at(id) * _Cv );
+    	    field[id] -= T.at(id) * eos->dp_dT(rho.at(id), T.at(id)) * divU / ( rho.at(id) * _Cv );
 	    	   
 
 	    
