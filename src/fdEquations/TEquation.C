@@ -223,14 +223,14 @@ const void TEquation::rval( scalarField& field, const scalarField& rho, const ve
 
 
 
-		// // Diffusive term: chi (\nabla rho) \cdot (\nabla T) / \rho
+		// Diffusive term: chi (\nabla rho) \cdot (\nabla T) / \rho
 	    
-		// rho.grad(gradRho, id);
+		rho.grad(gradRho, id);
 
-		// for( uint j = 0 ; j < 3 ; j++ )
-		//     field[id] += ( _lambda / rho.at(id) ) * gradRho[j] * gradT[j];
-		    
-		    
+		for( uint j = 0 ; j < 3 ; j++ )
+		    field[id] += ( _lambda / rho.at(id) ) * gradRho[j] * gradT[j];
+
+		  		    
 	    	   
 		break;
 
