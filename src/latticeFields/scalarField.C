@@ -523,6 +523,7 @@ const void scalarField::grad(scalar g[3], const uint& id, const bool inverse) co
 
 	else {
 
+
 	    int first( mesh.vnode(id, reverse[k]) ),
 		second( mesh.vnode(id, reverse[k], false) );
 
@@ -547,7 +548,7 @@ const void scalarField::grad(scalar g[3], const uint& id, const bool inverse) co
 		g[j] += omega[k] * vel[reverse[k]][j] * fval / cs2;
 
 
-	    
+
 
 	    // int otherNb = nb[id][reverse[k]];
 

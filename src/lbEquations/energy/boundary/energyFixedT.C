@@ -155,92 +155,119 @@ energyFixedT::~energyFixedT() {}
 
 
 
-
-
-/** Update pdf field */
+/** Update pdf field. NEBB */
 
 void energyFixedT::update( const energyEquation* eeq ) {
 
 
 
-    // Lattice constants
+    // // Lattice constants
     
-    const uint q = _mesh.lmodel()->q();
+    // const uint q = _mesh.lmodel()->q();
 
-    vector<scalar> f_eq_nb(q);
+    // const vector< vector<int> >& nb = _mesh.nbArray();
 
-    vector<scalar> f_eq_bnd(q);
+    // const vector<uint>& reverse = _mesh.lmodel()->reverse();     
 
-    vector<scalar> Unbid = {0,0,0};
+    // vector<scalar> f_eq_bnd(q);
 
-    vector<scalar> Uw = {0,0,0};
+    // vector<scalar> Uw = {0,0,0};
 
-
-    
-
-    // Random seeds
-    
-    uniform_real_distribution<scalar> unif( (100.0-_pert)/100.0, (100.0+_pert)/100.0);
-
-    default_random_engine re;
-
-    re.seed( _mesh.pid() );
 
     
 
+    // // Random seeds
+    
+    // uniform_real_distribution<scalar> unif( (100.0-_pert)/100.0, (100.0+_pert)/100.0);
 
-    // Move over boundary elements
+    // default_random_engine re;
 
-    for( uint i = 0 ; i < _nodes.size() ; i++ ) {
+    // re.seed( _mesh.pid() );
+
+    
+
+
+    // // Move over boundary elements
+
+    // for( uint i = 0 ; i < _nodes.size() ; i++ ) {
 	
 
-    	uint id = _nodes[i];
+    // 	uint id = _nodes[i];
 
-	scalar Tw = unif(re) * _bndVal[i];
+    // 	scalar Tw = unif(re) * _bndVal[i];
+
+
+
+    // 	// Density and velocity at neighbour node
+
+    // 	for(uint j = 0 ; j < 3 ; j++)			
+    // 	    Uw[j] = _U.at(id,j);
 
 
 	
-	// Density and velocity at neighbour node
 
-	const uint nbid = _nbid[i];
+    // 	// Equilibrium populations over boundary
+
+    // 	eeq->eqPS( f_eq_bnd, Tw, Uw, 0 );
+
+
 	
+    // 	// Update unknowk distributions
 
-
-	// Velocity at boundary
-
-	for(uint j = 0 ; j < 3 ; j++) {
+    // 	for( uint k = 1 ; k < q ; k++ ) {	    	    		       		   		    
 			
-	    Unbid[j] = _U.at(nbid,j);
+    // 	    if( nb[id][k] == -1 ) {
 
-	    // Uw[j] = _U.at(id,j);
+    // 		// _pdf[id][k] = _pdf[id][reverse[k]];
+    // 		_pdf[id][k] = f_eq_bnd[k];
 
-	}
+    // 	    }
 
-	
-
-	// Equilibrium
-
-	eeq->eqPS( f_eq_nb, _T.at(nbid), Unbid, 0 );
-
-	eeq->eqPS( f_eq_bnd, Tw, Uw, 0 );
-
-	// eeq->eqPS( f_eq_nb, _T.at(nbid), Unbid, eeq->heat(id) );
-
-	// eeq->eqPS( f_eq_bnd, Tw, Uw, eeq->heat(id) );
-	
+    // 	}
 
 
-	
-	// Update distribution
+    // 	// Beta constant
 
-    	for( uint k = 0 ; k < q ; k++ ) {	    	    		       		   		    
+    // 	scalar beta(0);
+
+    // 	scalar kn(0);
+
+    // 	scalar unk(0);
+
+
+    // 	for( uint k = 0 ; k < q ; k++ ) {	    	    		       		   		    
 			
-	    _pdf[id][k] = f_eq_bnd[k] + _pdf[nbid][k] - f_eq_nb[k];
+    // 	    if( nb[id][k] == -1 ) {
 
-    	}
+    // 		unk += _pdf[id][k];
+
+    // 	    }
+
+    // 	    else {
+
+    // 		kn += _pdf[id][k];
+
+    // 	    }
+
+    // 	}
+
+    // 	beta = (Tw - kn) / unk;
+
+
+
+    // 	for( uint k = 1 ; k < q ; k++ ) {	    	    		       		   		    
+			
+    // 	    if( nb[id][k] == -1 ) {
+		
+    // 		_pdf[id][k] = beta * _pdf[id][k];
+
+    // 	    }
+
+    // 	}
+	
 	
 
-    }
+    // }
 
     
 
@@ -249,7 +276,107 @@ void energyFixedT::update( const energyEquation* eeq ) {
 
 
 
+
 // /** Update pdf field */
+
+// // Non-equilibrium extrapolation
+
+// void energyFixedT::update( const energyEquation* eeq ) {
+
+
+
+//     // Lattice constants
+    
+//     const uint q = _mesh.lmodel()->q();
+
+//     vector<scalar> f_eq_nb(q);
+
+//     vector<scalar> f_eq_bnd(q);
+
+//     vector<scalar> Unbid = {0,0,0};
+
+//     vector<scalar> Uw = {0,0,0};
+
+
+    
+
+//     // Random seeds
+    
+//     uniform_real_distribution<scalar> unif( (100.0-_pert)/100.0, (100.0+_pert)/100.0);
+
+//     default_random_engine re;
+
+//     re.seed( _mesh.pid() );
+
+    
+
+
+//     // Move over boundary elements
+
+//     for( uint i = 0 ; i < _nodes.size() ; i++ ) {
+	
+
+//     	uint id = _nodes[i];
+
+// 	scalar Tw = unif(re) * _bndVal[i];
+
+
+	
+// 	// Density and velocity at neighbour node
+
+// 	const uint nbid = _nbid[i];
+	
+
+
+// 	// Velocity at boundary
+
+// 	for(uint j = 0 ; j < 3 ; j++) {
+			
+// 	    Unbid[j] = _U.at(nbid,j);
+
+// 	    // Uw[j] = _U.at(id,j);
+
+// 	}
+
+	
+
+// 	// Equilibrium
+
+// 	eeq->eqPS( f_eq_nb, _T.at(nbid), Unbid, 0 );
+
+// 	eeq->eqPS( f_eq_bnd, Tw, Uw, 0 );
+
+// 	// eeq->eqPS( f_eq_nb, _T.at(nbid), Unbid, eeq->heat(id) );
+
+// 	// eeq->eqPS( f_eq_bnd, Tw, Uw, eeq->heat(id) );
+	
+
+
+	
+// 	// Update distribution
+
+//     	for( uint k = 0 ; k < q ; k++ ) {	    	    		       		   		    
+			
+// 	    _pdf[id][k] = f_eq_bnd[k] + _pdf[nbid][k] - f_eq_nb[k];
+
+//     	}
+	
+
+//     }
+
+    
+
+// }
+
+
+
+
+
+
+
+// /** Update pdf field */
+
+// // Equiilbrium scheme
 
 // void energyFixedT::update( const energyEquation* eeq ) {
 

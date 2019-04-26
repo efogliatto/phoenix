@@ -4,6 +4,8 @@
 
 #include <pseudoPotEqHandler.H>
 
+#include <energyEqHandler.H>
+
 #include <TEquation.H>
 
 
@@ -91,6 +93,27 @@ int main( int argc, char **argv ) {
     scalarField K3( mesh, Time, "K3", IO::NO_READ, IO::NO_WRITE );
 
     scalarField K4( mesh, Time, "K4", IO::NO_READ, IO::NO_WRITE );        
+    
+
+
+
+    // PDF field. Energy equation
+
+    pdfField g( mesh, Time, "g", IO::MUST_READ, IO::MUST_WRITE );
+
+
+    // Macroscopic temperature
+
+    scalarField Tlb( mesh, Time, "Tlb", IO::NO_READ, IO::MUST_WRITE );
+
+    for(uint i = 0 ; i < mesh.npoints() ; i++)
+	Tlb[i] = T.at(i);
+
+
+    
+    // Energy MRT equation
+
+    energyEqHandler energy("Energy", mesh, Time, g, rho, U, Tlb);
     
     
     
@@ -197,6 +220,32 @@ int main( int argc, char **argv ) {
 	// T.sync();
 
 	
+
+
+	// Solve Energy equation
+
+	energy.collision();
+
+	energy.streaming();
+
+	energy.updateBoundaries();
+
+	g.sync();
+
+	energy.updateMacroTemperature();
+
+	for(uint i = 0 ; i < mesh.local() ; i++) {
+
+	    if( mesh.isOnBoundary(i) ) {
+
+		Tlb[i] = T.at(i);
+
+	    }
+
+	}
+
+	T.sync();
+
 	
 	
 
@@ -227,6 +276,8 @@ int main( int argc, char **argv ) {
     	    U.write();
 
     	    T.write();
+
+	    Tlb.write();
 
     	    f.write();
 
