@@ -111,6 +111,11 @@ int main( int argc, char **argv ) {
 
 
     
+    // // Navier-Stokes MRT equation
+
+    // pseudoPotEqHandler NS("Navier-Stokes", mesh, Time, f, rho, U, Tlb);
+
+    
     // Energy MRT equation
 
     energyEqHandler energy("Energy", mesh, Time, g, rho, U, Tlb);

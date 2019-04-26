@@ -161,113 +161,72 @@ void energyFixedT::update( const energyEquation* eeq ) {
 
 
 
-    // // Lattice constants
+    // Lattice constants
     
-    // const uint q = _mesh.lmodel()->q();
+    const uint q = _mesh.lmodel()->q();
 
-    // const vector< vector<int> >& nb = _mesh.nbArray();
+    const vector< vector<int> >& nb = _mesh.nbArray();
 
-    // const vector<uint>& reverse = _mesh.lmodel()->reverse();     
+    const vector<uint>& reverse = _mesh.lmodel()->reverse();     
 
-    // vector<scalar> f_eq_bnd(q);
+    vector<scalar> f_eq_bnd(q);
 
-    // vector<scalar> Uw = {0,0,0};
+    vector<scalar> Uw = {0,0,0};
 
-
-    
-
-    // // Random seeds
-    
-    // uniform_real_distribution<scalar> unif( (100.0-_pert)/100.0, (100.0+_pert)/100.0);
-
-    // default_random_engine re;
-
-    // re.seed( _mesh.pid() );
 
     
 
+    // Random seeds
+    
+    uniform_real_distribution<scalar> unif( (100.0-_pert)/100.0, (100.0+_pert)/100.0);
 
-    // // Move over boundary elements
+    default_random_engine re;
 
-    // for( uint i = 0 ; i < _nodes.size() ; i++ ) {
+    re.seed( _mesh.pid() );
+
+    
+
+
+    // Move over boundary elements
+
+    for( uint i = 0 ; i < _nodes.size() ; i++ ) {
 	
 
-    // 	uint id = _nodes[i];
+    	uint id = _nodes[i];
 
-    // 	scalar Tw = unif(re) * _bndVal[i];
-
-
-
-    // 	// Density and velocity at neighbour node
-
-    // 	for(uint j = 0 ; j < 3 ; j++)			
-    // 	    Uw[j] = _U.at(id,j);
+	scalar Tw = unif(re) * _bndVal[i];
 
 
-	
 
-    // 	// Equilibrium populations over boundary
+	// Density and velocity at neighbour node
 
-    // 	eeq->eqPS( f_eq_bnd, Tw, Uw, 0 );
+	for(uint j = 0 ; j < 3 ; j++)			
+	    Uw[j] = _U.at(id,j);
 
 
 	
-    // 	// Update unknowk distributions
 
-    // 	for( uint k = 1 ; k < q ; k++ ) {	    	    		       		   		    
+	// Equilibrium populations over boundary
+
+	eeq->eqPS( f_eq_bnd, Tw, Uw, 0 );
+
+
+	
+	// Update unknowk distributions
+
+    	for( uint k = 1 ; k < q ; k++ ) {	    	    		       		   		    
 			
-    // 	    if( nb[id][k] == -1 ) {
+	    if( nb[id][k] == -1 ) {
 
-    // 		// _pdf[id][k] = _pdf[id][reverse[k]];
-    // 		_pdf[id][k] = f_eq_bnd[k];
+		_pdf[id][k] = f_eq_bnd[k];
 
-    // 	    }
+	    }
 
-    // 	}
+    	}
 
-
-    // 	// Beta constant
-
-    // 	scalar beta(0);
-
-    // 	scalar kn(0);
-
-    // 	scalar unk(0);
-
-
-    // 	for( uint k = 0 ; k < q ; k++ ) {	    	    		       		   		    
-			
-    // 	    if( nb[id][k] == -1 ) {
-
-    // 		unk += _pdf[id][k];
-
-    // 	    }
-
-    // 	    else {
-
-    // 		kn += _pdf[id][k];
-
-    // 	    }
-
-    // 	}
-
-    // 	beta = (Tw - kn) / unk;
-
-
-
-    // 	for( uint k = 1 ; k < q ; k++ ) {	    	    		       		   		    
-			
-    // 	    if( nb[id][k] == -1 ) {
-		
-    // 		_pdf[id][k] = beta * _pdf[id][k];
-
-    // 	    }
-
-    // 	}
-	
 	
 
-    // }
+    }
 
     
 
