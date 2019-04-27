@@ -155,7 +155,7 @@ energyFixedT::~energyFixedT() {}
 
 
 
-/** Update pdf field. NEBB */
+/** Update pdf field. Inamuro */
 
 void energyFixedT::update( const energyEquation* eeq ) {
 
@@ -224,6 +224,43 @@ void energyFixedT::update( const energyEquation* eeq ) {
 
     	}
 
+
+
+
+	// Correction constants
+
+	scalar beta(0), kn(0), unk(0);
+
+    	for( uint k = 1 ; k < q ; k++ ) {	    	    		       		   		    
+			
+	    if( nb[id][k] == -1 ) {
+
+		unk += _pdf[id][k];
+
+	    }
+
+	    else {
+
+		kn += _pdf[id][k];
+
+	    }
+
+    	}
+
+
+	beta = (Tw - kn) / unk;
+
+    	for( uint k = 1 ; k < q ; k++ ) {	    	    		       		   		    
+			
+	    if( nb[id][k] == -1 ) {
+
+		_pdf[id][k] = beta * _pdf[id][k];
+
+	    }
+
+    	}
+	
+	
 	
 
     }

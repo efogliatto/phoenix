@@ -72,9 +72,9 @@ int main( int argc, char **argv ) {
     pdfField f( mesh, Time, "f", IO::MUST_READ, IO::MUST_WRITE ); 
     
     
-    // Navier-Stokes MRT equation
+    // // Navier-Stokes MRT equation
 
-    pseudoPotEqHandler NS("Navier-Stokes", mesh, Time, f, rho, U, T);
+    // pseudoPotEqHandler NS("Navier-Stokes", mesh, Time, f, rho, U, T);
 
 
     // Finite-difference T equation
@@ -111,9 +111,9 @@ int main( int argc, char **argv ) {
 
 
     
-    // // Navier-Stokes MRT equation
+    // Navier-Stokes MRT equation
 
-    // pseudoPotEqHandler NS("Navier-Stokes", mesh, Time, f, rho, U, Tlb);
+    pseudoPotEqHandler NS("Navier-Stokes", mesh, Time, f, rho, U, Tlb);
 
     
     // Energy MRT equation
@@ -249,7 +249,7 @@ int main( int argc, char **argv ) {
 
 	}
 
-	T.sync();
+	Tlb.sync();
 
 	
 	
