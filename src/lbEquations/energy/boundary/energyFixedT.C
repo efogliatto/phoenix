@@ -231,7 +231,7 @@ void energyFixedT::update( const energyEquation* eeq ) {
 
 	scalar beta(0), kn(0), unk(0);
 
-    	for( uint k = 1 ; k < q ; k++ ) {	    	    		       		   		    
+    	for( uint k = 0 ; k < q ; k++ ) {	    	    		       		   		    
 			
 	    if( nb[id][k] == -1 ) {
 
@@ -250,7 +250,7 @@ void energyFixedT::update( const energyEquation* eeq ) {
 
 	beta = (Tw - kn) / unk;
 
-    	for( uint k = 1 ; k < q ; k++ ) {	    	    		       		   		    
+    	for( uint k = 0 ; k < q ; k++ ) {	    	    		       		   		    
 			
 	    if( nb[id][k] == -1 ) {
 
@@ -259,6 +259,8 @@ void energyFixedT::update( const energyEquation* eeq ) {
 	    }
 
     	}
+
+	
 	
 	
 	

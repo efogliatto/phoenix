@@ -72,9 +72,9 @@ int main( int argc, char **argv ) {
     pdfField f( mesh, Time, "f", IO::MUST_READ, IO::MUST_WRITE ); 
     
     
-    // // Navier-Stokes MRT equation
+    // Navier-Stokes MRT equation
 
-    // pseudoPotEqHandler NS("Navier-Stokes", mesh, Time, f, rho, U, T);
+    pseudoPotEqHandler NS("Navier-Stokes", mesh, Time, f, rho, U, T);
 
 
     // Finite-difference T equation
@@ -111,9 +111,9 @@ int main( int argc, char **argv ) {
 
 
     
-    // Navier-Stokes MRT equation
+    // // Navier-Stokes MRT equation
 
-    pseudoPotEqHandler NS("Navier-Stokes", mesh, Time, f, rho, U, Tlb);
+    // pseudoPotEqHandler NS("Navier-Stokes", mesh, Time, f, rho, U, Tlb);
 
     
     // Energy MRT equation
@@ -209,23 +209,6 @@ int main( int argc, char **argv ) {
 
 	
 
-	// // Energy equation. Explicit Euler scheme
-
-	
-	// // K1
-	
-	// Teq.rval(K1, rho, U, T);
-
-
-	// // Update T
-
-	// for( uint id = 0 ; id < mesh.local() ; id++ )
-	//     T[id] = T.at(id) + K1.at(id);
-
-	// T.sync();
-
-	
-
 
 	// Solve Energy equation
 
@@ -238,16 +221,6 @@ int main( int argc, char **argv ) {
 	g.sync();
 
 	energy.updateMacroTemperature();
-
-	for(uint i = 0 ; i < mesh.local() ; i++) {
-
-	    if( mesh.isOnBoundary(i) ) {
-
-		Tlb[i] = T.at(i);
-
-	    }
-
-	}
 
 	Tlb.sync();
 
