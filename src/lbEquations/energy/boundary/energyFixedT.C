@@ -167,8 +167,6 @@ void energyFixedT::update( const energyEquation* eeq ) {
 
     const vector< vector<int> >& nb = _mesh.nbArray();
 
-    const vector<uint>& reverse = _mesh.lmodel()->reverse();     
-
     vector<scalar> f_eq_bnd(q);
 
     vector<scalar> Uw = {0,0,0};
@@ -208,7 +206,8 @@ void energyFixedT::update( const energyEquation* eeq ) {
 
 	// Equilibrium populations over boundary
 
-	eeq->eqPS( f_eq_bnd, Tw, Uw, 0 );
+	// eeq->eqPS( f_eq_bnd, Tw, Uw, 0 );
+	eeq->eqPS( f_eq_bnd, Tw, Uw,  eeq->heat(id) );
 
 
 	
