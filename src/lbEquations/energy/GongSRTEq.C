@@ -238,7 +238,7 @@ const void GongSRTEq::collision() {
 		for(uint j = 0 ; j < 3 ; j++)
 		    first += gradT[j] * gradRho[j];
 
-		first = (_kappa / _rho) * ( first +  _rho * lapT )   -   (_Tau[0]-0.5) * lapT / 3.0;
+		first = (_kappa / _rho) * ( first +  _rho * lapT )   -   GongSRTEq::diffusivityConstant() * lapT;
 	    
 	    
 		break;
