@@ -84,6 +84,11 @@ public:
     /** Thermal conductivity at node */
 
     const scalar thermalCond( const uint& id ) const;
+
+
+    /** Diffusivity constant recovered at macroscopic level */
+
+    const scalar diffusivityConstant() const;    
     
 };
 

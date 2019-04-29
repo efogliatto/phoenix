@@ -275,3 +275,13 @@ const scalar LiEnergyMRTEq::thermalCond( const uint& id ) const {
     return _kappa;
 
 }
+
+
+
+/** Diffusivity constant recovered at macroscopic level */
+
+const scalar LiEnergyMRTEq::diffusivityConstant() const {
+
+    return ( 1/_Tau[3] - 0.5 ) * mesh.lmodel()->cs2();
+
+}

@@ -88,6 +88,11 @@ public:
     /** Heat source at node */
 
     virtual const scalar heat(const scalar& id) const { return _hs->source(id); }
+
+
+    /** Diffusivity constant recovered at macroscopic level */
+
+    virtual const scalar diffusivityConstant() const = 0;
     
     
 };

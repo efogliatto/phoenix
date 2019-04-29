@@ -31,6 +31,10 @@ liHS::liHS( const string& dictName,
 
     _kappa = dict.lookUp<scalar>( eqName + "/HeatSource/Constants/kappa" );
 
+    _a1 = dict.lookUpOrDefault<scalar>( eqName + "/HeatSource/Constants/alpha_1", -2.0 );
+
+    _a2 = dict.lookUpOrDefault<scalar>( eqName + "/HeatSource/Constants/alpha_2",  2.0 );        
+
 
     
     // Read conductivity model
@@ -75,8 +79,8 @@ void liHS::update( const scalarField& rho, const scalarField& T, const vectorFie
     // Constants
 
     const uint np = _mesh.local();
-
-    const scalar _k( ( 1/_Tau[3] - 0.5 ) * _mesh.lmodel()->cs2() );
+    
+    const scalar _k( (1/_Tau[3] - 0.5) * (4.0 + 3.0 * _a1  + 2.0 * _a2) / 6.0 );
     
     
 

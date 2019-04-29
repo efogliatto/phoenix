@@ -29,6 +29,10 @@ protected:
 
     scalar _kappa;
 
+    scalar _a1;
+
+    scalar _a2;
+
 
     /** Thermal conductivity model */
 

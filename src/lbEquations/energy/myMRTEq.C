@@ -400,3 +400,14 @@ const scalar myMRTEq::thermalCond( const uint& id ) const {
     return k;
 
 }
+
+
+
+
+/** Diffusivity constant recovered at macroscopic level */
+
+const scalar myMRTEq::diffusivityConstant() const {
+
+    return (1/_Tau[3] - 0.5) * (4.0 + 3.0 * _a1  + 2.0 * _a2) / 6.0;
+
+}
