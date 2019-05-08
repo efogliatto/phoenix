@@ -58,6 +58,11 @@ public:
     /** Update source field */
 
     void update( const scalarField& rho, const scalarField& T, const vectorField& U );
+
+
+    /** Update source field with external temperature gradient */
+    
+    void update( const scalarField& rho, const scalarField& T, const vectorField& U, const vectorField& Tgrad ) {}
     
 
 };

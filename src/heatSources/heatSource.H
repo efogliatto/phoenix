@@ -58,6 +58,11 @@ public:
     virtual void update( const scalarField& rho, const scalarField& T, const vectorField& U ) = 0;
 
 
+    /** Update source field with external temperature gradient */
+
+    virtual void update( const scalarField& rho, const scalarField& T, const vectorField& U, const vectorField& Tgrad ) = 0;    
+
+
     /** Synv source field */
 
     const void sync() { _source.sync(); }

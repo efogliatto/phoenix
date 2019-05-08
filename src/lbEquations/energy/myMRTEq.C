@@ -15,7 +15,9 @@ myMRTEq::myMRTEq( const std::string& name,
 		  const vectorField& U_,
 		  scalarField& T_)
 
-    : energyEquation(name, mesh_, Time_, pdf_, rho_, U_, T_) {
+    : energyEquation(name, mesh_, Time_, pdf_, rho_, U_, T_),
+      Tgrad( mesh, Time, "Tgrad", IO::NO_READ, IO::NO_WRITE ),
+      localGradT(false) {
 
 
     // Read constants
@@ -27,6 +29,15 @@ myMRTEq::myMRTEq( const std::string& name,
     _a2 = dict.lookUp<scalar>( name + "/HeatSource/Constants/alpha_2");
 
     _Cv = dict.lookUp<scalar>( name + "/HeatSource/Constants/Cv");
+
+
+    
+    // Local Temperature gradient flag
+    
+    string loc = dict.lookUpOrDefault<string>( name + "/HeatSource/localGradT", "false");
+
+    if( loc == "true" )
+	localGradT = true; 
     
 
 
@@ -358,9 +369,61 @@ const void myMRTEq::collision() {
 
 const void myMRTEq::updateMacroTemperature() {
 
-    // Update heat sources first
 
-    _hs->update(rho,T,U);
+    // Compute temperature gradient first
+
+    if( localGradT == true ) {
+
+
+	scalar gamma = -6.0 / (4.0 + 3.0*_a1 + 2.0*_a2);
+
+	const scalarMatrix& M = mesh.lmodel()->MRTMatrix();
+
+	const uint q = mesh.lmodel()->q();    
+
+	vector<scalar> n(q);     // m:  momentum space
+    
+	vector<scalar> n_eq(q);  // meq: equilibrium in momentum space
+
+    
+    
+	for(uint i = 0 ; i < mesh.npoints() ; i++) {
+
+
+	    // Compute equilibrium in moment space
+
+	    eqMS(n_eq,i);
+
+
+	    // Distribution in moment space
+
+	    M.matDotVec( _pdf[i], n );
+
+
+	    // Update gradient
+
+	    Tgrad[i][0] = gamma * ( _Tau[3]*(n[3] - n_eq[3]) + _Tau[3]*_Tau[4]*0.5*(n[4] - n_eq[4]) );
+
+	    Tgrad[i][1] = gamma * ( _Tau[5]*(n[5] - n_eq[5]) + _Tau[5]*_Tau[6]*0.5*(n[6] - n_eq[6]) );
+
+	    Tgrad[i][2] = 0;	
+	
+
+	}
+ 
+	_hs->update(rho, T, U, Tgrad);
+
+
+    }
+
+
+    
+    else {
+  
+	_hs->update(rho, T, U);
+
+    }
+
 
     
     for( uint i = 0 ; i < mesh.npoints() ; i++ )

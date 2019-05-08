@@ -11,6 +11,16 @@ class myMRTEq : public energyEquation {
 
 protected:
 
+
+    /** Reference to temperature gradient field */
+
+    vectorField Tgrad;
+
+
+    /** Flag to enable temperature gradient calculation with local population */
+
+    bool localGradT;
+    
     
     /** Constants */
 
