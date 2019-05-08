@@ -73,21 +73,21 @@ void markusHaziHS::update( const scalarField& rho, const scalarField& T, const v
     
 	// Thermal difusivity
     
-	scalar lambda(0);
+	scalar chi(0);
 
 	switch( ltype ) {
 
 
 	case latticeModel::latticeType::D2Q9:
 
-	    lambda = _rho * _Cv * (1/_Tau[3] - 0.5) * (4.0 + 3.0 * _a1  + 2.0 * _a2) / 6.0;
+	    chi = (1/_Tau[3] - 0.5) * (4.0 + 3.0 * _a1  + 2.0 * _a2) / 6.0;
 
 	    break;
 
 
 	case latticeModel::latticeType::D3Q15:
 
-	    lambda = _rho * _Cv * (1/_Tau[3] - 0.5) * (6.0 + 11.0 * _a1  + _a2) / 9.0;
+	    chi = (1/_Tau[3] - 0.5) * (6.0 + 11.0 * _a1  + _a2) / 9.0;
 
 	    break;
 
@@ -109,7 +109,7 @@ void markusHaziHS::update( const scalarField& rho, const scalarField& T, const v
 	for(uint j = 0 ; j < 3 ; j++)
 	    first += gradT[j] * gradRho[j];
 
-	first = first * lambda / (_rho * _rho * _Cv);
+	first = first * chi / _rho;
 
 	
 	
