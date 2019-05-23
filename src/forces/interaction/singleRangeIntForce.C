@@ -93,8 +93,8 @@ void singleRangeIntForce::update( scalarField& rho, scalarField& T ) {
 
     // Apparent angle
     
-    scalar apangle = apparentContactAngle(rho, "Y0");
-    // scalar apangle(0);
+    // scalar apangle = apparentContactAngle(rho, "Y0");
+    scalar apangle(0);
 
     
 
