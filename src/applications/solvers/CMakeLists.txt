@@ -12,3 +12,9 @@ add_subdirectory (multiPhasePPHT)
 # Finite-difference scheme for energy equation
 
 add_subdirectory (multiPhasePPHT_FD)
+
+
+# Pseudopotential solver with heat transfer
+# Predictor-corrector scheme for energy equation
+
+add_subdirectory (simplifiedMultiPhaseHT)
