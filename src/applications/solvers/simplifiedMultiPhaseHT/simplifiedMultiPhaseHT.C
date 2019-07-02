@@ -48,6 +48,7 @@ int main( int argc, char **argv ) {
 
 
 
+    
     // Lattice mesh creation
     
     latticeMesh mesh(pid);
@@ -60,7 +61,12 @@ int main( int argc, char **argv ) {
 
     // Macroscopic density
 
-    scalarField rho( mesh, Time, "rho", IO::MUST_READ, IO::MUST_WRITE );  
+    scalarField rho( mesh, Time, "rho", IO::MUST_READ, IO::MUST_WRITE );
+
+
+    // Macroscopic temperature
+
+    scalarField T( mesh, Time, "T", IO::MUST_READ, IO::MUST_WRITE );
 
 
     // Macroscopic velocity
@@ -70,84 +76,73 @@ int main( int argc, char **argv ) {
 
     // PDF field. Navier - Stokes equation
 
-    pdfField f( mesh, Time, "f", IO::MUST_READ, IO::MUST_WRITE ); 
-    
-    
+    pdfField f( mesh, Time, "f", IO::MUST_READ, IO::MUST_WRITE );
 
 
-    // Macroscopic temperature
+    // PDF field. Energy equation
 
-    scalarField T( mesh, Time, "T", IO::MUST_READ, IO::MUST_WRITE );
-
-    scalarField Tstar( mesh, Time, "T", IO::MUST_READ, IO::NO_WRITE );
-
-    for( uint i = 0 ; i < mesh.local() ; i++ ) {
-
-	if( mesh.latticePoint(i)[1] == 0 ) {
-
-	    T[i] = 0.0296296;
-
-	    Tstar[i] = 0.0296296;	    
-
-	}
-
-    }
-
-    T.sync();
-
-    Tstar.sync();
-
-
-
-
-    /** Relaxation coefficients */
-    
-    vector<scalar> Tau;
-
-    vector<scalar> Tau2;
-
-    {
-
-	dictionary dict("properties/macroProperties");
-
-	Tau = dict.lookUp< vector<scalar> >( "Energy/LBModel/Tau" );
-
-	Tau2 = dict.lookUp< vector<scalar> >( "Energy/LBModel/Tau" );
-
-	for(uint k = 0 ; k < 9 ; k++) {
-	    
-	    Tau2[k] = 0.5 - (1.0/Tau[k]);
-
-	}
-
-    }
-
-
-
-    // Non diagonal Q (0.5 - inv(Q))
-
-    sparseScalarMatrix invQ( Tau2 );
-
-    invQ.addElement( 0.5*(Tau[3]-1.0)/Tau[3], 3, 4);
-
-    invQ.addElement( 0.5*(Tau[5]-1.0)/Tau[5], 5, 6);  
-    
-	
+    pdfField g( mesh, Time, "g", IO::MUST_READ, IO::MUST_WRITE );    
     
 
 
-   
+
+
     // Navier-Stokes MRT equation
 
     pseudoPotEqHandler NS("Navier-Stokes", mesh, Time, f, rho, U, T);
 
 
+    // Energy MRT equation
 
-    // Create eos
+    energyEqHandler energy("Energy", mesh, Time, g, rho, U, T);    
 
-    EOSCreator creator;
 
-    EOS* eos = creator.create("properties/macroProperties", "Navier-Stokes");
+
+
+    // Finite-difference T equation
+
+    scalarField Ts( mesh, Time, "Ts", IO::MUST_READ, IO::MUST_WRITE );
+
+    scalarField Tstar( mesh, Time, "Tstar", IO::NO_READ, IO::NO_WRITE );    
+    
+    TEquation Teq( mesh, Time, Ts );
+
+    
+    
+
+    // /** Relaxation coefficients */
+    
+    // vector<scalar> Tau;
+
+    // vector<scalar> Tau2;
+
+    // {
+
+    // 	dictionary dict("properties/macroProperties");
+
+    // 	Tau = dict.lookUp< vector<scalar> >( "Energy/LBModel/Tau" );
+
+    // 	Tau2 = dict.lookUp< vector<scalar> >( "Energy/LBModel/Tau" );
+
+    // 	for(uint k = 0 ; k < 9 ; k++) {
+	    
+    // 	    Tau2[k] = 0.5 - (1.0/Tau[k]);
+
+    // 	}
+
+    // }
+
+
+
+    // // Non diagonal Q (0.5 - inv(Q))
+
+    // sparseScalarMatrix invQ( Tau2 );
+
+    // invQ.addElement( 0.5*(Tau[3]-1.0)/Tau[3], 3, 4);
+
+    // invQ.addElement( 0.5*(Tau[5]-1.0)/Tau[5], 5, 6);  
+    
+
     
 
     
@@ -162,61 +157,23 @@ int main( int argc, char **argv ) {
 
 	{
 
-	    // Lattice constants
+	    // // Lattice constants
 
-	    const vector< vector<int> >& nb = mesh.nbArray();
+	    // const vector< vector<int> >& nb = mesh.nbArray();
 	    
-	    const scalarMatrix& invM = mesh.lmodel()->MRTInvMatrix();
+	    // const scalarMatrix& invM = mesh.lmodel()->MRTInvMatrix();
 
-	    vector<uint> reverse = mesh.lmodel()->reverse();	    
+	    // vector<uint> reverse = mesh.lmodel()->reverse();	    
 
-	    const uint q = mesh.lmodel()->q();
+	    // const uint q = mesh.lmodel()->q();
 
-	    vector<scalar> n_eq(q);
+	    // vector<scalar> n_eq(q);
 
-	    vector<scalar> n(q);
+	    // vector<scalar> n(q);
 	    
 
 
 	    // Predictor step
-
-	    for( uint id = 0 ; id < mesh.local() ; id++ ) {
-
-		if(  ( mesh.latticePoint(id)[1] > 0 )  &&  ( mesh.latticePoint(id)[1] < 300 )  ) {
-
-		    for( uint k = 0 ; k < q ; k++ ) {
-
-			int nbid = nb[id][k];
-
-			if(nbid != -1)
-			    n_eq[k] = neq(mesh, T, U, 1, 1, nbid, k);
-
-			if( k == 0 )
-			    n_eq[k] += 0.5*gammaHat(mesh, rho, T, U, 1, 1, Tau[3], eos, 1, id);
-
-		    }
-
-
-		    invM.matDotVec(n_eq, n);
-
-
-
-		    Tstar[id] = 0;
-
-		    for( uint k = 0 ; k < q ; k++ )
-			Tstar[id] += n[k];
-
-		}
-		
-	    }
-
-
-	    Tstar.sync();
-
-
-
-	    
-	    // Corrector step
 
 	    for( uint id = 0 ; id < mesh.local() ; id++ ) {
 
@@ -226,43 +183,95 @@ int main( int argc, char **argv ) {
 
 	    		int nbid = nb[id][k];
 
-	    		int nbplus = nb[id][reverse[k]];
+	    		if(nbid != -1)
+	    		    n_eq[k] = neq(mesh, T, U, 1, 1, nbid, k);
 
-	    		if(  (nbid != -1)  &&  (nbplus != -1)  ) {
-			
-	    		    n_eq[k] = neq(mesh, Tstar, U, 1, 1, nbplus, k)
-	    		        - neq(mesh, Tstar, U, 1, 1, id, k)
-	    		        + neq(mesh, T, U, 1, 1, nbid, k)
-	    		        - neq(mesh, T, U, 1, 1, id, k);
-
-	    		}
-
+	    		if( k == 0 )
+	    		    n_eq[k] += 0.5*gammaHat(mesh, rho, T, U, 1, 1, Tau[3], eos, 1, id);
 
 	    	    }
 
 
-	    	    invQ.matDotVec(n_eq, n);
+	    	    invM.matDotVec(n_eq, n);
 
-	    	    invM.matDotVec(n, n_eq);
+
+
+	    	    Tstar[id] = 0;
+
+	    	    for( uint k = 0 ; k < q ; k++ )
+	    		Tstar[id] += n[k];
+
+	    	}
+		
+	    }
+
+
+	    Tstar.sync();
+
+
+
+	    
+	    // // Corrector step
+
+	    // for( uint id = 0 ; id < mesh.local() ; id++ ) {
+
+	    // 	if(  ( mesh.latticePoint(id)[1] > 0 )  &&  ( mesh.latticePoint(id)[1] < 300 )  ) {
+
+	    // 	    for( uint k = 0 ; k < q ; k++ ) {
+
+	    // 		int nbid = nb[id][k];
+
+	    // 		int nbplus = nb[id][reverse[k]];
+
+	    // 		if(  (nbid != -1)  &&  (nbplus != -1)  ) {
+			
+	    // 		    n_eq[k] = neq(mesh, Tstar, U, 1, 1, nbplus, k)
+	    // 		        - neq(mesh, Tstar, U, 1, 1, id, k)
+	    // 		        + neq(mesh, T, U, 1, 1, nbid, k)
+	    // 		        - neq(mesh, T, U, 1, 1, id, k);
+
+	    // 		}
+
+
+	    // 	    }
+
+
+	    // 	    invQ.matDotVec(n_eq, n);
+
+	    // 	    invM.matDotVec(n, n_eq);
 
 		   
 		    
 
 
-	    	    T[id] = 0;
+	    // 	    T[id] = 0;
 
-	    	    for( uint k = 0 ; k < q ; k++ )
-	    	    	T[id] += n_eq[k];
+	    // 	    for( uint k = 0 ; k < q ; k++ )
+	    // 	    	T[id] += n_eq[k];
 
-	    	}
+	    // 	}
 		
-	    }
+	    // }
 	    
 	    
 
 	}
 
 	
+
+
+
+	// Solve Energy equation
+
+	energy.collision();
+
+	energy.streaming();
+
+	energy.updateBoundaries();
+
+	g.sync();
+
+	energy.updateMacroTemperature();
 
 	
 
@@ -293,6 +302,8 @@ int main( int argc, char **argv ) {
     	    U.write();
 
     	    T.write();
+
+	    Ts.write();
 
     	    f.write();
 

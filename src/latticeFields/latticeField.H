@@ -86,7 +86,12 @@ public:
 
     /** Write field using ensight format */
 
-    virtual const void write() const= 0;    
+    virtual const void write() const= 0;
+
+
+    /** Field name */
+
+    const std::string fieldName() const { return name; }
     
     
 

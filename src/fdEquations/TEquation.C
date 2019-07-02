@@ -63,12 +63,12 @@ TEquation::TEquation( const latticeMesh& mesh, timeOptions& Time, scalarField& T
     for( const auto& bd : bnd ) {
 
 
-	string bdtype = dict.lookUpOrDefault<string>("T/boundaryField/" + bd.first + "/type", "none");
+	string bdtype = dict.lookUpOrDefault<string>( T.fieldName() + "/boundaryField/" + bd.first + "/type", "none");
 
 	
 	if( bdtype == "fixedT" ) {
 
-	    scalar val = dict.lookUp<scalar>("T/boundaryField/" + bd.first + "/value");
+	    scalar val = dict.lookUp<scalar>( T.fieldName() + "/boundaryField/" + bd.first + "/value");
 
 	    for( const auto& id : bd.second ) {
 
@@ -84,9 +84,9 @@ TEquation::TEquation( const latticeMesh& mesh, timeOptions& Time, scalarField& T
 
 	    if( bdtype == "fixedTSpots" ) {
 
-		scalar val = dict.lookUp<scalar>("T/boundaryField/" + bd.first + "/value");
+		scalar val = dict.lookUp<scalar>( T.fieldName() + "/boundaryField/" + bd.first + "/value");
 
-		vector<string> spotList = dict.bracedEntriesNames("T/boundaryField/" + bd.first + "/Spots");		
+		vector<string> spotList = dict.bracedEntriesNames( T.fieldName() + "/boundaryField/" + bd.first + "/Spots");		
 
 
 		// Move over spots and assign condition
@@ -97,7 +97,7 @@ TEquation::TEquation( const latticeMesh& mesh, timeOptions& Time, scalarField& T
 
 		    // Load type
 
-		    string entry = "T/boundaryField/" + bd.first + "/Spots/" + spot;
+		    string entry = T.fieldName() + "/boundaryField/" + bd.first + "/Spots/" + spot;
 
 		    const string sptype = dict.lookUp<string>( entry + "/type" );
 
