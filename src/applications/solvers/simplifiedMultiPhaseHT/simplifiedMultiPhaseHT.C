@@ -6,13 +6,13 @@
 
 #include <energyEqHandler.H>
 
-#include <TEquation.H>
+#include <simplifiedTEq.H>
 
-#include "neq.H"
+// #include "neq.H"
 
-#include "gammaHat.H"
+// #include "gammaHat.H"
 
-#include <algebra.H>
+// #include <algebra.H>
 
 
 using namespace std;
@@ -105,43 +105,10 @@ int main( int argc, char **argv ) {
 
     scalarField Tstar( mesh, Time, "Tstar", IO::NO_READ, IO::NO_WRITE );    
     
-    TEquation Teq( mesh, Time, Ts );
+    simplifiedTEq Teq( mesh, Time, Ts );
 
-    
-    
-
-    // /** Relaxation coefficients */
-    
-    // vector<scalar> Tau;
-
-    // vector<scalar> Tau2;
-
-    // {
-
-    // 	dictionary dict("properties/macroProperties");
-
-    // 	Tau = dict.lookUp< vector<scalar> >( "Energy/LBModel/Tau" );
-
-    // 	Tau2 = dict.lookUp< vector<scalar> >( "Energy/LBModel/Tau" );
-
-    // 	for(uint k = 0 ; k < 9 ; k++) {
-	    
-    // 	    Tau2[k] = 0.5 - (1.0/Tau[k]);
-
-    // 	}
-
-    // }
-
-
-
-    // // Non diagonal Q (0.5 - inv(Q))
-
-    // sparseScalarMatrix invQ( Tau2 );
-
-    // invQ.addElement( 0.5*(Tau[3]-1.0)/Tau[3], 3, 4);
-
-    // invQ.addElement( 0.5*(Tau[5]-1.0)/Tau[5], 5, 6);  
-    
+  
+      
 
     
 
@@ -173,40 +140,40 @@ int main( int argc, char **argv ) {
 	    
 
 
-	    // Predictor step
+	    // // Predictor step
 
-	    for( uint id = 0 ; id < mesh.local() ; id++ ) {
+	    // for( uint id = 0 ; id < mesh.local() ; id++ ) {
 
-	    	if(  ( mesh.latticePoint(id)[1] > 0 )  &&  ( mesh.latticePoint(id)[1] < 300 )  ) {
+	    // 	if(  ( mesh.latticePoint(id)[1] > 0 )  &&  ( mesh.latticePoint(id)[1] < 300 )  ) {
 
-	    	    for( uint k = 0 ; k < q ; k++ ) {
+	    // 	    for( uint k = 0 ; k < q ; k++ ) {
 
-	    		int nbid = nb[id][k];
+	    // 		int nbid = nb[id][k];
 
-	    		if(nbid != -1)
-	    		    n_eq[k] = neq(mesh, T, U, 1, 1, nbid, k);
+	    // 		if(nbid != -1)
+	    // 		    n_eq[k] = neq(mesh, T, U, 1, 1, nbid, k);
 
-	    		if( k == 0 )
-	    		    n_eq[k] += 0.5*gammaHat(mesh, rho, T, U, 1, 1, Tau[3], eos, 1, id);
+	    // 		if( k == 0 )
+	    // 		    n_eq[k] += 0.5*gammaHat(mesh, rho, T, U, 1, 1, Tau[3], eos, 1, id);
 
-	    	    }
-
-
-	    	    invM.matDotVec(n_eq, n);
+	    // 	    }
 
 
+	    // 	    invM.matDotVec(n_eq, n);
 
-	    	    Tstar[id] = 0;
 
-	    	    for( uint k = 0 ; k < q ; k++ )
-	    		Tstar[id] += n[k];
 
-	    	}
+	    // 	    Tstar[id] = 0;
+
+	    // 	    for( uint k = 0 ; k < q ; k++ )
+	    // 		Tstar[id] += n[k];
+
+	    // 	}
 		
-	    }
+	    // }
 
 
-	    Tstar.sync();
+	    // Tstar.sync();
 
 
 
@@ -303,7 +270,7 @@ int main( int argc, char **argv ) {
 
     	    T.write();
 
-	    Ts.write();
+	    // Ts.write();
 
     	    f.write();
 
