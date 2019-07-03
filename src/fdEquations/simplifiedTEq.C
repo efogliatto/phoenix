@@ -228,80 +228,120 @@ const void simplifiedTEq::predictor( scalarField& Tstar, const scalarField& rho,
 const void simplifiedTEq::corrector( scalarField& T, const scalarField& rho, const vectorField& U, const scalarField& Tstar ) {
 
 
-    // Lattice constants
+    // // Lattice constants
 
-    const vector< vector<int> >& nb = _mesh.nbArray();
+    // const vector< vector<int> >& nb = _mesh.nbArray();
 	    
-    const scalarMatrix& invM = _mesh.lmodel()->MRTInvMatrix();
+    // const scalarMatrix& invM = _mesh.lmodel()->MRTInvMatrix();
 
-    vector<uint> reverse = _mesh.lmodel()->reverse();	    
+    // vector<uint> reverse = _mesh.lmodel()->reverse();	    
 
-    const uint q = _mesh.lmodel()->q();
+    // const uint q = _mesh.lmodel()->q();
 
-    vector<scalar> n_eq(q);
+    // vector<scalar> n_eq(q);
 
-    vector<scalar> n(q);
+    // vector<scalar> n(q);
     
     
     
-    for( uint id = 0 ; id < _mesh.local() ; id++ ) {
+    // for( uint id = 0 ; id < _mesh.local() ; id++ ) {
 
 	
-	if( !_mesh.isOnBoundary(id) ) {
+    // 	if( !_mesh.isOnBoundary(id) ) {
 	    
 
-	    for( uint k = 0 ; k < q ; k++ ) {
+    // 	    for( uint k = 0 ; k < q ; k++ ) {
 
-		int nbid = nb[id][k];
+    // 		int nbid = nb[id][k];
 
-		int nbplus = nb[id][reverse[k]];
+    // 		int nbplus = nb[id][reverse[k]];
 
-		if(nbid != -1) {
+    // 		if(nbid != -1) {
 
-		    if (nbplus != -1) {
+    // 		    if (nbplus != -1) {
 			
-			n_eq[k] = simplifiedTEq::neq( Tstar, U, nbplus, k )
-			        - simplifiedTEq::neq( Tstar, U, id, k )
-			        + simplifiedTEq::neq( T, U, nbid, k )
-			        - simplifiedTEq::neq( T, U, id, k );
+    // 			n_eq[k] = simplifiedTEq::neq( Tstar, U, nbplus, k )
+    // 			        - simplifiedTEq::neq( Tstar, U, id, k )
+    // 			        + simplifiedTEq::neq( T, U, nbid, k )
+    // 			        - simplifiedTEq::neq( T, U, id, k );
 
-		    }
+    // 		    }
 		    
-		}
+    // 		}
 
 
-	    }
+    // 	    }
 
 
-	    Qaux.matDotVec(n_eq, n);
+    // 	    Qaux.matDotVec(n_eq, n);
 
-	    invM.matDotVec(n, n_eq);
+    // 	    invM.matDotVec(n, n_eq);
 
 		   
 
-	    // Update new temperature field
+    // 	    // Update new temperature field
 
-	    Tnew[id] = Tstar.at(id);
+    // 	    Tnew[id] = Tstar.at(id);
 
-	    for( uint k = 0 ; k < q ; k++ )
-	    	Tnew[id] += n_eq[k];
+    // 	    for( uint k = 0 ; k < q ; k++ )
+    // 	    	Tnew[id] += n_eq[k];
 
-	}
+    // 	}
 		
-    }
+    // }
 
 
 
+    // // Update T values
+
+    // for( uint id = 0 ; id < _mesh.local() ; id++ ) {
+	
+    // 	if( !_mesh.isOnBoundary(id) )
+    // 	    T[id] = Tnew.at(id);
+
+    // }
+
+    // T.sync();
+
+
+
+
+
+
+
+
+
+    
     // Update T values
 
+    scalar chi(0);
+
+    switch( _mesh.lmodel()->q() ) {
+
+    case 9:
+
+    	chi = (1/_Tau[3] - 0.5) * (4.0 + 3.0 * alpha_1  + 2.0 * alpha_2) / 6.0;
+
+    	break;
+
+
+    case 15:
+
+    	chi = (1/_Tau[3] - 0.5) * (6.0 + 11.0 * alpha_1  + alpha_2) / 9.0;
+
+    	break;
+
+    }
+    
     for( uint id = 0 ; id < _mesh.local() ; id++ ) {
 	
-	if( !_mesh.isOnBoundary(id) )
-	    T[id] = Tnew[id];
+    	if( !_mesh.isOnBoundary(id) )
+    	    T[id] = Tstar.at(id) + chi*T.laplacian(id);
 
     }
 
     T.sync();
+    
     
 }
 
@@ -310,7 +350,10 @@ const void simplifiedTEq::corrector( scalarField& T, const scalarField& rho, con
 
 
 
-/** Source value at specific node */
+
+
+
+/** Source value at specific node (real) */ 
 
 const scalar simplifiedTEq::heatSource( const scalarField& rho, const scalarField& T, const vectorField& U, const uint id ) const {
 
