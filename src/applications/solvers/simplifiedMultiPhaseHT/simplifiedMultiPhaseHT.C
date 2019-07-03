@@ -8,11 +8,6 @@
 
 #include <simplifiedTEq.H>
 
-// #include "neq.H"
-
-// #include "gammaHat.H"
-
-// #include <algebra.H>
 
 
 using namespace std;
@@ -122,107 +117,16 @@ int main( int argc, char **argv ) {
 
 	// Energy equation
 
-	{
+	
+	// Predictor step
 
-	    // // Lattice constants
-
-	    // const vector< vector<int> >& nb = mesh.nbArray();
-	    
-	    // const scalarMatrix& invM = mesh.lmodel()->MRTInvMatrix();
-
-	    // vector<uint> reverse = mesh.lmodel()->reverse();	    
-
-	    // const uint q = mesh.lmodel()->q();
-
-	    // vector<scalar> n_eq(q);
-
-	    // vector<scalar> n(q);
-	    
-
-
-	    // // Predictor step
-
-	    // for( uint id = 0 ; id < mesh.local() ; id++ ) {
-
-	    // 	if(  ( mesh.latticePoint(id)[1] > 0 )  &&  ( mesh.latticePoint(id)[1] < 300 )  ) {
-
-	    // 	    for( uint k = 0 ; k < q ; k++ ) {
-
-	    // 		int nbid = nb[id][k];
-
-	    // 		if(nbid != -1)
-	    // 		    n_eq[k] = neq(mesh, T, U, 1, 1, nbid, k);
-
-	    // 		if( k == 0 )
-	    // 		    n_eq[k] += 0.5*gammaHat(mesh, rho, T, U, 1, 1, Tau[3], eos, 1, id);
-
-	    // 	    }
-
-
-	    // 	    invM.matDotVec(n_eq, n);
-
-
-
-	    // 	    Tstar[id] = 0;
-
-	    // 	    for( uint k = 0 ; k < q ; k++ )
-	    // 		Tstar[id] += n[k];
-
-	    // 	}
-		
-	    // }
-
-
-	    // Tstar.sync();
-
-
+	Teq.predictor(Tstar, rho, U, Ts);
 
 	    
-	    // // Corrector step
+	// Corrector step
 
-	    // for( uint id = 0 ; id < mesh.local() ; id++ ) {
-
-	    // 	if(  ( mesh.latticePoint(id)[1] > 0 )  &&  ( mesh.latticePoint(id)[1] < 300 )  ) {
-
-	    // 	    for( uint k = 0 ; k < q ; k++ ) {
-
-	    // 		int nbid = nb[id][k];
-
-	    // 		int nbplus = nb[id][reverse[k]];
-
-	    // 		if(  (nbid != -1)  &&  (nbplus != -1)  ) {
-			
-	    // 		    n_eq[k] = neq(mesh, Tstar, U, 1, 1, nbplus, k)
-	    // 		        - neq(mesh, Tstar, U, 1, 1, id, k)
-	    // 		        + neq(mesh, T, U, 1, 1, nbid, k)
-	    // 		        - neq(mesh, T, U, 1, 1, id, k);
-
-	    // 		}
-
-
-	    // 	    }
-
-
-	    // 	    invQ.matDotVec(n_eq, n);
-
-	    // 	    invM.matDotVec(n, n_eq);
-
-		   
-		    
-
-
-	    // 	    T[id] = 0;
-
-	    // 	    for( uint k = 0 ; k < q ; k++ )
-	    // 	    	T[id] += n_eq[k];
-
-	    // 	}
-		
-	    // }
-	    
-	    
-
-	}
+	Teq.corrector(Ts, rho, U, Tstar);
+	
 
 	
 
@@ -270,9 +174,11 @@ int main( int argc, char **argv ) {
 
     	    T.write();
 
-	    // Ts.write();
+	    Ts.write();
 
     	    f.write();
+
+    	    g.write();	    
 
 
 	    

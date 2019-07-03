@@ -51,6 +51,11 @@ protected:
     /** Equation of state */
 
     EOS* eos;
+
+
+    /** New temperature */
+
+    scalarField Tnew;
     
  
 
@@ -67,15 +72,27 @@ public:
 
     ~simplifiedTEq();
 
+    
+    /** Predictor step (convection + source) */
 
-    // /** Update scalar field using equation info */
+    const void predictor( scalarField& Tstar, const scalarField& rho, const vectorField& U, const scalarField& T );
 
-    // const void rval( scalarField& field, const scalarField& rho, const vectorField& U, const scalarField& T );
 
+    /** Corrector step (diffusion) */
+
+    const void corrector( scalarField& T, const scalarField& rho, const vectorField& U, const scalarField& Tstar );
+    
 
     /** Source value at specific node */
 
-    const scalar heatSource( const uint id ) const;
+    const scalar heatSource( const scalarField& rho, const scalarField& T, const vectorField& U, const uint id ) const;
+
+
+    /** Equilibrium value at specific node and velocity */
+
+    const scalar neq( const scalarField& T, const vectorField& U, const uint id, const uint vid );
+
+    
 
 
 

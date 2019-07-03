@@ -10,7 +10,8 @@ using namespace std;
 
 simplifiedTEq::simplifiedTEq( const latticeMesh& mesh, timeOptions& Time, scalarField& T)
     : _mesh(mesh),
-      _Time(Time) {
+      _Time(Time),
+      Tnew( mesh, Time, "Tnew", IO::NO_READ, IO::NO_WRITE ) {
 
 
 
@@ -158,126 +159,329 @@ simplifiedTEq::~simplifiedTEq() {}
 
 
 
-/** Source value at specific node */
+/** Update scalar field using equation info */
 
-const scalar simplifiedTEq::heatSource( const uint id ) const {
+const void simplifiedTEq::predictor( scalarField& Tstar, const scalarField& rho, const vectorField& U, const scalarField& T ) {
 
-    return 0;
+    
+    // Lattice constants
+
+    const vector< vector<int> >& nb = _mesh.nbArray();
+	    
+    const scalarMatrix& invM = _mesh.lmodel()->MRTInvMatrix();
+
+    const uint q = _mesh.lmodel()->q();
+
+    vector<scalar> n_eq(q);
+
+    vector<scalar> n(q);    
+
+
+
+    // Move over local points only
+
+    for( uint id = 0 ; id < _mesh.local() ; id++ ) {
+
+
+	if( !_mesh.isOnBoundary(id) ) {
+
+
+    	    for( uint k = 0 ; k < q ; k++ ) {
+
+    		int nbid = nb[id][k];
+
+    		if(nbid != -1)
+    		    n_eq[k] = simplifiedTEq::neq( T, U, nbid, k );
+
+    		if( k == 0 )
+    		    n_eq[k] += 0.5*simplifiedTEq::heatSource(rho, T, U, id);
+
+    	    }
+
+
+    	    invM.matDotVec(n_eq, n);
+
+
+
+    	    Tstar[id] = 0;
+
+    	    for( uint k = 0 ; k < q ; k++ )
+    		Tstar[id] += n[k];
+
+    	}
+
+		
+    }
+
+
+    Tstar.sync();
+    
 
 }
 
 
 
 
-// /** Update scalar field using equation info */
 
-// const void simplifiedTEq::rval( scalarField& field, const scalarField& rho, const vectorField& U, const scalarField& T ) {
+/** Corrector step (diffusion) */
+
+const void simplifiedTEq::corrector( scalarField& T, const scalarField& rho, const vectorField& U, const scalarField& Tstar ) {
 
 
-//     // Cached variables
+    // Lattice constants
+
+    const vector< vector<int> >& nb = _mesh.nbArray();
+	    
+    const scalarMatrix& invM = _mesh.lmodel()->MRTInvMatrix();
+
+    vector<uint> reverse = _mesh.lmodel()->reverse();	    
+
+    const uint q = _mesh.lmodel()->q();
+
+    vector<scalar> n_eq(q);
+
+    vector<scalar> n(q);
     
-//     scalar gradRho[3] = {0,0,0};
-
-//     scalar gradT[3] = {0,0,0};
-
-//     scalar lapT(0);
     
     
+    for( uint id = 0 ; id < _mesh.local() ; id++ ) {
 
-//     // Move over local points and update field if not on boundary
-
-//     for( uint id = 0 ; id < _mesh.local() ; id++ ) {
-
-
-// 	// Initialize field value
 	
-// 	field[id] = 0;
+	if( !_mesh.isOnBoundary(id) ) {
+	    
+
+	    for( uint k = 0 ; k < q ; k++ ) {
+
+		int nbid = nb[id][k];
+
+		int nbplus = nb[id][reverse[k]];
+
+		if(nbid != -1) {
+
+		    if (nbplus != -1) {
+			
+			n_eq[k] = simplifiedTEq::neq( Tstar, U, nbplus, k )
+			        - simplifiedTEq::neq( Tstar, U, id, k )
+			        + simplifiedTEq::neq( T, U, nbid, k )
+			        - simplifiedTEq::neq( T, U, id, k );
+
+		    }
+		    
+		}
+
+
+	    }
+
+
+	    Qaux.matDotVec(n_eq, n);
+
+	    invM.matDotVec(n, n_eq);
+
+		   
+
+	    // Update new temperature field
+
+	    Tnew[id] = Tstar.at(id);
+
+	    for( uint k = 0 ; k < q ; k++ )
+	    	Tnew[id] += n_eq[k];
+
+	}
+		
+    }
+
+
+
+    // Update T values
+
+    for( uint id = 0 ; id < _mesh.local() ; id++ ) {
 	
+	if( !_mesh.isOnBoundary(id) )
+	    T[id] = Tnew[id];
 
-// 	if( !_mesh.isOnBoundary(id) ) {
+    }
 
-
-// 	    // \nabla^2 T
-
-// 	    lapT = T.laplacian(id);
-	    
-
-	    
-
-//     	    // Convective term: -U \dot \nabla T
-
-// 	    T.grad(gradT, id);
-
-// 	    for( uint j = 0 ; j < 3 ; j++ )
-// 		field[id] -= U.at(id)[j] * gradT[j];
-		
-
-
-// 	    // // Only for tests: -T \nabla \cdot U
-
-// 	    // field[id] -= T.at(id) * U.div(id);
-	    
-	    
-
-// 	    // Diffusive term
-	    
-// 	    switch( thermal ) {
-		
-// 	    case thmodel::CD:
-
-		
-// 		// Diffusive term: chi \nabla^2 T
-
-// 		field[id] += _lambda * lapT;
-
-
-
-// 		// Diffusive term: chi (\nabla rho) \cdot (\nabla T) / \rho
-	    
-// 		rho.grad(gradRho, id);
-
-// 		for( uint j = 0 ; j < 3 ; j++ )
-// 		    field[id] += ( _lambda / rho.at(id) ) * gradRho[j] * gradT[j];
-
-		  		    
-	    	   
-// 		break;
-
-
-
-// 	    case thmodel::CC:
-
-		
-// 		// Diffusive term: chi \nabla^2 T
-
-// 		field[id] += _lambda * lapT;
-		
-// 		break;		
-
-
-// 	    }
+    T.sync();
+    
+}
 
 
 
 
-//     	    // Extra term  
-	    
-// 	    scalar divU( U.div(id) );
-	    
-//     	    field[id] -= T.at(id) * eos->dp_dT(rho.at(id), T.at(id)) * divU / ( rho.at(id) * _Cv );
-	    	   
-
-	    
-
-// 	}
 
 
+/** Source value at specific node */
 
-//     }
+const scalar simplifiedTEq::heatSource( const scalarField& rho, const scalarField& T, const vectorField& U, const uint id ) const {
+
+    
+    // Constants
+
+    scalar gradT[3]   = {0,0,0};
+
+    scalar gradRho[3] = {0,0,0};
 
 
 
-//     field.sync();
+    // Cached scalar values
+
+    const scalar _rho = rho.at(id);
+
+    const scalar _T = T.at(id);
+	
+	
+    
+    // Thermal difusivity
+    
+    scalar chi(0);
+
+    switch( _mesh.lmodel()->q() ) {
+
+    case 9:
+
+    	chi = (1/_Tau[3] - 0.5) * (4.0 + 3.0 * alpha_1  + 2.0 * alpha_2) / 6.0;
+
+    	break;
+
+
+    case 15:
+
+    	chi = (1/_Tau[3] - 0.5) * (6.0 + 11.0 * alpha_1  + alpha_2) / 9.0;
+
+    	break;
+
+    }
+
+
+
+    // Scalar fields gradients
+
+    T.grad(gradT, id);
+
+    rho.grad(gradRho, id);
+
+	
+    scalar first(0);
+
+    for(uint j = 0 ; j < 3 ; j++)
+	first += gradT[j] * gradRho[j];
+
+    first = first * chi / _rho;
+
+	
+	
+    // Velocity divergence term
+
+    scalar second = U.div(id) * _T * ( 1.0   -   eos->dp_dT(_rho, _T) / (_rho * _Cv) );
+
+
+	
+    return first + second;
+
+
+}
+
+
+
+
+
+/** Equilibrium value at specific node and velocity */
+
+const scalar simplifiedTEq::neq( const scalarField& T, const vectorField& U, const uint id, const uint vid ) {
+
+    
+    const uint q = _mesh.lmodel()->q();
+
+    scalar n(0);
     
 
-// }
+    switch(q) {
+	
+
+    case 9:
+	
+	switch(vid) {
+
+	case 0:
+
+	    n = T.at(id);
+
+	    break;
+
+
+	case 1:
+
+	    n = alpha_1 * T.at(id);
+
+	    break;
+
+
+	case 2:
+
+	    n = alpha_2 * T.at(id);
+
+	    break;
+
+
+	case 3:
+
+	    n = T.at(id) * U.at(id)[0];
+
+	    break;
+
+
+	case 4:
+
+	    n = -T.at(id) * U.at(id)[0];
+
+	    break;
+
+
+	case 5:
+
+	    n = T.at(id) * U.at(id)[1];
+
+	    break;
+
+
+	case 6:
+
+	    n = -T.at(id) * U.at(id)[1];
+
+	    break;
+
+
+	case 7:
+
+	    n = 0;
+
+	    break;
+
+
+	case 8:
+
+	    n = 0;
+
+	    break;	    
+
+	}
+	
+	
+	break;
+
+
+
+    default:
+
+    	cout << " [ERROR]  Equilibrium model not implemented" << endl;
+
+    	exit(1);
+
+	break;	
+
+    }
+
+
+    return n;
+
+}
