@@ -62,6 +62,13 @@ public:
     /** Add element */
 
     const void addElement( const scalar& val, const uint& i, const uint& j );
+
+
+    /** Access to elements */
+
+    const std::vector<scalar>& values() const {return _values;}
+    const std::vector<uint>& idx0() const {return _idx0;}
+    const std::vector<uint>& idx1() const {return _idx1;}        
     
     
 

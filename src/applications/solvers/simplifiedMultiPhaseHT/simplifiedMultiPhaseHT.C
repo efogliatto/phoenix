@@ -82,17 +82,6 @@ int main( int argc, char **argv ) {
 
 
 
-    // Navier-Stokes MRT equation
-
-    pseudoPotEqHandler NS("Navier-Stokes", mesh, Time, f, rho, U, T);
-
-
-    // Energy MRT equation
-
-    energyEqHandler energy("Energy", mesh, Time, g, rho, U, T);    
-
-
-
 
     // Finite-difference T equation
 
@@ -100,10 +89,19 @@ int main( int argc, char **argv ) {
 
     scalarField Tstar( mesh, Time, "Tstar", IO::NO_READ, IO::NO_WRITE );    
     
-    simplifiedTEq Teq( mesh, Time, Ts );
+    simplifiedTEq Teq( mesh, Time, Ts );    
 
-  
-      
+
+    // Navier-Stokes MRT equation
+
+    // pseudoPotEqHandler NS("Navier-Stokes", mesh, Time, f, rho, U, T);
+    pseudoPotEqHandler NS("Navier-Stokes", mesh, Time, f, rho, U, Ts);    
+
+
+    // // Energy MRT equation
+
+    // energyEqHandler energy("Energy", mesh, Time, g, rho, U, T);    
+ 
 
     
 
@@ -132,17 +130,17 @@ int main( int argc, char **argv ) {
 
 
 
-	// Solve Energy equation
+	// // Solve Energy equation
 
-	energy.collision();
+	// energy.collision();
 
-	energy.streaming();
+	// energy.streaming();
 
-	energy.updateBoundaries();
+	// energy.updateBoundaries();
 
-	g.sync();
+	// g.sync();
 
-	energy.updateMacroTemperature();
+	// energy.updateMacroTemperature();
 
 	
 
