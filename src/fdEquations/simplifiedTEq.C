@@ -193,22 +193,24 @@ const void simplifiedTEq::predictor( scalarField& Tstar, const scalarField& rho,
     		if(nbid != -1)
     		    n_eq[k] = simplifiedTEq::neq( T, U, nbid, k );
 
-    		if( k == 0 )
-    		    n_eq[k] += 0.5*simplifiedTEq::heatSource(rho, T, U, id);
-
     	    }
 
 
     	    invM.matDotVec(n_eq, n);
 
 
-
-    	    Tstar[id] = 0;
+    	    Tstar[id] = 0.5*simplifiedTEq::heatSource(rho, T, U, id);
 
     	    for( uint k = 0 ; k < q ; k++ )
     		Tstar[id] += n[k];
 
     	}
+
+	else {
+
+	    Tstar[id] = T.at(id);
+
+	}
 
 		
     }
@@ -332,13 +334,25 @@ const void simplifiedTEq::corrector( scalarField& T, const scalarField& rho, con
     	break;
 
     }
-    
+
+
+
     for( uint id = 0 ; id < _mesh.local() ; id++ ) {
-	
-    	if( !_mesh.isOnBoundary(id) )
-    	    T[id] = Tstar.at(id) + chi*T.laplacian(id);
+
+	if( !_mesh.isOnBoundary(id) )
+	    Tnew[id] = 0.5 * chi * T.laplacian(id);
 
     }
+
+
+    for( uint id = 0 ; id < _mesh.local() ; id++ ) {
+
+	if( !_mesh.isOnBoundary(id) )
+	    T[id] = Tstar.at(id) + Tnew[id];
+
+    }
+
+        
 
     T.sync();
     
