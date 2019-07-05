@@ -33,23 +33,14 @@ simplifiedTEq::simplifiedTEq( const latticeMesh& mesh, timeOptions& Time, scalar
     // Qaux initial values
 
     for( uint k = 0 ; k < mesh.lmodel()->q() ; k++ )
-	Qaux.addElement( 0.5 - 1.0/_Tau[k], k, k );
+    	Qaux.addElement( 0.5 - 1.0/_Tau[k], k, k );
 
     Qaux.addElement( (0.5*_Tau[3]-1.0)/_Tau[3], 3, 4 );
 
     Qaux.addElement( (0.5*_Tau[5]-1.0)/_Tau[5], 5, 6 );
-
     
-    // {
+    
 
-    // 	const vector<scalar>& Qval = Qaux.values();
-    // 	const vector<uint>& id0 = Qaux.idx0();
-    // 	const vector<uint>& id1 = Qaux.idx1();
-
-    // 	for(uint k = 0 ; k < Qval.size() ; k++)
-    // 	    cout << Qval[k] << " " << id0[k] << " " << id1[k] << endl;
-
-    // }
     
 
     
