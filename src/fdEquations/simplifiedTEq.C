@@ -40,16 +40,16 @@ simplifiedTEq::simplifiedTEq( const latticeMesh& mesh, timeOptions& Time, scalar
     Qaux.addElement( (0.5*_Tau[5]-1.0)/_Tau[5], 5, 6 );
 
     
-    {
+    // {
 
-	const vector<scalar>& Qval = Qaux.values();
-	const vector<uint>& id0 = Qaux.idx0();
-	const vector<uint>& id1 = Qaux.idx1();
+    // 	const vector<scalar>& Qval = Qaux.values();
+    // 	const vector<uint>& id0 = Qaux.idx0();
+    // 	const vector<uint>& id1 = Qaux.idx1();
 
-	for(uint k = 0 ; k < Qval.size() ; k++)
-	    cout << Qval[k] << " " << id0[k] << " " << id1[k] << endl;
+    // 	for(uint k = 0 ; k < Qval.size() ; k++)
+    // 	    cout << Qval[k] << " " << id0[k] << " " << id1[k] << endl;
 
-    }
+    // }
     
 
     
@@ -241,80 +241,108 @@ const void simplifiedTEq::predictor( scalarField& Tstar, const scalarField& rho,
 const void simplifiedTEq::corrector( scalarField& T, const scalarField& rho, const vectorField& U, const scalarField& Tstar ) {
 
 
-    // // Lattice constants
+    // Lattice constants
 
-    // const vector< vector<int> >& nb = _mesh.nbArray();
+    const vector< vector<int> >& nb = _mesh.nbArray();
 	    
     // const scalarMatrix& invM = _mesh.lmodel()->MRTInvMatrix();
 
-    // vector<uint> reverse = _mesh.lmodel()->reverse();	    
+    vector<uint> reverse = _mesh.lmodel()->reverse();	    
 
-    // const uint q = _mesh.lmodel()->q();
+    const uint q = _mesh.lmodel()->q();
 
-    // vector<scalar> n_eq(q);
+    vector<scalar> n_eq(q);
 
-    // vector<scalar> n(q);
+    vector<scalar> n(q);
+
+
+
     
-    
-    
-    // for( uint id = 0 ; id < _mesh.local() ; id++ ) {
-
-	
-    // 	if( !_mesh.isOnBoundary(id) ) {
-	    
-
-    // 	    for( uint k = 0 ; k < q ; k++ ) {
-
-    // 		int nbid = nb[id][k];
-
-    // 		int nbplus = nb[id][reverse[k]];
-
-    // 		if(nbid != -1) {
-
-    // 		    if (nbplus != -1) {
-			
-    // 			n_eq[k] = simplifiedTEq::neq( Tstar, U, nbplus, k )
-    // 			        - simplifiedTEq::neq( Tstar, U, id, k )
-    // 			        + simplifiedTEq::neq( T, U, nbid, k )
-    // 			        - simplifiedTEq::neq( T, U, id, k );
-
-    // 		    }
-		    
-    // 		}
-
-
-    // 	    }
-
-
-    // 	    Qaux.matDotVec(n_eq, n);
-
-    // 	    invM.matDotVec(n, n_eq);
-
-		   
-
-    // 	    // Update new temperature field
-
-    // 	    Tnew[id] = Tstar.at(id);
-
-    // 	    for( uint k = 0 ; k < q ; k++ )
-    // 	    	Tnew[id] += n_eq[k];
-
-    // 	}
-		
-    // }
-
-
-
     // // Update T values
 
-    // for( uint id = 0 ; id < _mesh.local() ; id++ ) {
-	
-    // 	if( !_mesh.isOnBoundary(id) )
-    // 	    T[id] = Tnew.at(id);
+    // scalar chi(0);
+
+    // switch( _mesh.lmodel()->q() ) {
+
+    // case 9:
+
+    // 	chi = (1/_Tau[3] - 0.5) * (4.0 + 3.0 * alpha_1  + 2.0 * alpha_2) / 6.0;
+
+    // 	break;
+
+
+    // case 15:
+
+    // 	chi = (1/_Tau[3] - 0.5) * (6.0 + 11.0 * alpha_1  + alpha_2) / 9.0;
+
+    // 	break;
 
     // }
+    
+    
+    
+    
+    for( uint id = 0 ; id < _mesh.local() ; id++ ) {
 
-    // T.sync();
+	
+    	if( !_mesh.isOnBoundary(id) ) {
+	    
+
+    	    for( uint k = 0 ; k < q ; k++ ) {
+
+    		int nbid = nb[id][k];
+
+    		int nbplus = nb[id][reverse[k]];
+
+    		// if(nbid != -1) {
+
+    		//     if (nbplus != -1) {
+			
+    			n_eq[k] = simplifiedTEq::neq( Tstar, U, nbplus, k )
+    			        - simplifiedTEq::neq( Tstar, U, id, k )
+    			        + simplifiedTEq::neq( T, U, nbid, k )
+    			        - simplifiedTEq::neq( T, U, id, k ) ;
+
+
+    		//     }
+		    
+    		// }
+
+
+    	    }
+
+
+    	    Qaux.matDotVec(n_eq, n);   
+
+    	    // invM.matDotVec(n, n_eq);
+
+	    
+
+    	    // Update new temperature field
+
+    	    Tnew[id] = n[0];
+
+    	    // for( uint k = 0 ; k < q ; k++ )
+    	    // 	Tnew[id] += n_eq[k];
+
+	    // cout << Tnew[id] << "  " << 0.5 * chi * T.laplacian(id) << endl;
+
+    	}
+		
+    }
+
+
+
+    // Update T values
+
+    for( uint id = 0 ; id < _mesh.local() ; id++ ) {
+	
+    	if( !_mesh.isOnBoundary(id) )
+    	    T[id] = Tstar.at(id) + Tnew.at(id);
+
+    }
+
+    T.sync();
 
 
 
@@ -325,47 +353,47 @@ const void simplifiedTEq::corrector( scalarField& T, const scalarField& rho, con
 
 
     
-    // Update T values
+    // // Update T values
 
-    scalar chi(0);
+    // scalar chi(0);
 
-    switch( _mesh.lmodel()->q() ) {
+    // switch( _mesh.lmodel()->q() ) {
 
-    case 9:
+    // case 9:
 
-    	chi = (1/_Tau[3] - 0.5) * (4.0 + 3.0 * alpha_1  + 2.0 * alpha_2) / 6.0;
+    // 	chi = (1/_Tau[3] - 0.5) * (4.0 + 3.0 * alpha_1  + 2.0 * alpha_2) / 6.0;
 
-    	break;
-
-
-    case 15:
-
-    	chi = (1/_Tau[3] - 0.5) * (6.0 + 11.0 * alpha_1  + alpha_2) / 9.0;
-
-    	break;
-
-    }
+    // 	break;
 
 
+    // case 15:
 
-    for( uint id = 0 ; id < _mesh.local() ; id++ ) {
+    // 	chi = (1/_Tau[3] - 0.5) * (6.0 + 11.0 * alpha_1  + alpha_2) / 9.0;
 
-	if( !_mesh.isOnBoundary(id) )
-	    Tnew[id] = 0.5 * chi * T.laplacian(id);
+    // 	break;
 
-    }
+    // }
 
 
-    for( uint id = 0 ; id < _mesh.local() ; id++ ) {
 
-	if( !_mesh.isOnBoundary(id) )
-	    T[id] = Tstar.at(id) + Tnew[id];
+    // for( uint id = 0 ; id < _mesh.local() ; id++ ) {
 
-    }
+    // 	if( !_mesh.isOnBoundary(id) )
+    // 	    Tnew[id] = 0.5 * chi * T.laplacian(id);
+
+    // }
+
+
+    // for( uint id = 0 ; id < _mesh.local() ; id++ ) {
+
+    // 	if( !_mesh.isOnBoundary(id) )
+    // 	    T[id] = Tstar.at(id) + Tnew[id];
+
+    // }
 
         
 
-    T.sync();
+    // T.sync();
     
     
 }
