@@ -15,18 +15,18 @@ energyBndCond* energyBndCreator::create(const std::string& eqName,
 
     // Initialize types
 
-    _bdMapType["fixedT"]            = bdType::fixedT;
-    _bdMapType["fixedGradT"]        = bdType::fixedGradT;
-    _bdMapType["periodic"]          = bdType::periodic;
-    _bdMapType["normalHeatFlux"]    = bdType::normalHeatFlux;
-    _bdMapType["outflow"]           = bdType::outflow;
-    _bdMapType["fixedTSpots"]       = bdType::fixedTSpots;
-    _bdMapType["fixedCosT"]         = bdType::fixedCosT;
-    _bdMapType["InamuroFixedT"]     = bdType::InamuroFT;
-    _bdMapType["eqFixedT"     ]     = bdType::eqFT;
-    _bdMapType["NEExtFixedT"]       = bdType::NEExtFT;
-    _bdMapType["eqFixedTSpot"]      = bdType::eqFTSpot;        
-    _bdMapType["NEExtFixedTSpot"]   = bdType::NEExtFTSpot;
+    _bdMapType["fixedT"]             = bdType::fixedT;
+    _bdMapType["fixedGradT"]         = bdType::fixedGradT;
+    _bdMapType["periodic"]           = bdType::periodic;
+    _bdMapType["normalHeatFlux"]     = bdType::normalHeatFlux;
+    _bdMapType["outflow"]            = bdType::outflow;
+    _bdMapType["fixedTSpots"]        = bdType::fixedTSpots;
+    _bdMapType["fixedCosT"]          = bdType::fixedCosT;
+    _bdMapType["InamuroFixedT"]      = bdType::InamuroFT;
+    _bdMapType["eqFixedT"     ]      = bdType::eqFT;
+    _bdMapType["NEExtFixedT"]        = bdType::NEExtFT;
+    _bdMapType["eqFixedTSpots"]      = bdType::eqFTSpot;        
+    _bdMapType["NEExtFixedTSpots"]   = bdType::NEExtFTSpot;
     
     
     
