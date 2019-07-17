@@ -21,7 +21,8 @@ energyBndCond* energyBndCreator::create(const std::string& eqName,
     _bdMapType["normalHeatFlux"] = bdType::normalHeatFlux;
     _bdMapType["outflow"]        = bdType::outflow;
     _bdMapType["fixedTSpots"]    = bdType::fixedTSpots;
-    _bdMapType["fixedCosT"]      = bdType::fixedCosT;    
+    _bdMapType["fixedCosT"]      = bdType::fixedCosT;
+    _bdMapType["InamuroFixedT"]  = bdType::InamuroFT;    
 	
     
     
@@ -87,8 +88,31 @@ energyBndCond* energyBndCreator::create(const std::string& eqName,
 
 	    return new energyFixedCosT( eqName, bdName, mesh, rho, T, U, pdf );
 
-	    break;		 	    
+	    break;
 
+
+	case bdType::InamuroFT:
+
+	    return new InamuroFixedT( eqName, bdName, mesh, rho, T, U, pdf );
+
+	    break;		    
+
+
+	case bdType::eqFT:
+
+	    return new eqFixedT( eqName, bdName, mesh, rho, T, U, pdf );
+
+	    break;		    
+
+
+	case bdType::NEExtFT:
+
+	    return new NEExtFixedT( eqName, bdName, mesh, rho, T, U, pdf );
+
+	    break;		    
+	    
+
+	    
 	}
 
     

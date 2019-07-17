@@ -24,6 +24,9 @@ add_library(lbequations SHARED
   energy/energyEqHandler.C
   energy/boundary/energyBndCond.C
   energy/boundary/energyFixedT.C
+  energy/boundary/InamuroFixedT.C
+  energy/boundary/eqFixedT.C
+  energy/boundary/NEExtFixedT.C    
   energy/boundary/energyFixedTSpot.C
   energy/boundary/energyFixedCosT.C
   energy/boundary/energyFixedGradT.C

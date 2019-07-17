@@ -1,0 +1,1 @@
+../src/lbEquations/energy/boundary/eqFixedT.H

@@ -3,6 +3,12 @@
 
 #include <energyFixedT.H>
 
+#include <InamuroFixedT.H>
+
+#include <NEExtFixedT.H>
+
+#include <eqFixedT.H>
+
 #include <energyNormalHeatFlux.H>
 
 #include <energyPeriodic.H>
@@ -21,7 +27,7 @@ protected:
     
     // Boundary types
 
-    enum class bdType{ fixedT, periodic, fixedGradT, normalHeatFlux, outflow, fixedTSpots, fixedCosT };
+    enum class bdType{ fixedT, periodic, fixedGradT, normalHeatFlux, outflow, fixedTSpots, fixedCosT, InamuroFT, eqFT, NEExtFT };
 
     std::map<std::string, bdType> _bdMapType;
     
