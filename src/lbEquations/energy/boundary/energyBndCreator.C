@@ -15,15 +15,19 @@ energyBndCond* energyBndCreator::create(const std::string& eqName,
 
     // Initialize types
 
-    _bdMapType["fixedT"]         = bdType::fixedT;
-    _bdMapType["fixedGradT"]     = bdType::fixedGradT;
-    _bdMapType["periodic"]       = bdType::periodic;
-    _bdMapType["normalHeatFlux"] = bdType::normalHeatFlux;
-    _bdMapType["outflow"]        = bdType::outflow;
-    _bdMapType["fixedTSpots"]    = bdType::fixedTSpots;
-    _bdMapType["fixedCosT"]      = bdType::fixedCosT;
-    _bdMapType["InamuroFixedT"]  = bdType::InamuroFT;    
-	
+    _bdMapType["fixedT"]            = bdType::fixedT;
+    _bdMapType["fixedGradT"]        = bdType::fixedGradT;
+    _bdMapType["periodic"]          = bdType::periodic;
+    _bdMapType["normalHeatFlux"]    = bdType::normalHeatFlux;
+    _bdMapType["outflow"]           = bdType::outflow;
+    _bdMapType["fixedTSpots"]       = bdType::fixedTSpots;
+    _bdMapType["fixedCosT"]         = bdType::fixedCosT;
+    _bdMapType["InamuroFixedT"]     = bdType::InamuroFT;
+    _bdMapType["eqFixedT"     ]     = bdType::eqFT;
+    _bdMapType["NEExtFixedT"]       = bdType::NEExtFT;
+    _bdMapType["eqFixedTSpot"]      = bdType::eqFTSpot;        
+    _bdMapType["NEExtFixedTSpot"]   = bdType::NEExtFTSpot;
+    
     
     
     // Load model name from dictionary
@@ -109,9 +113,23 @@ energyBndCond* energyBndCreator::create(const std::string& eqName,
 
 	    return new NEExtFixedT( eqName, bdName, mesh, rho, T, U, pdf );
 
-	    break;		    
+	    break;
+
+
+
+	case bdType::eqFTSpot:
+
+	    return new eqFixedTSpot( eqName, bdName, mesh, rho, T, U, pdf );
+
+	    break;	    
 	    
 
+	case bdType::NEExtFTSpot:
+
+	    return new NEExtFixedTSpot( eqName, bdName, mesh, rho, T, U, pdf );
+
+	    break;	    
+	    
 	    
 	}
 

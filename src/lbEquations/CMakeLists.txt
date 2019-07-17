@@ -28,6 +28,8 @@ add_library(lbequations SHARED
   energy/boundary/eqFixedT.C
   energy/boundary/NEExtFixedT.C    
   energy/boundary/energyFixedTSpot.C
+  energy/boundary/eqFixedTSpot.C
+  energy/boundary/NEExtFixedTSpot.C      
   energy/boundary/energyFixedCosT.C
   energy/boundary/energyFixedGradT.C
   energy/boundary/energyPeriodic.C
