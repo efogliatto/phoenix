@@ -29,6 +29,8 @@ energyFixedGradT::energyFixedGradT( const std::string& eqName,
 	// Resize neighbour indices, compute normals and check indexing
 
 	_nbid.resize( _bndVal.size() );
+	
+	_snbid.resize( _bndVal.size() );	
 
 	const vector< vector<int> >& nb = mesh.nbArray();
 
@@ -119,12 +121,13 @@ energyFixedGradT::energyFixedGradT( const std::string& eqName,
 
 		_nbid[i] = nb[nid][ln];
 
+		_snbid[i] = nb[_nbid[i]][ln];		
+
 	    }
 	
 
 	}
-
-
+	
     }
     
 

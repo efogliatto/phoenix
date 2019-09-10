@@ -97,28 +97,29 @@ int main( int argc, char **argv ) {
 
 
 
-    // PDF field. Energy equation
+    // // PDF field. Energy equation
 
-    pdfField g( mesh, Time, "g", IO::MUST_READ, IO::MUST_WRITE );
-
-
-    // Macroscopic temperature
-
-    scalarField Tlb( mesh, Time, "Tlb", IO::NO_READ, IO::MUST_WRITE );
-
-    for(uint i = 0 ; i < mesh.npoints() ; i++)
-	Tlb[i] = T.at(i);
+    // pdfField g( mesh, Time, "g", IO::MUST_READ, IO::MUST_WRITE );
 
 
+    // // Macroscopic temperature
+
+    // scalarField Tlb( mesh, Time, "Tlb", IO::NO_READ, IO::MUST_WRITE );
+
+    // for(uint i = 0 ; i < mesh.npoints() ; i++)
+    // 	Tlb[i] = T.at(i);
+
+
+    
     
     // // Navier-Stokes MRT equation
 
     // pseudoPotEqHandler NS("Navier-Stokes", mesh, Time, f, rho, U, Tlb);
 
     
-    // Energy MRT equation
+    // // Energy MRT equation
 
-    energyEqHandler energy("Energy", mesh, Time, g, rho, U, Tlb);
+    // energyEqHandler energy("Energy", mesh, Time, g, rho, U, Tlb);
     
     
     
@@ -210,19 +211,19 @@ int main( int argc, char **argv ) {
 	
 
 
-	// Solve Energy equation
+	// // Solve Energy equation
 
-	energy.collision();
+	// energy.collision();
 
-	energy.streaming();
+	// energy.streaming();
 
-	energy.updateBoundaries();
+	// energy.updateBoundaries();
 
-	g.sync();
+	// g.sync();
 
-	energy.updateMacroTemperature();
+	// energy.updateMacroTemperature();
 
-	Tlb.sync();
+	// Tlb.sync();
 
 	
 	
@@ -255,7 +256,7 @@ int main( int argc, char **argv ) {
 
     	    T.write();
 
-	    Tlb.write();
+	    // Tlb.write();
 
     	    f.write();
 

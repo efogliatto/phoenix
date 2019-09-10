@@ -17,6 +17,8 @@ protected:
 
     std::vector<uint> _nbid;
 
+    std::vector<uint> _snbid;    
+
 
 public:
 
