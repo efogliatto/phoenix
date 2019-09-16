@@ -53,6 +53,10 @@ add_subdirectory (forces)
 add_subdirectory (heatSources)
 
 
+# Relaxation factors
+
+add_subdirectory (relaxModel)
+
 
 # Specific applications
 
