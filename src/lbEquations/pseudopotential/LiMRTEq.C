@@ -94,9 +94,10 @@ const void LiMRTEq::collision() {
     
     // Local copy of relaxation factors
 
-    vector<scalar> localTau(_Tau);
-
+    vector<scalar> localTau(q);
     
+
+
     
 
     // Move over all points
@@ -111,21 +112,12 @@ const void LiMRTEq::collision() {
 	const scalar u[3] = { U.at(id,0), U.at(id,1), U.at(id,2) };
 
 
-	// // Update local values of relaxation factors
+	
+	// Update local values of relaxation factors
 
-	// if(r < 3.48) {
+	for(uint k = 0 ; k < q ; k++)
+	    localTau[k] = _relax->tau(r,k);
 
-	//     localTau[7] = 1 / ((5/3)*(1/_Tau[7] - 0.5) + 0.5);
-	//     localTau[8] = localTau[7];	    
-
-	// }
-
-	// else {
-
-	//     localTau[7] = _Tau[7];
-	//     localTau[8] = _Tau[8];
-
-	// }
 	
 
 	// Velocity magnitude
@@ -140,8 +132,8 @@ const void LiMRTEq::collision() {
 	// Compute equilibrium in moment space
 	
 	m_eq[0] = r;
-	m_eq[1] = r * (-2 + 3*umag);
-	m_eq[2] = r * (1 - 3*umag);
+	m_eq[1] = r * (-2.0 + 3.0*umag);
+	m_eq[2] = r * (1.0 - 3.0*umag);
 	m_eq[3] = r *  u[0];
 	m_eq[4] = r * (-u[0]);
 	m_eq[5] = r *   u[1];
@@ -166,14 +158,14 @@ const void LiMRTEq::collision() {
 	const scalar Fi[3] = { F.interaction(id,0), F.interaction(id,1), F.interaction(id,2) };
 
 
-	S[0] = 0;
-	S[1] =  6 * (u[0]*Ft[0] + u[1]*Ft[1]) + 12 * _sigma * (Fi[0]*Fi[0] + Fi[1]*Fi[1]) / (psi * psi * ((1/localTau[1])-0.5));
-	S[2] = -6 * (u[0]*Ft[0] + u[1]*Ft[1]) - 12 * _sigma * (Fi[0]*Fi[0] + Fi[1]*Fi[1]) / (psi * psi * ((1/localTau[2])-0.5));
+	S[0] = 0.0;
+	S[1] =  6.0 * (u[0]*Ft[0] + u[1]*Ft[1]) + 12.0 * _sigma * (Fi[0]*Fi[0] + Fi[1]*Fi[1]) / (psi * psi * ((1.0/localTau[1])-0.5));
+	S[2] = -6.0 * (u[0]*Ft[0] + u[1]*Ft[1]) - 12.0 * _sigma * (Fi[0]*Fi[0] + Fi[1]*Fi[1]) / (psi * psi * ((1.0/localTau[2])-0.5));
 	S[3] = Ft[0];
 	S[4] = -Ft[0];
 	S[5] = Ft[1];
 	S[6] = -Ft[1];
-	S[7] = 2 * (u[0]*Ft[0] - u[1]*Ft[1]);
+	S[7] = 2.0 * (u[0]*Ft[0] - u[1]*Ft[1]);
 	S[8] = u[0]*Ft[1] + u[1]*Ft[0];
 
 
@@ -192,7 +184,7 @@ const void LiMRTEq::collision() {
 
 	    m[k] = m[k]
 		-  localTau[k]*( m[k] - m_eq[k] )
-		+  ( 1 - 0.5*localTau[k] ) * S[k] 
+		+  ( 1.0 - 0.5*localTau[k] ) * S[k] 
 		+  C[k]
 		;
 	    
@@ -285,7 +277,7 @@ const void LiMRTEq::pressure( const scalarField& phi, scalarField& p ) {
     
     const scalar cs2 = mesh.lmodel()->cs2();
 
-    scalar G(-1);
+    scalar G(-1.0);
 
     const scalar c(1);
 

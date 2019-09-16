@@ -16,7 +16,9 @@ lbEquation::lbEquation( const string& name,
 
 
 
-    // Read coefficients from dictionary
+    // Read coefficients from dictionary (DEPRECATED)
+
+    #warning Single Tau use is DEPRECATED
 
     dictionary dict("properties/macroProperties");
 
@@ -34,7 +36,16 @@ lbEquation::lbEquation( const string& name,
     _swap.resize( np );
 
     for( uint i = 0 ; i < np ; i++ )
-    	_swap[i].resize(q);    
+    	_swap[i].resize(q);
+
+
+
+    // Relaxation model
+
+    relaxModelCreator rmodel;
+
+    _relax = rmodel.create( name + "/LBModel" );
+    
     
 }
 

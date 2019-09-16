@@ -265,47 +265,103 @@ const void myMRTEq::collision() {
     vector<scalar> aux_2(q);
     
 
+    
+    // Local copy of relaxation factors
 
-    // Non diagonal Q
+    vector<scalar> localTau(q);
 
-    sparseScalarMatrix Q( _Tau );
 
-    switch(q) {
+    // // Update local values of relaxation factors
 
-    case 9:
+    // for(uint k = 0 ; k < q ; k++)
+    // 	localTau[k] = _relax->tau(rho.at(0),k);
+    
 
-    	Q.addElement( _Tau[4]  *  ( _Tau[3]/2.0  - 1.0 ), 3, 4);
+    
 
-    	Q.addElement( _Tau[6]  *  ( _Tau[5]/2.0  - 1.0 ), 5, 6);
+    // // Non diagonal Q
+
+    // sparseScalarMatrix Q( localTau );
+
+    // switch(q) {
+
+    // case 9:
+
+    // 	Q.addElement( localTau[4]  *  ( localTau[3]/2.0  - 1.0 ), 3, 4);
+
+    // 	Q.addElement( localTau[6]  *  ( localTau[5]/2.0  - 1.0 ), 5, 6);
 	
-    	break;
+    // 	break;
 
 
-    case 15:
+    // case 15:
 
-    	Q.addElement( _Tau[4]  *  ( _Tau[3]/2.0  - 1.0 ), 3, 4);
+    // 	Q.addElement( localTau[4]  *  ( localTau[3]/2.0  - 1.0 ), 3, 4);
 
-    	Q.addElement( _Tau[6]  *  ( _Tau[5]/2.0  - 1.0 ), 5, 6);
+    // 	Q.addElement( localTau[6]  *  ( localTau[5]/2.0  - 1.0 ), 5, 6);
 
-    	Q.addElement( _Tau[8]  *  ( _Tau[7]/2.0  - 1.0 ), 7, 8);	
+    // 	Q.addElement( localTau[8]  *  ( localTau[7]/2.0  - 1.0 ), 7, 8);	
 	
-    	break;
+    // 	break;
 
-    default:
+    // default:
 
-	cout << " [ERROR]  Undefined grid model for myMRT" << endl << endl;
+    // 	cout << " [ERROR]  Undefined grid model for myMRT" << endl << endl;
 
-	exit(1);
+    // 	exit(1);
 	
-	break;
+    // 	break;
 
-    }
+    // }
 
     
 
     // Move over all points
 
     for( uint id = 0 ; id < nodes ; id++ ) {
+
+
+	// Update local values of relaxation factors
+
+	for(uint k = 0 ; k < q ; k++)
+	    localTau[k] = _relax->tau(rho.at(id),k);	
+
+
+	// Non diagonal Q
+
+	sparseScalarMatrix Q( localTau );
+
+	switch(q) {
+
+	case 9:
+
+	    Q.addElement( localTau[4]  *  ( localTau[3]/2.0  - 1.0 ), 3, 4);
+
+	    Q.addElement( localTau[6]  *  ( localTau[5]/2.0  - 1.0 ), 5, 6);
+	
+	    break;
+
+
+	case 15:
+
+	    Q.addElement( localTau[4]  *  ( localTau[3]/2.0  - 1.0 ), 3, 4);
+
+	    Q.addElement( localTau[6]  *  ( localTau[5]/2.0  - 1.0 ), 5, 6);
+
+	    Q.addElement( localTau[8]  *  ( localTau[7]/2.0  - 1.0 ), 7, 8);	
+	
+	    break;
+
+	default:
+
+	    cout << " [ERROR]  Undefined grid model for myMRT" << endl << endl;
+
+	    exit(1);
+	
+	    break;
+
+	}
+	
 
 	
     	// Compute equilibrium in moment space
@@ -334,7 +390,7 @@ const void myMRTEq::collision() {
 	
         // Second auxiliary distribution: (I  -  0.5 * Q) * GammaHat	
 
-    	scalar heat = (1.0 - 0.5 * _Tau[0])  * _hs->source(id);
+    	scalar heat = (1.0 - 0.5 * localTau[0])  * _hs->source(id);
 
 
 
@@ -385,6 +441,11 @@ const void myMRTEq::updateMacroTemperature() {
     
 	vector<scalar> n_eq(q);  // meq: equilibrium in momentum space
 
+
+	// Local copy of relaxation factors
+
+	vector<scalar> localTau(q);	
+
     
     
 	for(uint i = 0 ; i < mesh.npoints() ; i++) {
@@ -400,11 +461,17 @@ const void myMRTEq::updateMacroTemperature() {
 	    M.matDotVec( _pdf[i], n );
 
 
+	    // Update local values of relaxation factors
+
+	    for(uint k = 0 ; k < q ; k++)
+		localTau[k] = _relax->tau(rho.at(i),k);	    
+
+
 	    // Update gradient
 
-	    Tgrad[i][0] = gamma * ( _Tau[3]*(n[3] - n_eq[3]) + _Tau[3]*_Tau[4]*0.5*(n[4] - n_eq[4]) );
+	    Tgrad[i][0] = gamma * ( localTau[3]*(n[3] - n_eq[3]) + localTau[3]*localTau[4]*0.5*(n[4] - n_eq[4]) );
 
-	    Tgrad[i][1] = gamma * ( _Tau[5]*(n[5] - n_eq[5]) + _Tau[5]*_Tau[6]*0.5*(n[6] - n_eq[6]) );
+	    Tgrad[i][1] = gamma * ( localTau[5]*(n[5] - n_eq[5]) + localTau[5]*localTau[6]*0.5*(n[6] - n_eq[6]) );
 
 	    Tgrad[i][2] = 0;	
 	
@@ -445,14 +512,14 @@ const scalar myMRTEq::thermalCond( const uint& id ) const {
 
     case 9:
 
-	k = rho.at(id) * _Cv * (1/_Tau[3] - 0.5) * (4.0 + 3.0 * _a1  + 2.0 * _a2) / 6.0;
+	k = rho.at(id) * _Cv * (1/_relax->tau(rho.at(id),3) - 0.5) * (4.0 + 3.0 * _a1  + 2.0 * _a2) / 6.0;
 	
 	break;
 
 
     case 15:
 
-	k = rho.at(id) * _Cv * (1/_Tau[3] - 0.5) * (6.0 + 11.0 * _a1  + _a2) / 9.0;
+	k = rho.at(id) * _Cv * (1/_relax->tau(rho.at(id),3) - 0.5) * (6.0 + 11.0 * _a1  + _a2) / 9.0;
 	    	
 	break;
 
@@ -471,6 +538,6 @@ const scalar myMRTEq::thermalCond( const uint& id ) const {
 
 const scalar myMRTEq::diffusivityConstant() const {
 
-    return (1/_Tau[3] - 0.5) * (4.0 + 3.0 * _a1  + 2.0 * _a2) / 6.0;
+    return (1/_relax->tau(rho.at(0),3) - 0.5) * (4.0 + 3.0 * _a1  + 2.0 * _a2) / 6.0;
 
 }

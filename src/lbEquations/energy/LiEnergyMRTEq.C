@@ -187,6 +187,12 @@ const void LiEnergyMRTEq::collision() {
     
     vector<scalar> n_eq(q);  // meq: equilibrium in momentum space
 
+
+
+    // Local copy of relaxation factors
+
+    vector<scalar> localTau(q);    
+
     
     
 
@@ -209,10 +215,18 @@ const void LiEnergyMRTEq::collision() {
 	scalar n6 = n[6];
 
 
+	// Update local values of relaxation factors
+
+	for(uint k = 0 ; k < q ; k++)
+	    localTau[k] = _relax->tau(rho.at(id),k);
+
+	
+
+
     	// Collision in momentum space
 	
     	for( uint k = 0 ; k < q ; k++ )
-    	    n[k] = n[k]   -   _Tau[k] * (n[k] - n_eq[k]);
+    	    n[k] = n[k]   -   localTau[k] * (n[k] - n_eq[k]);
 
 	    
     	n[0] = n[0] + _hs->source(id);
@@ -221,9 +235,9 @@ const void LiEnergyMRTEq::collision() {
 
 	// Correction terms
 
-	n[3] = n[3]   +   ( 1.0 - 0.5*_Tau[3] ) * _Tau[4] * (n4 - n_eq[4]);
+	n[3] = n[3]   +   ( 1.0 - 0.5*localTau[3] ) * localTau[4] * (n4 - n_eq[4]);
 
-	n[5] = n[5]   +   ( 1.0 - 0.5*_Tau[5] ) * _Tau[6] * (n6 - n_eq[6]);
+	n[5] = n[5]   +   ( 1.0 - 0.5*localTau[5] ) * localTau[6] * (n6 - n_eq[6]);
 	
 
 

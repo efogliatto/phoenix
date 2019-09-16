@@ -84,6 +84,12 @@ const void XuMRTEq::collision() {
     // vector<scalar> C(9);     // Surface tension term
 
 
+
+    // Local copy of relaxation factors
+
+    vector<scalar> localTau(q);
+
+    
     
 
     // Move over all points
@@ -96,6 +102,13 @@ const void XuMRTEq::collision() {
 	const scalar r = rho[id];
 
 	const scalar u[3] = { U.at(id,0), U.at(id,1), U.at(id,2) };
+
+
+	// Update local values of relaxation factors
+
+	for(uint k = 0 ; k < q ; k++)
+	    localTau[k] = _relax->tau(r,k);
+	
 	
 
 	// Velocity magnitude
@@ -174,7 +187,7 @@ const void XuMRTEq::collision() {
 	
 	for( uint k = 0 ; k < q ; k++ ) {
 
-	    m[k] = m[k]  -  _Tau[k]*( m[k] - m_eq[k] )  +  ( 1 - 0.5*_Tau[k] ) * S[k];
+	    m[k] = m[k]  -  localTau[k]*( m[k] - m_eq[k] )  +  ( 1 - 0.5*localTau[k] ) * S[k];
 	    
 	}
 

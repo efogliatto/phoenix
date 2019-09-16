@@ -51,6 +51,7 @@ set ( PROJECT_LINK_LIBS
   libtequations.so
   libforces.so
   libheatsources.so
+  librelaxmodel.so
   m
   # ${MPI_LIBRARIES}
   )

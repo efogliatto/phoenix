@@ -177,6 +177,9 @@ const void GongSRTEq::collision() {
     // Partial distributions
     
     vector<scalar> g_eq(q);
+
+
+    scalar localTau;
     
     
     
@@ -188,6 +191,11 @@ const void GongSRTEq::collision() {
 	// Compute equilibrium
 	
 	GongSRTEq::eqPS(g_eq, id);
+
+
+	// Update local relaxation factor
+
+	localTau = _relax->tau(rho.at(id),0);	
 
 
 	// Local heat source
@@ -218,7 +226,7 @@ const void GongSRTEq::collision() {
 
 	    case thmodel::constCond:
 
-		first = lapT * ( _kappa / ( _rho *_Cv) - (_Tau[0]-0.5) / 3.0 );
+		first = lapT * ( _kappa / ( _rho *_Cv) - (localTau-0.5) / 3.0 );
 	    
 		break;
 
@@ -263,7 +271,7 @@ const void GongSRTEq::collision() {
 	for( uint k = 0 ; k < q ; k++ ) {
 
 	    _pdf[id][k] = _pdf[id][k]
-		        - (1.0/_Tau[0]) * (_pdf[id][k] - g_eq[k])
+		        - (1.0/localTau) * (_pdf[id][k] - g_eq[k])
 		        + omega[k] * heat;
 
 	}

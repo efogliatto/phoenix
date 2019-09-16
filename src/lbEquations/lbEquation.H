@@ -9,6 +9,8 @@
 
 #include <map>
 
+#include <relaxModelCreator.H>
+
 
 class lbEquation {
 
@@ -43,6 +45,11 @@ protected:
     /** Swap auxiliary field */
 
     std::vector< std::vector<scalar> > _swap;
+
+
+    /** Relaxation model */
+
+    std::unique_ptr<relaxModel> _relax;
     
 
 
