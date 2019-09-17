@@ -94,10 +94,8 @@ const void LiMRTEq::collision() {
     
     // Local copy of relaxation factors
 
-    // vector<scalar> localTau(q);
-    vector<scalar> localTau(_Tau);
+    vector<scalar> localTau(q);
     
-
 
     
 
@@ -116,31 +114,8 @@ const void LiMRTEq::collision() {
 	
 	// Update local values of relaxation factors
 
-	// for(uint k = 0 ; k < q ; k++)
-	//     localTau[k] = _relax->tau(r,k);
-
-
-	// Update local values of relaxation factors
-
-	if(r < 0.13045) {
-
-	    localTau[7] = 1 / (15*(1/_Tau[7] - 0.5) + 0.5);
-	    localTau[8] = localTau[7];	    
-
-	}
-
-	else {
-
-	    localTau[7] = _Tau[7];
-	    localTau[8] = _Tau[8];
-
-	}
-
-
 	for(uint k = 0 ; k < q ; k++)
-	    cout << localTau[k] << " (" <<  _relax->tau(r,k) << ")  " ;
-
-	cout << endl;
+	    localTau[k] = _relax->tau(r,k);
 	
 	
 
