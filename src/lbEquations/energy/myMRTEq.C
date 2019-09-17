@@ -268,51 +268,44 @@ const void myMRTEq::collision() {
     
     // Local copy of relaxation factors
 
-    vector<scalar> localTau(q);
-
-
-    // // Update local values of relaxation factors
-
-    // for(uint k = 0 ; k < q ; k++)
-    // 	localTau[k] = _relax->tau(rho.at(0),k);
-    
+    vector<scalar> localTau(q); 
 
     
 
-    // // Non diagonal Q
+    // Non diagonal Q
 
-    // sparseScalarMatrix Q( localTau );
+    sparseScalarMatrix Q( localTau );
 
-    // switch(q) {
+    switch(q) {
 
-    // case 9:
+    case 9:
 
-    // 	Q.addElement( localTau[4]  *  ( localTau[3]/2.0  - 1.0 ), 3, 4);
+    	Q.addElement( 1.0, 3, 4);
 
-    // 	Q.addElement( localTau[6]  *  ( localTau[5]/2.0  - 1.0 ), 5, 6);
+    	Q.addElement( 1.0, 5, 6);
 	
-    // 	break;
+    	break;
 
 
-    // case 15:
+    case 15:
 
-    // 	Q.addElement( localTau[4]  *  ( localTau[3]/2.0  - 1.0 ), 3, 4);
+    	Q.addElement( 1.0, 3, 4);
 
-    // 	Q.addElement( localTau[6]  *  ( localTau[5]/2.0  - 1.0 ), 5, 6);
+    	Q.addElement( 1.0, 5, 6);
 
-    // 	Q.addElement( localTau[8]  *  ( localTau[7]/2.0  - 1.0 ), 7, 8);	
+    	Q.addElement( 1.0, 7, 8);	
 	
-    // 	break;
+    	break;
 
-    // default:
+    default:
 
-    // 	cout << " [ERROR]  Undefined grid model for myMRT" << endl << endl;
+    	cout << " [ERROR]  Undefined grid model for myMRT" << endl << endl;
 
-    // 	exit(1);
+    	exit(1);
 	
-    // 	break;
+    	break;
 
-    // }
+    }
 
     
 
@@ -323,13 +316,16 @@ const void myMRTEq::collision() {
 
 	// Update local values of relaxation factors
 
-	for(uint k = 0 ; k < q ; k++)
-	    localTau[k] = _relax->tau(rho.at(id),k);	
+	for(uint k = 0 ; k < q ; k++) {
+	    
+	    localTau[k] = _relax->tau(rho.at(id),k);
+	    
+	    Q.addElement( localTau[k], k, k);
+	    
+	}
 
 
 	// Non diagonal Q
-
-	sparseScalarMatrix Q( localTau );
 
 	switch(q) {
 
@@ -353,10 +349,6 @@ const void myMRTEq::collision() {
 	    break;
 
 	default:
-
-	    cout << " [ERROR]  Undefined grid model for myMRT" << endl << endl;
-
-	    exit(1);
 	
 	    break;
 
@@ -442,10 +434,6 @@ const void myMRTEq::updateMacroTemperature() {
 	vector<scalar> n_eq(q);  // meq: equilibrium in momentum space
 
 
-	// Local copy of relaxation factors
-
-	vector<scalar> localTau(q);	
-
     
     
 	for(uint i = 0 ; i < mesh.npoints() ; i++) {
@@ -455,26 +443,20 @@ const void myMRTEq::updateMacroTemperature() {
 
 	    eqMS(n_eq,i);
 
-
+	    
 	    // Distribution in moment space
 
 	    M.matDotVec( _pdf[i], n );
-
-
-	    // Update local values of relaxation factors
-
-	    for(uint k = 0 ; k < q ; k++)
-		localTau[k] = _relax->tau(rho.at(i),k);	    
-
+	    
 
 	    // Update gradient
 
-	    Tgrad[i][0] = gamma * ( localTau[3]*(n[3] - n_eq[3]) + localTau[3]*localTau[4]*0.5*(n[4] - n_eq[4]) );
+	    Tgrad[i][0] = gamma * ( _relax->tau(rho.at(i),3)*(n[3] - n_eq[3]) + _relax->tau(rho.at(i),3)*_relax->tau(rho.at(i),4)*0.5*(n[4] - n_eq[4]) );
 
-	    Tgrad[i][1] = gamma * ( localTau[5]*(n[5] - n_eq[5]) + localTau[5]*localTau[6]*0.5*(n[6] - n_eq[6]) );
+	    Tgrad[i][1] = gamma * ( _relax->tau(rho.at(i),5)*(n[5] - n_eq[5]) + _relax->tau(rho.at(i),5)*_relax->tau(rho.at(i),6)*0.5*(n[6] - n_eq[6]) );
 
 	    Tgrad[i][2] = 0;	
-	
+
 
 	}
  
