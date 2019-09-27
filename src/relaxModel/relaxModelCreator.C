@@ -33,6 +33,7 @@ unique_ptr<relaxModel> relaxModelCreator::create( const std::string& entry ) {
     
 
     // Assign model
+  
     
     if( _relaxMapType.find(modelName) != _relaxMapType.end() ) {
 
@@ -40,21 +41,21 @@ unique_ptr<relaxModel> relaxModelCreator::create( const std::string& entry ) {
 
 	case relaxType::utau:
 
-	    return std::make_unique<uniformTau>(entry);
+	    return unique_ptr<relaxModel>( new uniformTau(entry) );
 
 	    break;
 
 
-	case relaxType::rhopw:
+	case relaxType::rhopw:	    
 
-	    return std::make_unique<rhoPieceWise>(entry);
+	    return unique_ptr<relaxModel>( new rhoPieceWise(entry) );
 
 	    break;
 
 
 	case relaxType::rhopwl:
 
-	    return std::make_unique<rhoPieceWiseLinear>(entry);
+	    return unique_ptr<relaxModel>( new rhoPieceWiseLinear(entry) );
 
 	    break;	    
 

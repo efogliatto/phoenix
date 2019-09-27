@@ -26,7 +26,7 @@ find_package(MPI REQUIRED)
 
 # Compiler options for CXX
 
-SET( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall -lm -pedantic --std=c++14 -funroll-loops" )
+SET( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall -lm -pedantic --std=c++11 -funroll-loops" )
 
 if(CMAKE_BUILD_TYPE STREQUAL Debug)
 
