@@ -18,6 +18,7 @@ adhesiveForce* adsForceCreator::create( const string& dictName,
 
     _adsMapType["none"]           = adsType::NONE;
     _adsMapType["Phi-based-mod"]  = adsType::PHI_BASED_MOD;
+    _adsMapType["randomSpots"]    = adsType::RND_SPOTS;    
 
     
     
@@ -48,6 +49,14 @@ adhesiveForce* adsForceCreator::create( const string& dictName,
 
     	    break;	   
 
+
+	    
+    	case adsType::RND_SPOTS:
+
+    	    return new rndSpots(dictName, eqName, mesh, Fi, Time);
+
+    	    break;	   
+	    
 	    
     	}
 

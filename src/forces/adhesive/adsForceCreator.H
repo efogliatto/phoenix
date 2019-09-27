@@ -5,6 +5,8 @@
 
 #include <phiBasedMod.H>
 
+#include <rndSpots.H>
+
 
 class adsForceCreator {
 
@@ -13,7 +15,7 @@ protected:
 
     /** Force type types */
 
-    enum class adsType{ NONE, PHI_BASED_MOD };
+    enum class adsType{ NONE, PHI_BASED_MOD, RND_SPOTS };
 
     std::map<std::string, adsType> _adsMapType;
 
