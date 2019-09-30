@@ -1,1 +1,1 @@
-../src/applications/utilities/adhesiveBoundary/uniformSpots.H
+../src/applications/utilities/adhesiveBoundary/spotSample/uniformSpots.H

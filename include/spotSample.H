@@ -1,1 +1,1 @@
-../src/applications/utilities/adhesiveBoundary/spotSample.H
+../src/applications/utilities/adhesiveBoundary/spotSample/spotSample.H

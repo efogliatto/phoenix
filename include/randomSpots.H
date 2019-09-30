@@ -1,1 +1,1 @@
-../src/applications/utilities/adhesiveBoundary/randomSpots.H
+../src/applications/utilities/adhesiveBoundary/spotSample/randomSpots.H
