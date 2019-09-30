@@ -9,7 +9,8 @@
 
 
 class spotSample {
-
+    
+    
 protected:
 
     
@@ -23,15 +24,26 @@ protected:
     std::vector< std::vector<uint> > _location;
     
 
-    /** Total number of spots */
-    
-    uint _nSpots;
+    /** Spots */
+
+    std::vector< std::pair<uint,uint> > _spots;
 
 
-    /** Mean radius */
 
-    scalar _radius;
-    
+    /** Read nodes on boundary */
+
+    const void readNodes( const std::string& bdname );
+
+
+    /** Read position of nodes on boundary */
+
+    const void readLocations( const std::string& bdname );
+
+
+    /** Create spots */
+
+    const void createSpots( const std::string& bdname );
+
     
 
 public:

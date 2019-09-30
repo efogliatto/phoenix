@@ -2,14 +2,45 @@
 
 #include <dictionary.H>
 
+#include <spotRadiusCreator.H>
+
 
 using namespace std;
+
+
 
 
 /** Default constructor */
 
 spotSample::spotSample(const std::string& bdname) {
 
+
+    // Nodes ids and locations
+
+    readNodes(bdname);
+    
+    readLocations(bdname);
+
+
+    // Assign spots positions and radius
+
+    createSpots(bdname);
+
+    
+
+}
+
+
+/** Destructor */
+
+spotSample::~spotSample() {}
+
+
+
+/** Read nodes on boundary */
+
+const void spotSample::readNodes( const string& bdname ) {
+    
 
     // Read node indices for boundary "bdname"
 
@@ -75,10 +106,16 @@ spotSample::spotSample(const std::string& bdname) {
 
     inFile.close();
 
+}
 
 
 
 
+/** Read position of nodes on boundary */
+
+const void spotSample::readLocations( const string& bdname ) {
+
+    
     // Look for nodes location
 
     _location.resize( _nodes.size() );
@@ -87,6 +124,8 @@ spotSample::spotSample(const std::string& bdname) {
 	_location[i].resize(3);
     
 
+    ifstream inFile;
+    
     inFile.open( "lattice/points");
 
     if( inFile.is_open() == false ){
@@ -130,11 +169,44 @@ spotSample::spotSample(const std::string& bdname) {
 	    _location[i][j] = points[ _nodes[i] ][j];
 
     }
-    
+
 
 }
 
 
-/** Destructor */
 
-spotSample::~spotSample() {}
+/** Create spots */
+
+const void spotSample::createSpots( const string& bdname ) {
+
+
+    // Radius model
+    
+    dictionary dict("properties/adhesiveProperties");
+
+    string rtype = dict.lookUpOrDefault<string>("Boundaries/" + bdname + "/sampleRadiusType", "fixed");
+    
+    spotRadiusCreator rdcreator;
+
+    std::unique_ptr<spotRadius> rmodel = rdcreator.create(rtype);
+
+    
+    
+    uint nspots     = (uint)dict.lookUp<scalar>("Boundaries/" + bdname + "/nSpots");
+
+    uint meanRadius = (uint)dict.lookUp<scalar>("Boundaries/" + bdname + "/radius");
+
+    uint devRadius  = (uint)dict.lookUpOrDefault<scalar>("Boundaries/" + bdname + "/dev", 0);
+
+    
+    // Assign spots
+
+    _spots.resize(nspots);
+
+    vector<uint> rad = rmodel->radius(nspots, meanRadius, devRadius);
+
+    for(uint i = 0 ; i < nspots ; i++)
+	_spots[i] = std::make_pair(0,rad[i]);
+
+
+}
