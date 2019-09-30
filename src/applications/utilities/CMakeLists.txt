@@ -16,3 +16,8 @@ add_subdirectory (lbPressure)
 # Additional calculations
 
 add_subdirectory (extraFD)
+
+
+# Adhesive coefficients
+
+add_subdirectory (adhesiveBoundary)
