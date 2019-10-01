@@ -26,6 +26,13 @@ spotSample::spotSample(const std::string& bdname) {
 
     createSpots(bdname);
 
+
+    // Create cavity model
+
+    cavityModelCreator creator;
+
+    _cavity = creator.create( bdname );
+
     
 
 }
@@ -209,4 +216,15 @@ const void spotSample::createSpots( const string& bdname ) {
 	_spots[i] = std::make_pair(0,rad[i]);
 
 
+}
+
+
+
+
+/** Compute adhesive coefficients */
+
+const std::vector< std::pair<uint, scalar> > spotSample::computeAds() const {
+
+    return _cavity->coeffs(_nodes, _location, _spots);
+    
 }

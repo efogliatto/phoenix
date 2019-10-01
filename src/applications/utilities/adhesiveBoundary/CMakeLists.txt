@@ -12,6 +12,8 @@ add_executable(adhesiveBoundary
   "spotRadius/spotRadiusCreator.C"
   "cavityModel/cavityModel.C"
   "cavityModel/flatCavity.C"
+  "cavityModel/linearCavity.C"
+  "cavityModel/cavityModelCreator.C"
   )
 
 target_link_libraries(adhesiveBoundary ${PROJECT_LINK_LIBS} ${MPI_LIBRARIES} ${PROJECT_LINK_LIBS})

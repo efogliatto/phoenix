@@ -1,29 +1,28 @@
-#ifndef FLATCAVITY_H
-#define FLATCAVITY_H
+#ifndef LINEARCAVITY_H
+#define LINEARCAVITY_H
 
 #include <cavityModel.H>
 
-class flatCavity : public cavityModel {
+class linearCavity : public cavityModel {
 
 public:
 
     /** Constructor */
     
-    flatCavity( const std::string& bdname );
+    linearCavity( const std::string& bdname );
 
 
     /** Destructor */
 
-    ~flatCavity();
+    ~linearCavity();
 
-
+    
     /** Compute adhesive coefficients */
 
     const std::vector< std::pair<uint, scalar> > coeffs(const std::vector<uint>& nodes,
 							const std::vector< std::vector<uint> >& loc,
 							const std::vector< std::pair<uint,uint> >& spots) const;
 
-
 };
 
-#endif // FLATCAVITY_H
+#endif // LINEARCAVITY_H

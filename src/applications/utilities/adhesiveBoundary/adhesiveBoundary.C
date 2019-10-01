@@ -6,10 +6,6 @@
 
 #include <dictionary.H>
 
-// #include <pseudoPotEqHandler.H>
-
-// #include <energyEqHandler.H>
-
 
 using namespace std;
 
@@ -37,6 +33,11 @@ int main( int argc, char **argv ) {
 	string sptype = dict.lookUpOrDefault<string>("Boundaries/" + bdname + "/sampleType", "uniform");
 
 	unique_ptr<spotSample> spots = spcreator.create(sptype, bdname);
+
+
+	// Compute coefficients
+
+	vector< pair<uint, scalar> > Gads = spots->computeAds();
 
     }
 

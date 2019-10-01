@@ -7,6 +7,8 @@
 
 #include <vector>
 
+#include <cavityModelCreator.H>
+
 
 class spotSample {
     
@@ -27,6 +29,11 @@ protected:
     /** Spots */
 
     std::vector< std::pair<uint,uint> > _spots;
+
+
+    /** Cavity model */
+
+    std::unique_ptr<cavityModel> _cavity;
 
 
 
@@ -57,6 +64,11 @@ public:
     /** Destructor */
 
     ~spotSample();
+
+
+    /** Compute adhesive coefficients */
+
+    virtual const std::vector< std::pair<uint, scalar> > computeAds() const;
 
     
 
