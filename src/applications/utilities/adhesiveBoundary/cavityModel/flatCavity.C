@@ -36,7 +36,7 @@ const vector< pair<uint, scalar> > flatCavity::coeffs(const vector<uint>& nodes,
 
     for( auto sp : spots ) {
 
-
+	
     	// Move over nodes until spot is found
 
     	bool find(false);
@@ -69,7 +69,7 @@ const vector< pair<uint, scalar> > flatCavity::coeffs(const vector<uint>& nodes,
     		if( (i+j) < Gads.size() )
     		    Gads[i+j] = make_pair( nodes[i+j], min_gads );
 
-    		if( (i<j) > 0 )
+    		if( (i-j) > 0 )
     		    Gads[i-j] = make_pair( nodes[i-j], min_gads );	    
 	    
     	    }

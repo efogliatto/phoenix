@@ -39,6 +39,9 @@ int main( int argc, char **argv ) {
 
 	vector< pair<uint, scalar> > Gads = spots->computeAds();
 
+	for(auto g : Gads)
+	    cout << g.first << "  " << g.second << endl;
+
     }
 
 
