@@ -21,11 +21,13 @@ int main( int argc, char **argv ) {
     dictionary dict("properties/adhesiveProperties");
 
     vector<string> boundaries = dict.bracedEntriesNames("Boundaries");
+    
 
 
     // Spot factory
     
     spotSampleCreator spcreator;
+    
     
     
     // Move over boundaries and assign coefficients
@@ -90,6 +92,8 @@ int main( int argc, char **argv ) {
 
 
 	}
+
+	
 	
 	
     }

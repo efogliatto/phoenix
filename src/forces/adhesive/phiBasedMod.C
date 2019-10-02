@@ -54,7 +54,7 @@ void phiBasedMod::update( scalarField& rho, scalarField& T ) {
 
 	if( _Gads.find(i) != _Gads.end() ) {
 
-	    
+
 	    scalar Fads[3] = {0, 0, 0};
  
 	    scalar phi = _Fi->potential( rho.at(i), T.at(i), cs2 );

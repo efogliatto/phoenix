@@ -43,21 +43,26 @@ adhesiveForce::adhesiveForce( const string& dictName,
 
 	if( infile.good() ) {
 
-	    if( bd.second.size() != 0 ) {
+	    uint npoints(0);
 
-		uint nid;
+	    scalar g;
 
-		scalar g;
+	    infile >> npoints;
 	    
-		for( const auto &id : bd.second ) {
+	    
+	    if( npoints > 0 ) {
 
-		    infile >> nid;
+		uint nid(0);
+	    
+	    	for( uint k = 0 ; k < npoints ; k++ ) {
 
-		    infile >> g;
+	    	    infile >> nid;
 
-		    _Gads[id] = g;
+	    	    infile >> g;
 
-		}
+	    	    _Gads[nid] = g;
+
+	    	}
 
 	    }
 
