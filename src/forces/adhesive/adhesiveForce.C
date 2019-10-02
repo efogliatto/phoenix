@@ -32,19 +32,54 @@ adhesiveForce::adhesiveForce( const string& dictName,
 
     const map< string, vector<uint> >& boundary = _mesh.boundaries();
 
-    dictionary dict("start/boundaries");
         
     for( const auto &bd : boundary ) {
-	
-    	scalar g_ads = dict.lookUpOrDefault<scalar>( eqName + "/" + bd.first + "/Gads", 0 );
 
-    	if(  ( g_ads != 0 )  &&  ( bd.second.size() != 0 )  ) {
+
+
+	// If file is present, read from file
+
+	ifstream infile( "processor" + to_string(_mesh.pid()) + "/lattice/" + bd.first + "_gads" );
+
+	if( infile.good() ) {
+
+	    if( bd.second.size() != 0 ) {
+
+		uint nid;
+
+		scalar g;
 	    
-	    for( const auto &id : bd.second ) {
+		for( const auto &id : bd.second ) {
 
-		_Gads[id] = g_ads;
+		    infile >> nid;
+
+		    infile >> g;
+
+		    _Gads[id] = g;
+
+		}
 
 	    }
+
+	}
+
+	else {
+	    
+
+	    dictionary dict("start/boundaries");
+		
+	    scalar g_ads = dict.lookUpOrDefault<scalar>( eqName + "/" + bd.first + "/Gads", 0 );
+
+	    if(  ( g_ads != 0 )  &&  ( bd.second.size() != 0 )  ) {
+	    
+		for( const auto &id : bd.second ) {
+
+		    _Gads[id] = g_ads;
+
+		}
+
+	    }
+
 
 	}
 
