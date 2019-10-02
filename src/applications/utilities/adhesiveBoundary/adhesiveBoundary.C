@@ -6,6 +6,8 @@
 
 #include <dictionary.H>
 
+#include <localIndexer.H>
+
 
 using namespace std;
 
@@ -46,98 +48,46 @@ int main( int argc, char **argv ) {
 
 	// Distribute over processors
 
-	dictionary pdict("properties/parallel");
-
-	uint np = (uint)pdict.lookUp<scalar>("numProc");
-
-
-
-	if(np > 1) {
-	
-	
-	    ifstream infile;
-
-	    infile.open("lattice/points");
-
-	    uint npoints;
-
-	    infile >> npoints;
-
-	    infile.close();
-
+	localIndexer indexer;
 
 	
-	    infile.open( ("lattice/lattice.graph.part." + to_string(np)).c_str()  );
-
-	    if( infile.is_open() == false ){
-	
-		cout << " [ERROR]  Unable to find file lattice/lattice.graph.part." << np << endl;
-	
-		exit(1);
-	
-	    }	
-
-	    vector< map<uint, uint> > globalToLocal(np);
-
-	    vector<uint> pidIds(npoints);
-
-	    vector<uint> total(np);
-
-	    std::fill( total.begin(), total.end(), 0 );
+	for( uint pid = 0 ; pid < indexer.np() ; pid++ ) {
 
 
-	    for( uint i = 0 ; i < npoints ; i++ ) {
+	    // First check total number of boundary nodes for this processor
 
-		uint pid;
-	    
-		infile >> pid;
+	    uint count(0);
 
-		pidIds[i] = pid;
+	    for( const auto& g : Gads ) {
 
-		total[pid]++;
-	    
-		globalToLocal[pid][i] = total[pid] - 1;
+		int lid = indexer.globalToLocal( g.first, pid );
+
+		if(lid != -1)
+		    count++;
 
 	    }
-       
-	    infile.close();
-	
 
-	    ofstream outfile;
-	
-	    for( uint pid = 0 ; pid < np ; pid++ ) {
 
+	    if( count > 0 ) {
+	    
+		ofstream outfile;
+	    
 		outfile.open( ("processor" + to_string(pid) + "/lattice/" + bdname + "_gads").c_str()  );
 
+		outfile << count << endl;
 
-		for( auto g : Gads ) {
+		for( const auto& g : Gads ) {
 
-		    if(pidIds[g.first] == pid) {
+		    int lid = indexer.globalToLocal( g.first, pid );
 
-			outfile << globalToLocal[pid][g.first] << " " << g.second << endl;
-
-		    }
+		    if( lid != -1 )
+			outfile << lid << "  " << g.second << endl;
 
 		}
-	    
-	    
-		outfile.close();
+
 
 	    }
 
-
-	}
-
-	else {
-
-	    ofstream outfile;
-	
-	    outfile.open( ("processor0/lattice/" + bdname + "_gads").c_str()  );
-
-	    for( auto g : Gads )
-		outfile << g.first << " " << g.second << endl;
-	    
-	    outfile.close();
 
 	}
 	

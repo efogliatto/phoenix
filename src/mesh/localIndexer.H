@@ -3,14 +3,32 @@
 
 #include <dictionary.H>
 
+#include <map>
+
 class localIndexer {
 
 
 protected:
 
-    /** Global to local list */
+    /** Global to local list : (pid, node) */
 
-    std::vector<  std::vector< std::pair<int, int> >  > _idx;
+    std::vector<  std::map< uint, uint>  > _idx;
+
+    
+    /** Local to global list : (local, global) */
+
+    std::vector<  std::map< uint, uint>  > _l2g;    
+
+    
+    /** Total number of nodes per processor */
+
+    std::vector<uint> nodesPerProc;
+    
+    
+    /** Construct global to local list */
+
+    const void createIdxList( const std::vector<uint>& pids, const std::vector< std::vector<int> >& nb );
+   
     
     
 public:
@@ -22,7 +40,7 @@ public:
 
     /** Constructor with vector of indices */
 
-    localIndexer( const std::vector<uint>& pid );
+    localIndexer( const std::vector<uint>& pids, const std::vector< std::vector<int> >& nb );
 
 
     /** Destructor */
@@ -32,7 +50,22 @@ public:
 
     /** Global to local index */
 
-    const std::pair<int, int> globalToLocal( const uint id ) const;
+    const int globalToLocal( const uint id, const uint pid ) const;
+
+
+    /** Local to global index */
+
+    const int localToGlobal( const uint id, const uint pid ) const;
+
+
+    /** Local to local index */
+
+    const int localToLocal( const uint id, const uint ownPid, const uint otherPid ) const;
+
+
+    /** Total number of processors */
+
+    const uint np() const;
 
 };
 
