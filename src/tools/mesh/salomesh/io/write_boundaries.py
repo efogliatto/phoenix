@@ -25,7 +25,7 @@ def write_boundaries( geompy, bd ):
     file.write( "\n" )
 
 
-    for key, value in bd.iteritems() :
+    for key, value in bd.items() :
 
         file.write( "\n" )
         file.write( key )

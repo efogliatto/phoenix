@@ -1,0 +1,22 @@
+#!/bin/bash 
+
+#SBATCH -J runLBM
+#SBATCH --partition xeon_2660i
+#SBATCH --nodes 1
+#SBATCH --ntasks 20
+#SBATCH --exclusive
+##SBATCH --nodelist compute-0-[0,2]
+#SBATCH --exclude compute-0-[18]
+echo "working directory:" 
+pwd 
+echo "SLURM_SUBMIT_DIR:" 
+echo $SLURM_SUBMIT_DIR 
+HOSTFILE=hosts.$SLURM_JOB_ID 
+srun hostname -s > $HOSTFILE 
+
+# mprun='mpirun --mca btl ^openib --mca btl_tcp_if_exclude ib0 --display-map --map-by core'
+mprun='mpirun --mca btl openib,self,sm --display-map --map-by core'
+
+# $mprun -np ${SLURM_NTASKS} multiPhasePPHT > log.lbm
+$mprun -np ${SLURM_NTASKS} multiPhasePP > log.lbm
+

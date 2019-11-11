@@ -13,3 +13,6 @@ from .io.write_boundaries import write_boundaries
 from .io.write_neighbours import write_neighbours
 from .io.write_points import write_points
 from .io.write_vtk_cells import write_vtk_cells
+
+
+from .DdQq.D2Q9 import D2Q9

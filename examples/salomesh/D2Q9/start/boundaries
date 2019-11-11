@@ -1,0 +1,59 @@
+Navier-Stokes
+{
+
+    X0
+    {
+        type periodic;
+    }
+
+    X1
+    {
+        type periodic;
+    }
+
+    Y0
+    {
+        type NEBB;
+
+	value (0 0 0);
+    }
+
+    Y1
+    {
+        type NEBB;
+
+	value (0 0 0);
+    }
+    
+}
+
+
+Energy
+{
+
+    X0
+    {
+        type periodic;
+    }
+
+    X1
+    {
+        type periodic;
+    }
+
+    Y0
+    {
+
+       type fixedT;
+
+       value 0.01236812;	
+    }
+
+    Y1
+    {
+        type fixedT;
+
+        value 0.01236812;
+    }
+
+}
