@@ -46,4 +46,22 @@ class D2Q9:
         """
         Reverse indices
         """
-        return self.__rev    
+        return self.__rev
+
+
+    # Return name
+
+    def name(self):
+        """
+        Model name
+        """
+        return "D2Q9"
+
+
+    # Dimension
+
+    def D(self):
+        """
+        Lattice dimension
+        """
+        return np.int64(2)

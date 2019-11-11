@@ -181,10 +181,13 @@ for group in [X0,X1,Y0,Y1]:
 
 
 
+##############################
+#       MESH CREATION        #
+##############################
 
-lmodel = sm.D2Q9()
+mesh = sm.lbmesh(geompy, Cavity)
 
-print( lmodel.velocities() )
+mesh.compute()
   
 
 

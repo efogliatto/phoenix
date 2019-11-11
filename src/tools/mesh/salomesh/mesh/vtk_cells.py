@@ -7,7 +7,7 @@ import numpy as np
 from salome.geom import geomtools
     
 
-def vtk_cells(geompy, nb):
+def vtk_cells(geompy, nb, lmodel, ):
 
     vtk = []
 
