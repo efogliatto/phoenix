@@ -2,14 +2,10 @@ import sys
 
 import os
 
-import salome
-
 import numpy
 
-from salome.geom import geomtools
- 
     
-def write_vtk_cells( geompy, cells ):
+def write_vtk_cells( cells ):
 
     directory = "lattice"
     
@@ -19,7 +15,7 @@ def write_vtk_cells( geompy, cells ):
     file = open(directory + "/vtkCells", 'w')
 
     file.write( str( len(cells) )  )
-    file.write( " 4\n" )
+    file.write( " {}\n".format(len(cells[0])) )
     
 
     for cell in cells:

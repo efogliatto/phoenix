@@ -35,9 +35,18 @@ import numpy as np
 
 # Box definition
 
-dx = 5
-dy = 5
+x0 = 0
+x1 = 2
+x2 = 3
+x3 = 5
+y0 = 0
+y1 = 2
+y2 = 7
 
+
+# Total number of replicates
+
+nrep = 1
 
 
 geompy = geomBuilder.New()
@@ -53,10 +62,14 @@ geompy.addToStudy( OY, 'OY' )
 geompy.addToStudy( OZ, 'OZ' )
 
 
-Vertex_0 = geompy.MakeVertex(0,  0, 0)
-Vertex_1 = geompy.MakeVertex(dx, 0, 0)
-Vertex_2 = geompy.MakeVertex(dx, dy, 0)
-Vertex_3 = geompy.MakeVertex(0, dy, 0)
+Vertex_0 = geompy.MakeVertex(x0, y1, 0)
+Vertex_1 = geompy.MakeVertex(x1, y1, 0)
+Vertex_2 = geompy.MakeVertex(x1, y0, 0)
+Vertex_3 = geompy.MakeVertex(x2, y0, 0)
+Vertex_4 = geompy.MakeVertex(x2, y1, 0)
+Vertex_5 = geompy.MakeVertex(x3, y1, 0)
+Vertex_6 = geompy.MakeVertex(x3, y2, 0)
+Vertex_7 = geompy.MakeVertex(x0, y2, 0)
 
 
 
@@ -64,14 +77,27 @@ Vertex_3 = geompy.MakeVertex(0, dy, 0)
 Line_0 = geompy.MakeLineTwoPnt(Vertex_0, Vertex_1)
 Line_1 = geompy.MakeLineTwoPnt(Vertex_1, Vertex_2)
 Line_2 = geompy.MakeLineTwoPnt(Vertex_2, Vertex_3)
-Line_3 = geompy.MakeLineTwoPnt(Vertex_3, Vertex_0)
+Line_3 = geompy.MakeLineTwoPnt(Vertex_3, Vertex_4)
+Line_4 = geompy.MakeLineTwoPnt(Vertex_4, Vertex_5)
+Line_5 = geompy.MakeLineTwoPnt(Vertex_5, Vertex_6)
+Line_6 = geompy.MakeLineTwoPnt(Vertex_6, Vertex_7)
+Line_7 = geompy.MakeLineTwoPnt(Vertex_7, Vertex_0)
 
 
 # Make face from lines
-Wire_1 = geompy.MakeWire([Line_0, Line_1, Line_2, Line_3], 1e-07)
+Wire_1 = geompy.MakeWire([Line_0, Line_1, Line_2, Line_3, Line_4, Line_5, Line_6, Line_7], 1e-07)
 Cavity = geompy.MakeFaceWires([Wire_1], 1)
+CavityBase = geompy.MakeFaceWires([Wire_1], 1)
+
+
+# Copy cavity
+for i in range(nrep):
+  Cavity = geompy.MakeFuseList([Cavity, geompy.MakeTranslation(CavityBase, x3*i, 0, 0)], True, True)
+
 
 geompy.addToStudy( Cavity, 'Cavity' )
+# geompy.addToStudy( CavityBase, 'CavityBase' )
+
 
 
 # List of edges
@@ -111,7 +137,7 @@ for edge in edgeList:
   
   # X0
   
-  if np.isclose(coord[0], 0, rtol=1e-05, atol=1e-08, equal_nan=False):
+  if np.isclose(coord[0], x0, rtol=1e-05, atol=1e-08, equal_nan=False):
 
     geompy.UnionList(X0,[edge])
 
@@ -120,7 +146,7 @@ for edge in edgeList:
 
   # X1
 
-  elif np.isclose(coord[0], dx, rtol=1e-05, atol=1e-08, equal_nan=False):
+  elif np.isclose(coord[0], x3*nrep, rtol=1e-05, atol=1e-08, equal_nan=False):
 
     geompy.UnionList(X1,[edge])
 
@@ -129,7 +155,7 @@ for edge in edgeList:
     
   # Y1
 
-  elif np.isclose(coord[1], dy, rtol=1e-05, atol=1e-08, equal_nan=False):
+  elif np.isclose(coord[1], y2, rtol=1e-05, atol=1e-08, equal_nan=False):
 
     geompy.UnionList(Y1,[edge])
 
@@ -164,8 +190,6 @@ mesh = sm.lbmesh(geompy, Cavity)
 mesh.compute()
   
 mesh.export()
-
-
 
 
 

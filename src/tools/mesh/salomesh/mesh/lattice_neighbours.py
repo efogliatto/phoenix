@@ -40,11 +40,9 @@ def lattice_neighbours(points, grid, lmodel):
     if lmodel.D() == 2:                
 
 
-        # Internal points first
+        for j in range(ny):
 
-        for j in range(1,ny-1):
-
-            for i in range(1,nx-1):
+            for i in range(nx):
 
                 pointId = i + j*nx
 
@@ -54,7 +52,7 @@ def lattice_neighbours(points, grid, lmodel):
 
                 if( (i == 0)  or  (i == nx-1)   or   (j == 0)  or  (j == ny-1) ):
 
-                        
+
                     # Iterate on velocities
 
                     for velId in range(q):

@@ -2,14 +2,10 @@ import sys
 
 import os
 
-import salome
-
 import numpy
 
-from salome.geom import geomtools
 
-
-def write_neighbours( geompy, nb ):
+def write_neighbours( nb ):
 
     directory = "lattice"
     
@@ -20,7 +16,6 @@ def write_neighbours( geompy, nb ):
 
 
     for nbi in nb:
-
         
         for i in nbi:
 

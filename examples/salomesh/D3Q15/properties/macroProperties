@@ -4,21 +4,11 @@ Navier-Stokes
     LBModel
     {
 
-	type LiMRT;
+	type XuMRT;
 
-        relaxModel rhoPieceWiseLinear;
+	Tau (1.0 1.1 1.1 1.0 1.1 1.0 1.1 1.0 1.1 1.0 1.0 1.0 1.0 1.0 1.2);
 
-	Tau (1.0 0.8 1.0 1.0 1.1 1.0 1.1 1.9591 1.9591);
-
-	Tau_l (1.0 0.8 1.0 1.0 1.1 1.0 1.1 1.9591 1.9591);
-
-	Tau_v (1.0 0.8 1.0 1.0 1.1 1.0 1.1 1.8312 1.8312);
-
-	rho_l 8.209417;
-
-	rho_v 0.04042889;
-
-	sigma 0.114;
+	sigma 0.125;
 
     }
 
@@ -32,31 +22,27 @@ Navier-Stokes
 
             G -1;
 
-	    OnBoundaries false;
-
         }
 
         EOS
 	{
 
-            type Peng-Robinson;
+            type vanDerWaals;
 
-            a 0.010204;
+            a 0.5;
 
-            b 0.095238;
-
-            w 0.344;
+            b 4;
 
         }
 
         Buoyancy
 	{
 
-            type averageDensity;
+            type fixedDensity;
 
-            rhoRef 4.124923;
+	    rhoRef 0;
 
-	    gravity (0 -1.89e-6 0);
+	    gravity (0 0 -1.234567e-07);
 
         }
 
@@ -67,69 +53,6 @@ Navier-Stokes
 
         }
 
-	Adhesive
-	{
-
-	    type none;
-
-	}
-
-	SurfaceTension
-	{
-
-	    type none;
-
-	    kappa -1;
-
-	}
-
-    }
-
-}
-
-
-Energy
-{
-        
-    LBModel
-    {
-
-	type myMRT;
-
-        relaxModel rhoPieceWiseLinear;
-
-	Tau (1.0 1.0 1.0 1.1 1.0 1.1 1.0 1.0 1.0);
-
-	Tau_l (1.0 1.0 1.0 1.923 1.0 1.923 1.0 1.0 1.0);
-
-	Tau_v (1.0 1.0 1.0 0.188 1.0 0.188 1.0 1.0 1.0);
-
-	rho_lim 4.124923;
-
-	rho_l 8.209417;
-
-	rho_v 0.04042889;
-
-    }
-
-    HeatSource
-    {
-
-	type Markus-Hazi;
-
-        Constants
-        {
-
-            alpha_1 -2;
-        
-            alpha_2 1.1;   
-        
-            Cv 4;
-    
-        }
-
-	ConductivityModel constDiff;
-	
     }
 
 }

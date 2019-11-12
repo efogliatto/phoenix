@@ -1,0 +1,101 @@
+scalarFields
+{
+  rho
+  T
+}
+
+vectorFields
+{
+  U
+}
+
+pdfFields
+{
+  f
+  g
+}
+
+
+
+T
+{
+
+    internalField
+    {
+
+        type uniform;
+
+        value 0.01236812;
+
+    }
+
+}
+
+
+rho
+{
+
+    internalField
+    {
+
+        type box;
+
+        inside 8.209417;
+
+	outside 0.040428;
+
+        minPoint (0 0 0);
+
+	maxPoint (10000 400 0);
+
+    }
+
+}
+
+
+
+
+
+U
+{
+
+    internalField
+    {
+
+	type uniform;
+
+	value (0 0 0);
+
+    }
+
+}
+
+
+f
+{
+
+    internalField
+    {
+
+	type uniform;
+
+	value (0 0 0 0 0 0 0 0 0);
+
+    }
+
+}
+
+
+g
+{
+
+    internalField
+    {
+
+	type uniform;
+
+	value (0 0 0 0 0 0 0 0 0);
+
+    }
+
+}

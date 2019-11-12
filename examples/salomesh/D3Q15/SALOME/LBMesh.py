@@ -171,9 +171,11 @@ for group in [X0,X1,Y0,Y1,Z0,Z1]:
 #       MESH CREATION        #
 ##############################
 
-mesh = sm.lbmesh(geompy, Cavity)
+mesh = sm.lbmesh(geompy, Cavity, lattice_model = "D3Q15")
 
 mesh.compute()
+
+mesh.export()
   
 
 

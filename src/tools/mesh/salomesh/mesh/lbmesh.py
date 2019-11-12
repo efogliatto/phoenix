@@ -18,6 +18,12 @@ from .vtk_cells import vtk_cells
 
 from ..DdQq.DdQq import DdQq
 
+from ..io.write_points import write_points
+
+from ..io.write_neighbours import write_neighbours
+
+from ..io.write_vtk_cells import write_vtk_cells
+
 
 
 class lbmesh:
@@ -36,6 +42,7 @@ class lbmesh:
         self.__geompy = geompy
 
         self.__shape = shape
+       
 
         pass
 
@@ -49,19 +56,19 @@ class lbmesh:
 
         # Point creation
 
-        base_points, grid = lattice_mesh_points(self.__geompy, self.__shape, self.__lmodel.D())
+        self.__points, grid = lattice_mesh_points(self.__geompy, self.__shape, self.__lmodel.D())
 
 
     
         # Neighbour creation
 
-        base_nb = lattice_neighbours(base_points, grid, self.__lmodel)
+        self.__nb = lattice_neighbours(self.__points, grid, self.__lmodel)
 
 
 
-        # # VTKCells
+        # VTKCells
 
-        # base_vtk = vtk_cells(grid, self.__lmodel)
+        self.__vtkCells = vtk_cells(grid, self.__lmodel)
 
         
         
@@ -88,3 +95,20 @@ class lbmesh:
 
         # Compute basic mesh
         self.basicMesh()
+
+        pass
+    
+
+
+    def export(self):
+        """
+        Export lattice mesh
+        """
+        
+        write_points(self.__points)
+
+        write_neighbours(self.__nb)
+
+        write_vtk_cells(self.__vtkCells)
+
+        pass

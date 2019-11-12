@@ -1,46 +1,69 @@
-import salome
-
-import sys
-
 import numpy as np
 
-from salome.geom import geomtools
-    
 
 def vtk_cells(grid, lmodel):
 
-    vtk = []
-
-    rev =  [0, 3, 4, 1, 2, 7, 8, 5, 6]
 
     
-    for id in range( len(nb) ):
+    nx = grid[0]
+    ny = grid[1]
+    nz = grid[2]
+    
 
-        cell = []
-        
-        cell.append( id )
+    
+    if lmodel.D() == 2:
 
-        
-        for k in [3,7,4]:
+        vtkCells = np.zeros(  ( (nx-1)*(ny-1),4)  )
 
-            aux = nb[id][k]
-            
-            if aux != -1:
+        ncells = 0
 
-                cell.append(aux)
+    
+        for j in range(ny-1):
+
+            for i in range(nx-1):    
+
+    	        vtkCells[ncells,0] = i + j*nx
+    	        vtkCells[ncells,1] = i + j*nx + 1
+    	        vtkCells[ncells,2] = i + j*nx + nx
+    	        vtkCells[ncells,3] = i + j*nx + nx + 1
+	
+    	        ncells = ncells + 1
 
 
                 
-        if len(cell) == 4:
-
-            a = cell[3]
-
-            cell[3] = cell[2]
-
-            cell[2] = a
-
-            vtk.append( cell )
 
 
+    elif lmodel.D() == 3:
+
+        vtkCells = np.zeros(  ( (nx-1)*(ny-1)*(nz-1),8)  )    
+
+        ncells = 0
+
+        for k in range(nz-1):
+    
+            for j in range(ny-1):
+	
+                for i in range(nx-1):
+
+                    vtkCells[ncells,0] = i + j*nx + k*nx*ny
+
+                    vtkCells[ncells,1] = i  +  j*nx + 1  +  k*nx*ny
+
+                    vtkCells[ncells,2] = i  +  j*nx + nx  +  k*nx*ny
+
+                    vtkCells[ncells,3] = i  +  j*nx + nx + 1  +  k*nx*ny
+
+                    vtkCells[ncells,4] = i  +  j*nx  +  (k+1)*nx*ny
+
+                    vtkCells[ncells,5] = i  +  j*nx + 1  +   (k+1)*nx*ny
+
+                    vtkCells[ncells,6] = i  +  j*nx + nx  +  (k+1)*nx*ny
+
+                    vtkCells[ncells,7] = i  +  j*nx + nx + 1  +  (k+1)*nx*ny
+
+                    ncells = ncells + 1
+    
+
+                    
             
-    return vtk
+    return vtkCells
