@@ -14,9 +14,15 @@ from .points_in_shape import points_in_shape
 
 from .remove_neighbours import remove_neighbours
 
+from .remove_points import remove_points
+
 from .vtk_cells import vtk_cells
 
 from .remove_cells import remove_cells
+
+from .update_vtkCells import update_vtkCells
+
+from .check_active_points import check_active_points
 
 from ..DdQq.DdQq import DdQq
 
@@ -96,10 +102,6 @@ class lbmesh:
 
 
     
-        # # Non existing neighbours removal
-
-        # nb = remove_neighbours(geompy, npid, base_nb, len(points) )
-
 
         pass
 
@@ -117,8 +119,30 @@ class lbmesh:
 
 
         # Remove extra cells
+        # Falta remover vecinos en caras convexas
 
         self.__vtkCells = remove_cells(self.__geompy, self.__shape, self.__points, self.__vtkCells, self.__fraction)
+
+
+        # Activate points
+
+        active_points = check_active_points(self.__vtkCells, len(self.__points))
+
+        
+        # Remove non-existing points
+
+        self.__points, oldToNew = remove_points(self.__points, active_points)
+
+
+        # Remove non-existing neighbours
+
+        self.__nb = remove_neighbours( self.__nb, oldToNew, len(self.__points) )
+
+
+        # Update vtkCells with new indexing
+
+        self.__vtkCells = update_vtkCells(self.__vtkCells, oldToNew)
+        
         
 
         pass

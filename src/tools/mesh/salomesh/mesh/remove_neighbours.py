@@ -4,30 +4,27 @@ import sys
 
 import numpy as np
 
-from salome.geom import geomtools
 
-
-def remove_neighbours(geompy, pindex, nb, n ):
+def remove_neighbours( nb, pindex, n ):
 
     """
     New neighbour array. Remove non existing neighbours based on indices
     """
 
-    newNeigh = -1 + np.zeros( (n, nb.shape[1]), dtype = int )
+    newNeigh = -1 + np.zeros( (n, nb.shape[1]), dtype = np.int64 )
 
-    Q = nb.shape[1]
+    q = len(nb[0])
 
-
-   
-    for i, id in enumerate(pindex):
+    
+    for i in range( len(pindex) ):
         
-        if id != -1:
+        if pindex[i] != -1:
 
-            for vid in range(Q):
+            for vid in range(q):
 
-                if int(nb[i][vid]) != -1:
+                if nb[i,vid] != -1:
 
-                    newNeigh[id][vid] = pindex[ int(nb[i][vid]) ]
+                    newNeigh[ pindex[i],vid ] = pindex[ int(nb[i,vid]) ]
     
     
     return newNeigh

@@ -21,10 +21,11 @@ def remove_cells(geompy, shape, points, cells, fraction = 0.5):
     rm = np.zeros( (len(cells),1), dtype=np.int32 )
     
 
-    
-    for c in cells:
+    if len(cells[0]) == 4:
 
-        if len(c) == 4:
+        
+        for i,c in enumerate(cells):
+        
 
             # Cell centre
             
@@ -37,14 +38,59 @@ def remove_cells(geompy, shape, points, cells, fraction = 0.5):
             
             Common = geompy.MakeCommonList([Face, shape], True)
 
-            
+            prop = geompy.BasicProperties(Common)
+
+            if prop[1] >= fraction:
+                rm[i] = 1
 
             
 
 
-        elif len(c) == 8:
+    elif len(cells[0]) == 8:
 
-            pass
+        
+        for i,c in enumerate(cells):
+
+            
+            # Cell vertices
+            
+            Vertex_0 = geompy.MakeVertex( points[ c[0],0 ], points[ c[0],1 ], points[ c[0],2 ] )
+
+            Vertex_1 = geompy.MakeVertex( points[ c[7],0 ], points[ c[7],1 ], points[ c[7],2 ] )
+
+            Box = geompy.MakeBoxTwoPnt(Vertex_0, Vertex_1)
 
 
-    return cells
+            # Compute intersections
+            
+            Common = geompy.MakeCommonList([Box, shape], True)
+
+            prop = geompy.BasicProperties(Common)
+
+            if prop[2] >= fraction:
+                rm[i] = 1            
+
+
+
+    # Count number of active cells
+
+    active = np.sum(rm)
+
+    newCells = np.zeros( (active, len(cells[0])), dtype=np.int64 )
+
+
+    # Copy only active cells
+
+    nc = 0
+    
+    for i,c in enumerate(cells):
+
+        if rm[i] == 1:
+                
+            newCells[nc] = c
+
+        nc = nc + 1
+
+    
+
+    return newCells
