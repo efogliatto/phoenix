@@ -7,41 +7,37 @@ import numpy as np
 from salome.geom import geomtools
 
 
-def lattice_neighbours(geompy, shape, points, lmodel):
+def lattice_neighbours(points, grid, lmodel):
     
     '''
     This function returns neighbour indices
     '''
+    
+        
+    # Lattice velocities and reverse indices
+        
+    vel = lmodel.velocities()
 
-    nb = []
+    rev = lmodel.reverse()
 
-    bbox = geompy.BoundingBox( shape )
+    q = len(rev)
 
+        
+    # Mesh. number of points
+        
+    nx = int( grid[0] )
+    ny = int( grid[1] )
+    nz = int( grid[2] )
+
+
+    # Resize neighbour
+
+    nb = -1. + np.zeros( (len(points), q) )
+    
 
     
-    if lmodel.name() == "D2Q9":
-
-        
-        # Resize neighbour
-
-        nb = -1. + np.zeros( (len(points),9) )
-            
-
-        
-        # Lattice velocities and reverse indices
-        
-        vel = lmodel.velocities()
-
-        rev = lmodel.reverse()
-
-
-        
-        # Mesh. number of points
-        
-        nx = int(  bbox[1] - bbox[0]  ) + 1
-        ny = int(  bbox[3] - bbox[2]  ) + 1
-        nz = int(  bbox[5] - bbox[4]  ) + 1
-        
+    
+    if lmodel.D() == 2:                
 
 
         # Internal points first
@@ -53,59 +49,101 @@ def lattice_neighbours(geompy, shape, points, lmodel):
                 pointId = i + j*nx
 
 
-                # Iterate on velocities
 
-                for velId in range(9):
+                # Boundary nodes
 
-                    nb[pointId,velId] = pointId   +   vel[ rev[velId], 0]   +   vel[ rev[velId] , 1] * nx
+                if( (i == 0)  or  (i == nx-1)   or   (j == 0)  or  (j == ny-1) ):
+
+                        
+                    # Iterate on velocities
+
+                    for velId in range(q):
+                
+                        newId = pointId   +   vel[ rev[velId] ,0]   +   vel[ rev[velId] ,1] * nx
+                    
+                        if  newId >= 0  and   newId <= nx*ny-1:
+
+                            if ( (  np.abs( points[pointId,0] - points[newId,0] ) <= 1  )   and   (  np.abs( points[pointId,1] - points[newId,1] ) <= 1  ) ):
+
+                                nb[pointId,velId] = newId
+
+
+
+                # Internal nodes
+
+                else:
+
+                    for velId in range(q):
+
+                        nb[pointId,velId] = pointId   +   vel[ rev[velId], 0]   +   vel[ rev[velId] , 1] * nx
+                
+
+
+
+        
+
+        # # Internal points first
+
+        # for j in range(1,ny-1):
+
+        #     for i in range(1,nx-1):
+
+        #         pointId = i + j*nx
+
+
+        #         # Iterate on velocities
+
+        #         for velId in range(q):
+
+        #             nb[pointId,velId] = pointId   +   vel[ rev[velId], 0]   +   vel[ rev[velId] , 1] * nx
 
 
 
                     
-        # For boundary nodes, check neighbouring using distance to point
+        # # For boundary nodes, check neighbouring using distance to point
 
-        for j in range(0,ny,ny-1):
+        # for j in range(0,ny,ny-1):
 
-            for i in range(nx):
+        #     for i in range(nx):
 
-                pointId = i+j*nx
+        #         pointId = i+j*nx
 
 
-    	        # Iterate on velocities
+    	#         # Iterate on velocities
 
-                for velId in range(9):
+        #         for velId in range(q):
                 
-                    newId = pointId   +   vel[ rev[velId] ,0]   +   vel[ rev[velId] ,1] * nx
+        #             newId = pointId   +   vel[ rev[velId] ,0]   +   vel[ rev[velId] ,1] * nx
                 
 
-                    if newId >= 0  and   newId <= nx*ny-1:
+        #             if newId >= 0  and   newId <= nx*ny-1:
 
-                        if ( (  np.abs( points[pointId,0] - points[newId,0] ) <= 1  )   and   (  np.abs( points[pointId,1] - points[newId,1] ) <= 1  )  ):
+        #                 if ( (  np.abs( points[pointId,0] - points[newId,0] ) <= 1  )   and   (  np.abs( points[pointId,1] - points[newId,1] ) <= 1  )  ):
 	    
-                            nb[pointId,velId] = newId
+        #                     nb[pointId,velId] = newId
 
                         
 
 
-        for j in range(1,ny-1):
+        # for j in range(1,ny-1):
 
-            for i in range(0,nx,nx-1):
+        #     for i in range(0,nx,nx-1):
 
-                pointId = i + j*nx
+        #         pointId = i + j*nx
 
             
-     	        # Iterate on velocities
+     	#         # Iterate on velocities
             
-                for velId in range(9):
+        #         for velId in range(q):
 
-                    newId = pointId   +   vel[ rev[velId] ,0]   +   vel[ rev[velId] ,1] * nx
+        #             newId = pointId   +   vel[ rev[velId] ,0]   +   vel[ rev[velId] ,1] * nx
                 
 
-                    if  newId >= 0  and   newId <= nx*ny-1:
+        #             if  newId >= 0  and   newId <= nx*ny-1:
 
-                        if ( (  np.abs( points[pointId,0] - points[newId,0] ) <= 1  )   and   (  np.abs( points[pointId,1] - points[newId,1] ) <= 1  )  ):
+        #                 if ( (  np.abs( points[pointId,0] - points[newId,0] ) <= 1  )   and   (  np.abs( points[pointId,1] - points[newId,1] ) <= 1  )  ):
 	    
-                            nb[pointId,velId] = newId
+        #                     nb[pointId,velId] = newId
             
 
 
@@ -113,98 +151,45 @@ def lattice_neighbours(geompy, shape, points, lmodel):
 
 
 
-    elif lmodel.name() == "D2Q9":
+    elif lmodel.D() == 3:
+             
 
-        
-        # Resize neighbour
+        for k in range(nz):
 
-        nb = -1. + np.zeros( (len(points),15) )
-            
+            for j in range(ny):
 
-        
-        # Lattice velocities and reverse indices
-        
-        vel = lmodel.velocities()
-
-        rev = lmodel.reverse()
-
-
-        
-        # Mesh. number of points
-        
-        nx = int(  bbox[1] - bbox[0]  ) + 1
-        ny = int(  bbox[3] - bbox[2]  ) + 1
-        nz = int(  bbox[5] - bbox[4]  ) + 1
-        
-
-
-        # Internal points first
-
-        for k in range(1,nz-1):
-        
-            for j in range(1,ny-1):
-
-                for i in range(1,nx-1):
+                for i in range(nx):
 
                     pointId = i + j*nx + k*nx*ny
 
 
-                    # Iterate on velocities
+                    # Boundary nodes
 
-                    for velId in range(15):
-
-                        # nb[pointId,velId] = pointId   +   vel[ rev[velId], 0]   +   vel[ rev[velId] , 1] * nx
-                        nb[pointId,velId] = pointId   +   vel[ rev[velId], 0]   +   vel[ rev[velId] , 1] * nx   +   vel[ rev[velId] , 2] * nx * ny
-
-
-
-                    
-        # For boundary nodes, check neighbouring using distance to point
-
-        for j in range(0,ny,ny-1):
-
-            for i in range(nx):
-
-                pointId = i + j*nx + k*nx*ny
-
-
-    	        # Iterate on velocities
-
-                for velId in range(9):
-                
-                    newId = pointId   +   vel[ rev[velId] ,0]   +   vel[ rev[velId] ,1] * nx
-                
-
-                    if newId >= 0  and   newId <= nx*ny-1:
-
-                        if ( (  np.abs( points[pointId,0] - points[newId,0] ) <= 1  )   and   (  np.abs( points[pointId,1] - points[newId,1] ) <= 1  )  ):
-	    
-                            nb[pointId,velId] = newId
+                    if( (i == 0)  or  (i == nx-1)   or   (j == 0)  or  (j == ny-1)   or   (k == 0)  or  (k == nz-1) ):
 
                         
+                        # Iterate on velocities
 
-
-        for j in range(1,ny-1):
-
-            for i in range(0,nx,nx-1):
-
-                pointId = i + j*nx + k*nx*ny
-
-            
-     	        # Iterate on velocities
-            
-                for velId in range(9):
-
-                    newId = pointId   +   vel[ rev[velId] ,0]   +   vel[ rev[velId] ,1] * nx
+                        for velId in range(q):
                 
+                            newId = pointId   +   vel[ rev[velId] ,0]   +   vel[ rev[velId] ,1] * nx   +   vel[ rev[velId], 2] * nx * ny
+                    
+                            if  newId >= 0  and   newId <= nx*ny*nz-1:
 
-                    if  newId >= 0  and   newId <= nx*ny-1:
+                                if ( (  np.abs( points[pointId,0] - points[newId,0] ) <= 1  )   and   (  np.abs( points[pointId,1] - points[newId,1] ) <= 1  )      and   (  np.abs( points[pointId,2] - points[newId,2] ) <= 1  )  ):
 
-                        if ( (  np.abs( points[pointId,0] - points[newId,0] ) <= 1  )   and   (  np.abs( points[pointId,1] - points[newId,1] ) <= 1  )  ):
-	    
-                            nb[pointId,velId] = newId
-        
+                                    nb[pointId,velId] = newId
 
+
+
+                    # Internal nodes
+
+                    else:
+
+                        for velId in range(q):
+
+                            nb[pointId,velId] = pointId   +   vel[ rev[velId], 0]   +   vel[ rev[velId] , 1] * nx   +   vel[ rev[velId] , 2] * nx*ny
+                                    
 
         
     

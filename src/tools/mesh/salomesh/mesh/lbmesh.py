@@ -49,19 +49,19 @@ class lbmesh:
 
         # Point creation
 
-        base_points = lattice_mesh_points(self.__geompy, self.__shape, self.__lmodel.D())
+        base_points, grid = lattice_mesh_points(self.__geompy, self.__shape, self.__lmodel.D())
 
 
     
         # Neighbour creation
 
-        base_nb = lattice_neighbours(self.__geompy, self.__shape, base_points, self.__lmodel)
+        base_nb = lattice_neighbours(base_points, grid, self.__lmodel)
 
 
 
-        # VTKCells
+        # # VTKCells
 
-        base_vtk = vtk_cells(self.__geompy, base_nb, self.__lmodel)
+        # base_vtk = vtk_cells(grid, self.__lmodel)
 
         
         

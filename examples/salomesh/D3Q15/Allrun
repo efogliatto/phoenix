@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# Initialize without heat transfer
+
+sed -i 's/st_time/0/g' properties/simulation
+sed -i 's/end_time/5000/g' properties/simulation
+
+mpiexec -n 4 multiPhasePP
+
+
+# Continue with heat transfer
+
+sed -i 's/startTime 0;/startTime 5000;/g' properties/simulation
+sed -i 's/endTime 5000;/endTime 100000;/g' properties/simulation
+
+mpiexec -n 4 multiPhasePPHT
+
+
+# Back to start
+
+sed -i 's/startTime 5000;/startTime st_time;/g' properties/simulation
+sed -i 's/endTime 100000;/endTime end_time;/g' properties/simulation
+
+
+# Extract profiles
+
+pvpython GetData.py

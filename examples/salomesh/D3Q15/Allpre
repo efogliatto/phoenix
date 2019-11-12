@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# Copy SALOME lattice
+cp -r SALOME/lattice .
+
+# Lattice partitioning
+latticeMeshPartition
+
+# Field partitioning
+setInitialFields

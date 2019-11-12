@@ -62,4 +62,4 @@ def lattice_mesh_points(geompy, shape, dim):
         assert False, "Dimension error in lattice points construction"
     
         
-    return pointList
+    return pointList, (nx,ny,nz)
