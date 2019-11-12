@@ -13,7 +13,7 @@ def vtk_cells(grid, lmodel):
     
     if lmodel.D() == 2:
 
-        vtkCells = np.zeros(  ( (nx-1)*(ny-1),4)  )
+        vtkCells = np.zeros(  ( (nx-1)*(ny-1),4), dtype=np.int64  )
 
         ncells = 0
 
@@ -35,7 +35,7 @@ def vtk_cells(grid, lmodel):
 
     elif lmodel.D() == 3:
 
-        vtkCells = np.zeros(  ( (nx-1)*(ny-1)*(nz-1),8)  )    
+        vtkCells = np.zeros(  ( (nx-1)*(ny-1)*(nz-1),8), dtype=np.int64  )    
 
         ncells = 0
 

@@ -16,6 +16,8 @@ from .remove_neighbours import remove_neighbours
 
 from .vtk_cells import vtk_cells
 
+from .remove_cells import remove_cells
+
 from ..DdQq.DdQq import DdQq
 
 from ..io.write_points import write_points
@@ -44,9 +46,24 @@ class lbmesh:
         self.__shape = shape
        
 
+        self.__fraction = np.float64(0.5)
+
+
+        
         pass
 
 
+    
+    def setCellFraction(f):
+        """
+        Volume fraction used in cell removal
+        """
+
+        self.__fraction = f
+
+        pass
+
+    
 
     def basicMesh(self):
 
@@ -88,15 +105,24 @@ class lbmesh:
 
 
 
+
     def compute(self):
         """
         Compute lattice mesh
         """
 
         # Compute basic mesh
+
         self.basicMesh()
 
+
+        # Remove extra cells
+
+        self.__vtkCells = remove_cells(self.__geompy, self.__shape, self.__points, self.__vtkCells, self.__fraction)
+        
+
         pass
+    
     
 
 
