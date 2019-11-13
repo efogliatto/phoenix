@@ -18,6 +18,8 @@ from .remove_points import remove_points
 
 from .vtk_cells import vtk_cells
 
+from .lattice_boundaries_weights import lattice_boundaries_weights
+
 from .remove_cells import remove_cells
 
 from .update_vtkCells import update_vtkCells
@@ -31,6 +33,8 @@ from ..io.write_points import write_points
 from ..io.write_neighbours import write_neighbours
 
 from ..io.write_vtk_cells import write_vtk_cells
+
+from ..io.write_boundaries import write_boundaries
 
 
 
@@ -60,7 +64,7 @@ class lbmesh:
 
 
     
-    def setCellFraction(f):
+    def setCellFraction(self,f):
         """
         Volume fraction used in cell removal
         """
@@ -68,6 +72,17 @@ class lbmesh:
         self.__fraction = f
 
         pass
+
+
+
+    def setGroupsFromGeometry(self,groups):
+        """
+        Boundary assignment using geometry groups
+        """
+
+        self.__gfg = groups
+
+        pass    
 
     
 
@@ -92,14 +107,6 @@ class lbmesh:
         # VTKCells
 
         self.__vtkCells = vtk_cells(grid, self.__lmodel)
-
-        
-        
-    
-        # # Points inside geometry
-
-        # npid,points = points_in_shape(geompy, shape, base_points)
-
 
     
 
@@ -142,7 +149,11 @@ class lbmesh:
         # Update vtkCells with new indexing
 
         self.__vtkCells = update_vtkCells(self.__vtkCells, oldToNew)
-        
+
+
+        # Assign boundaries
+
+        self.__boundaries = lattice_boundaries_weights(self.__geompy, self.__shape, self.__gfg, self.__points, self.__nb) 
         
 
         pass
@@ -160,5 +171,7 @@ class lbmesh:
         write_neighbours(self.__nb)
 
         write_vtk_cells(self.__vtkCells)
+
+        write_boundaries(self.__boundaries)
 
         pass

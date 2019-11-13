@@ -2,14 +2,10 @@ import sys
 
 import os
 
-import salome
-
 import numpy
 
-from salome.geom import geomtools
 
-
-def write_boundaries( geompy, bd ):
+def write_boundaries( bd ):
 
     directory = "lattice"
     

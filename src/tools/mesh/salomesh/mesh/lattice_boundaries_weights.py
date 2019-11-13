@@ -7,18 +7,26 @@ import numpy as np
 from salome.geom import geomtools
 
 
-def lattice_boundaries_weights(geompy, shape, GroupList, points, nb, bdWeights):
+def lattice_boundaries_weights(geompy, shape, GroupList, points, nb):
 
 
+    # Create weight dictionary using positions in GroupList
+
+    bdWeights = {}
+
+    for i,group in enumerate(GroupList):
+
+        bdWeights[ group.GetName() ] = len(GroupList) - i
+    
             
 
     # Initialize boundary dictionary
     
     bdDict = {}
 
-    for ft in GroupList:
+    for group in GroupList:
 
-        bdDict[ ft.GetName() ] = []
+        bdDict[ group.GetName() ] = []
         
     count = 0
 
@@ -46,10 +54,13 @@ def lattice_boundaries_weights(geompy, shape, GroupList, points, nb, bdWeights):
 
             
             dist = []
+
+            pt = geompy.MakeVertex( np.float64(points[id,0]), np.float64(points[id,1]), np.float64(points[id,2]) )
+
                     
             for ft in GroupList:
 
-                distAux = geompy.MinDistance( ft, points[id] )
+                distAux = geompy.MinDistance( ft, pt )
 
                 dist.append( (ft.GetName(), distAux) )
 

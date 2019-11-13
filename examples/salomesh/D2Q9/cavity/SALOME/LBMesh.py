@@ -35,9 +35,9 @@ import numpy as np
 
 # Box definition
 
-dx = 2
-dy = 2
-dz = 2
+dx = 5
+dy = 5
+
 
 
 geompy = geomBuilder.New()
@@ -53,34 +53,44 @@ geompy.addToStudy( OY, 'OY' )
 geompy.addToStudy( OZ, 'OZ' )
 
 
-Cavity = geompy.MakeBoxDXDYDZ(dx, dy, dz)
+Vertex_0 = geompy.MakeVertex(0,  0, 0)
+Vertex_1 = geompy.MakeVertex(dx, 0, 0)
+Vertex_2 = geompy.MakeVertex(dx, dy, 0)
+Vertex_3 = geompy.MakeVertex(0, dy, 0)
+
+
+
+# Cavity lines
+Line_0 = geompy.MakeLineTwoPnt(Vertex_0, Vertex_1)
+Line_1 = geompy.MakeLineTwoPnt(Vertex_1, Vertex_2)
+Line_2 = geompy.MakeLineTwoPnt(Vertex_2, Vertex_3)
+Line_3 = geompy.MakeLineTwoPnt(Vertex_3, Vertex_0)
+
+
+# Make face from lines
+Wire_1 = geompy.MakeWire([Line_0, Line_1, Line_2, Line_3], 1e-07)
+Cavity = geompy.MakeFaceWires([Wire_1], 1)
 
 geompy.addToStudy( Cavity, 'Cavity' )
 
 
+# List of edges
 
-
-# List of faces
-
-faceList = geompy.ExtractShapes(Cavity, geompy.ShapeType["FACE"], True)
+edgeList = geompy.ExtractShapes(Cavity, geompy.ShapeType["EDGE"], True)
 
 
 # Groups
 
-X0 = geompy.CreateGroup(Cavity, geompy.ShapeType["FACE"])
-X1 = geompy.CreateGroup(Cavity, geompy.ShapeType["FACE"])
-Y0 = geompy.CreateGroup(Cavity, geompy.ShapeType["FACE"])
-Y1 = geompy.CreateGroup(Cavity, geompy.ShapeType["FACE"])
-Z0 = geompy.CreateGroup(Cavity, geompy.ShapeType["FACE"])
-Z1 = geompy.CreateGroup(Cavity, geompy.ShapeType["FACE"])
+X0 = geompy.CreateGroup(Cavity, geompy.ShapeType["EDGE"])
+X1 = geompy.CreateGroup(Cavity, geompy.ShapeType["EDGE"])
+Y0 = geompy.CreateGroup(Cavity, geompy.ShapeType["EDGE"])
+Y1 = geompy.CreateGroup(Cavity, geompy.ShapeType["EDGE"])
 
 
 X0.SetName('X0')
 X1.SetName('X1')
 Y0.SetName('Y0')
 Y1.SetName('Y1')
-Z0.SetName('Z0')
-Z1.SetName('Z1')
 
 
 GroupsDict = {}
@@ -88,15 +98,13 @@ GroupsDict['X0'] = []
 GroupsDict['X1'] = []
 GroupsDict['Y0'] = []
 GroupsDict['Y1'] = []
-GroupsDict['Z0'] = []
-GroupsDict['Z1'] = []
 
 
 
 
-for face in faceList:
+for edge in edgeList:
 
-  com   = geompy.MakeCDG(face)
+  com   = geompy.MakeCDG(edge)
   
   coord = geompy.PointCoordinates(com)
 
@@ -105,61 +113,41 @@ for face in faceList:
   
   if np.isclose(coord[0], 0, rtol=1e-05, atol=1e-08, equal_nan=False):
 
-    geompy.UnionList(X0,[face])
+    geompy.UnionList(X0,[edge])
 
-    GroupsDict['X0'].append(face)
+    GroupsDict['X0'].append(edge)
 
 
   # X1
 
   elif np.isclose(coord[0], dx, rtol=1e-05, atol=1e-08, equal_nan=False):
 
-    geompy.UnionList(X1,[face])
+    geompy.UnionList(X1,[edge])
 
-    GroupsDict['X1'].append(face)
-
-    
-  # Y0
-
-  elif np.isclose(coord[1], 0, rtol=1e-05, atol=1e-08, equal_nan=False): 
-
-    geompy.UnionList(Y0,[face])
-
-    GroupsDict['Y0'].append(face)
+    GroupsDict['X1'].append(edge)
     
     
   # Y1
 
   elif np.isclose(coord[1], dy, rtol=1e-05, atol=1e-08, equal_nan=False):
 
-    geompy.UnionList(Y1,[face])
+    geompy.UnionList(Y1,[edge])
 
-    GroupsDict['Y1'].append(face)
-
-  
-  # Z0
-
-  elif np.isclose(coord[2], 0, rtol=1e-05, atol=1e-08, equal_nan=False): 
-
-    geompy.UnionList(Z0,[face])
-
-    GroupsDict['Z0'].append(face)
-    
-    
-  # Z1
-
-  elif np.isclose(coord[2], dz, rtol=1e-05, atol=1e-08, equal_nan=False):
-
-    geompy.UnionList(Z1,[face])
-
-    GroupsDict['Z1'].append(face)
-
-  
+    GroupsDict['Y1'].append(edge)
 
     
+  # Y0
+
+  else:    
+
+    geompy.UnionList(Y0,[edge])
+
+    GroupsDict['Y0'].append(edge)
 
 
-for group in [X0,X1,Y0,Y1,Z0,Z1]:
+
+
+for group in [X0,X1,Y0,Y1]:
 
   geompy.addToStudyInFather( Cavity, group, group.GetName() )
 
@@ -168,15 +156,25 @@ for group in [X0,X1,Y0,Y1,Z0,Z1]:
 
 
 ##############################
-#       MESH CREATION        #
+#            MESH            #
 ##############################
 
-mesh = sm.lbmesh(geompy, Cavity, lattice_model = "D3Q15")
+# Mesh creation
+
+mesh = sm.lbmesh(geompy, Cavity)
+
+
+# Set boundaries from geometry groups
+
+mesh.setGroupsFromGeometry( [X0,X1,Y0,Y1] )
+
+
+# Mesh calculation and saving
 
 mesh.compute()
-
-mesh.export()
   
+mesh.export()
+
 
 
 
