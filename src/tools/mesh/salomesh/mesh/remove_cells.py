@@ -7,22 +7,30 @@ import numpy as np
 from salome.geom import geomtools
 
 
-def remove_cells(geompy, shape, points, cells, fraction = 0.5):
+def remove_cells(geompy, shape, points, nb, cells, fraction = 0.5):
 
     """
     Check cell intersection with shape
+    Removes intra cell neighbouring 
     """
-
-    OZ = geompy.MakeVectorDXDYDZ(0, 0, 1)
 
 
     # Cell removal array
 
     rm = np.zeros( (len(cells),1), dtype=np.int32 )
+
+
+    # New neighbours
+
+    newNb = np.copy(nb)
+
+    q = len(nb[0])
     
 
     if len(cells[0]) == 4:
 
+        
+        OZ = geompy.MakeVectorDXDYDZ(0, 0, 1)
         
         for i,c in enumerate(cells):
         
@@ -40,8 +48,33 @@ def remove_cells(geompy, shape, points, cells, fraction = 0.5):
 
             prop = geompy.BasicProperties(Common)
 
+
+            # Update cell status and remove intra cell neighbours
+            
             if prop[1] >= fraction:
+                
                 rm[i] = 1
+
+            else:
+
+                
+                # Check neighbours for each node in cell. If neighbour is in cell and is further than 1, remove conection
+                
+                for c0 in c:
+
+                    for k in range(q):
+
+                        nbib = nb[c0,k]
+                        
+                        if nbid in c:
+
+                            if( (abs(points[c0,0] - points[nbid,0]) + abs(points[c0,1] - points[nbid,1]) + abs(points[c0,2] - points[nbid,2])) > 1.0 ):
+
+                                newNb[c0,k] = -1
+
+                    
+
+                        
 
             
 
@@ -67,10 +100,32 @@ def remove_cells(geompy, shape, points, cells, fraction = 0.5):
 
             prop = geompy.BasicProperties(Common)
 
+
+            # Update cell status and remove intra cell neighbours
+            
             if prop[2] >= fraction:
-                rm[i] = 1            
+                
+                rm[i] = 1
+
+            else:
+
+                
+                # Check neighbours for each node in cell. If neighbour is in cell and is further than 1, remove conection
+                
+                for c0 in c:
+
+                    for k in range(q):
+
+                        nbib = nb[c0,k]
+                        
+                        if nbid in c:
+
+                            if( (abs(points[c0,0] - points[nbid,0]) + abs(points[c0,1] - points[nbid,1]) + abs(points[c0,2] - points[nbid,2])) > 1.0 ):
+
+                                newNb[c0,k] = -1                
 
 
+                                
 
     # Count number of active cells
 
@@ -93,4 +148,4 @@ def remove_cells(geompy, shape, points, cells, fraction = 0.5):
 
     
 
-    return newCells
+    return newCells, newNb

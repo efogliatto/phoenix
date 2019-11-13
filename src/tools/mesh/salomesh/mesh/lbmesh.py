@@ -155,7 +155,7 @@ class lbmesh:
         # Remove extra cells
         # Falta remover vecinos en caras convexas
 
-        self.__vtkCells = remove_cells(self.__geompy, self.__shape, self.__points, self.__vtkCells, self.__fraction)
+        self.__vtkCells, self.__nb = remove_cells(self.__geompy, self.__shape, self.__points, self.__nb, self.__vtkCells, self.__fraction)
 
 
         # Activate points
