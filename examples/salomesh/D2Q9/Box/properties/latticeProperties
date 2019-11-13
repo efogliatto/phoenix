@@ -1,0 +1,7 @@
+Nx 6;
+
+Ny 6;
+
+LBModel D2Q9;
+
+boundaryType generic;

@@ -1,7 +1,0 @@
-Nx 5;
-
-Ny 5;
-
-LBModel D2Q9;
-
-boundaryType periodicX;
