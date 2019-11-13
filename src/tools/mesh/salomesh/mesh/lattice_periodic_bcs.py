@@ -10,6 +10,8 @@ def lattice_periodic_bcs( nb, bdDict, periodicBCs, points, corners=[] ):
 
    
     newNb = np.copy(nb)
+
+    q = len(nb[0])
     
 
     # Move over periodic boundaries and reassign neighbours
@@ -22,9 +24,9 @@ def lattice_periodic_bcs( nb, bdDict, periodicBCs, points, corners=[] ):
             id = bdDict[ bdPair[0] ][i]
 
             nid = bdDict[ bdPair[1] ][i]
-                
+               
 
-            for k in range(9):
+            for k in range(q):
 
                 
                 if newNb[id][k] == -1:
@@ -72,7 +74,7 @@ def lattice_periodic_bcs( nb, bdDict, periodicBCs, points, corners=[] ):
 
         for pair in pairId:
 
-            for k in range(9):
+            for k in range(q):
 
                 if newNb[pair[0]][k] == -1:
 
