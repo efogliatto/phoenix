@@ -6,6 +6,8 @@ import numpy as np
 
 from salome.geom import geomtools
 
+import time
+
 from .lattice_mesh_points import lattice_mesh_points
 
 from .lattice_neighbours import lattice_neighbours
@@ -149,44 +151,50 @@ class lbmesh:
 
         # Compute basic mesh
 
+        start = time.time()
         self.basicMesh()
+        end = time.time()
+
+        print('\nBasic mesh computed in {:.4f} seconds\n'.format(end-start))
 
 
         # Remove extra cells
-        # Falta remover vecinos en caras convexas
 
+        start = time.time()
         self.__vtkCells, self.__nb = remove_cells(self.__geompy, self.__shape, self.__points, self.__nb, self.__vtkCells, self.__fraction)
+        end = time.time()
+        print('\nExtra cells removed in {:.4f} seconds\n'.format(end-start))
+        
+        
+        # # Activate points
 
-
-        # Activate points
-
-        active_points = check_active_points(self.__vtkCells, len(self.__points))
+        # active_points = check_active_points(self.__vtkCells, len(self.__points))
 
         
-        # Remove non-existing points
+        # # Remove non-existing points
 
-        self.__points, oldToNew = remove_points(self.__points, active_points)
-
-
-        # Remove non-existing neighbours
-
-        self.__nb = remove_neighbours( self.__nb, oldToNew, len(self.__points) )
+        # self.__points, oldToNew = remove_points(self.__points, active_points)
 
 
-        # Update vtkCells with new indexing
+        # # Remove non-existing neighbours
 
-        self.__vtkCells = update_vtkCells(self.__vtkCells, oldToNew)
-
-
-        # Assign boundaries
-
-        self.__boundaries = lattice_boundaries_weights(self.__geompy, self.__shape, self.__gfg, self.__points, self.__nb)
+        # self.__nb = remove_neighbours( self.__nb, oldToNew, len(self.__points) )
 
 
-        # Assign periodic boundaries
+        # # Update vtkCells with new indexing
 
-        if self.__periodic:
-            self.__nb = lattice_periodic_bcs(self.__nb, self.__boundaries, self.__periodic, self.__points, self.__corners)
+        # self.__vtkCells = update_vtkCells(self.__vtkCells, oldToNew)
+
+
+        # # Assign boundaries
+
+        # self.__boundaries = lattice_boundaries_weights(self.__geompy, self.__shape, self.__gfg, self.__points, self.__nb)
+
+
+        # # Assign periodic boundaries
+
+        # if self.__periodic:
+        #     self.__nb = lattice_periodic_bcs(self.__nb, self.__boundaries, self.__periodic, self.__points, self.__corners)
         
 
         pass
