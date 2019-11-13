@@ -155,6 +155,9 @@ for group in [X0,X1,Y0,Y1]:
 
 
 
+  
+
+
 ##############################
 #            MESH            #
 ##############################
@@ -169,56 +172,18 @@ mesh = sm.lbmesh(geompy, Cavity)
 mesh.setGroupsFromGeometry( [Y0,Y1,X0,X1] )
 
 
+# Set periodic boundaries
+
+mesh.setPeriodicBoundaries( [ ('X0', 'X1') ] )
+
+
+# Set explicit corner correction
+
+mesh.setCorners( [((0,0,0),(dx,0,0)), ((0,dy,0),(dx,dy,0))] )
+
+
 # Mesh calculation and saving
 
 mesh.compute()
   
 mesh.export()
-
-
-
-
-
-# # Mesh creation
-
-# points, nb = sm.mesh(geompy, Cavity, "D2Q9")
-
-
-# # VTKCells
-
-# vtk = sm.vtk_cells(geompy, nb)
-
-
-# # Boundaries detection
-
-# bdWeights = {'X0': 1, 'X1': 1, 'Y0': 2, 'Y1': 2}
-
-# bdDict = sm.lattice_boundaries_weights(geompy, Cavity, [X0,X1,Y0,Y1], points, nb, bdWeights)
-
-
-# periodicBCs = [ ('X0', 'X1') ]
-
-# # corners = [((x0,y0),(x3,y0)),
-# #            ((x0,y1),(x3,y1))] 
-
-# nb = sm.lattice_periodic_bcs(geompy, nb, bdDict, periodicBCs, points)
-
-
-
-
-
-# # Write mesh info in LB format
-
-# sm.write_points( geompy, points )
-
-# sm.write_neighbours( geompy, nb )
-
-# sm.write_boundaries( geompy, bdDict )
-
-# sm.write_vtk_cells( geompy, vtk )
-
-
-
-
-# if salome.sg.hasDesktop():
-#   salome.sg.updateObjBrowser(True)

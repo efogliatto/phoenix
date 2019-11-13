@@ -4,12 +4,11 @@ import sys
 
 import numpy as np
 
-from salome.geom import geomtools
 
 
-def lattice_periodic_bcs(geompy, nb, bdDict, periodicBCs, points, corners = []):
+def lattice_periodic_bcs( nb, bdDict, periodicBCs, points, corners=[] ):
 
-
+   
     newNb = np.copy(nb)
     
 
@@ -56,11 +55,11 @@ def lattice_periodic_bcs(geompy, nb, bdDict, periodicBCs, points, corners = []):
                 
                 # Move over points
 
-                for pt in range(len(points)):
+                for pt,coord in enumerate(points):
 
-                    coord = geompy.PointCoordinates(points[pt])
+                    # coord = geompy.PointCoordinates(points[pt])
                     
-                    if coord[0] == p[0]  and  coord[1] == p[1]:
+                    if coord[0] == p[0]  and  coord[1] == p[1]   and  coord[2] == p[2]:
 
                         ids[i] = pt
 

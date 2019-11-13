@@ -178,7 +178,17 @@ mesh = sm.lbmesh(geompy, Cavity, lattice_model = "D3Q15")
 
 # Set boundaries from geometry groups
 
-mesh.setGroupsFromGeometry( [X0,X1,Y0,Y1,Z0,Z1] )
+mesh.setGroupsFromGeometry( [Z0,Z1,X0,X1,Y0,Y1] )
+
+
+# Set periodic boundaries
+
+mesh.setPeriodicBoundaries( [ ('X0', 'X1'), ('Y0', 'Y1') ] )
+
+
+# Set explicit periodic corner correction
+
+mesh.setCorners( [((0,0,0),(dx,0,0)), ((0,dy,0),(dx,dy,0)), ((0,0,0),(dx,0,dz)), ((0,dy,0),(dx,dy,dz)), ((0,0,0),(0,dy,0)), ((dx,0,0),(dx,dy,0)), ((0,0,0),(0,dy,dz)), ((dx,0,0),(dx,dy,dz)), ((0,0,0),(dx,dy,0)), ((dx,0,0),(dx,dy,0)), ((0,0,dz),(dx,dy,dz)), ((dx,0,dz),(dx,dy,dz))] )
 
 
 # Mesh calculation and saving

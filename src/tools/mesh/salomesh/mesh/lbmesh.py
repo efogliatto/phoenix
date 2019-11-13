@@ -20,6 +20,8 @@ from .vtk_cells import vtk_cells
 
 from .lattice_boundaries_weights import lattice_boundaries_weights
 
+from .lattice_periodic_bcs import lattice_periodic_bcs
+
 from .remove_cells import remove_cells
 
 from .update_vtkCells import update_vtkCells
@@ -58,6 +60,11 @@ class lbmesh:
 
         self.__fraction = np.float64(0.5)
 
+        self.__boundaries = {}
+
+        self.__periodic = []
+
+        self.__corners = []
 
         
         pass
@@ -82,7 +89,27 @@ class lbmesh:
 
         self.__gfg = groups
 
-        pass    
+        pass
+
+
+    def setPeriodicBoundaries(self, periodic):
+        """
+        Pairs of periodic boundaries
+        """
+
+        self.__periodic = periodic
+
+        pass
+
+
+    def setCorners(self, corners):
+        """
+        Explicit corner correction.
+        """
+
+        self.__corners = corners
+
+        pass
 
     
 
@@ -153,7 +180,13 @@ class lbmesh:
 
         # Assign boundaries
 
-        self.__boundaries = lattice_boundaries_weights(self.__geompy, self.__shape, self.__gfg, self.__points, self.__nb) 
+        self.__boundaries = lattice_boundaries_weights(self.__geompy, self.__shape, self.__gfg, self.__points, self.__nb)
+
+
+        # Assign periodic boundaries
+
+        if self.__periodic:
+            self.__nb = lattice_periodic_bcs(self.__nb, self.__boundaries, self.__periodic, self.__points, self.__corners)
         
 
         pass
