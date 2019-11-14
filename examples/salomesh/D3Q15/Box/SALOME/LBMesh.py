@@ -157,9 +157,11 @@ for face in faceList:
   
 
     
+# List of groups
 
+GroupsList = [X0,X1,Y0,Y1,Z0,Z1]
 
-for group in [X0,X1,Y0,Y1,Z0,Z1]:
+for group in GroupsList:
 
   geompy.addToStudyInFather( Cavity, group, group.GetName() )
 
@@ -167,37 +169,180 @@ for group in [X0,X1,Y0,Y1,Z0,Z1]:
 
 
 
-##############################
-#            MESH            #
-##############################
 
-# Mesh creation
+# Integer bounding box
 
-mesh = sm.lbmesh(geompy, Cavity, lattice_model = "D3Q15")
+BBox = geompy.BoundingBox(Cavity, True)
 
+Box = geompy.MakeBoxTwoPnt(  geompy.MakeVertex( np.ceil(BBox[0]), np.ceil(BBox[2]), np.ceil(BBox[4]) ),  geompy.MakeVertex( np.ceil(BBox[1]), np.ceil(BBox[3]), np.ceil(BBox[5])) )
 
-# Set boundaries from geometry groups
-
-mesh.setGroupsFromGeometry( [Z0,Z1,X0,X1,Y0,Y1] )
+geompy.addToStudy( Box, 'Bounding box' )
 
 
-# Set periodic boundaries
 
-mesh.setPeriodicBoundaries( [ ('X0', 'X1'), ('Y0', 'Y1') ] )
+###
+### SMESH component
+###
+
+import  SMESH, SALOMEDS
+
+from salome.smesh import smeshBuilder
+
+smesh = smeshBuilder.New()
+#smesh.SetEnablePublish( False ) # Set to False to avoid publish in study if not needed or in some particular situations:
+                                 # multiples meshes built in parallel, complex and numerous mesh edition (performance)
+
+Local_Length = smesh.CreateHypothesis('LocalLength')
+
+Local_Length.SetLength( 1 )
+
+Local_Length.SetPrecision( 1e-07 )
+
+Mesh = smesh.Mesh( Box )
+
+Cartesian_3D = Mesh.BodyFitted()
+
+Body_Fitting_Parameters = Cartesian_3D.SetGrid([ [ '1' ], [ 0, 1 ]],[ [ '1' ], [ 0, 1 ]],[ [ '1' ], [ 0, 1 ]],2,0)
+
+Body_Fitting_Parameters.SetFixedPoint( SMESH.PointStruct ( 0, 0, 0 ), 1 )
+
+Body_Fitting_Parameters.SetAxesDirs( SMESH.DirStruct( SMESH.PointStruct ( 1, 0, 0 )), SMESH.DirStruct( SMESH.PointStruct ( 0, 1, 0 )), SMESH.DirStruct( SMESH.PointStruct ( 0, 0, 1 )) )
+
+isDone = Mesh.Compute()
 
 
-# Set explicit periodic corner correction
-
-mesh.setCorners( [((0,0,0),(dx,0,0)), ((0,dy,0),(dx,dy,0)), ((0,0,0),(dx,0,dz)), ((0,dy,0),(dx,dy,dz))] )
-
-# mesh.setCorners( [((0,0,0),(dx,0,0)), ((0,dy,0),(dx,dy,0)), ((0,0,0),(dx,0,dz)), ((0,dy,0),(dx,dy,dz)), ((0,0,0),(0,dy,0)), ((dx,0,0),(dx,dy,0)), ((0,0,0),(0,dy,dz)), ((dx,0,0),(dx,dy,dz)), ((0,0,0),(dx,dy,0)), ((dx,0,0),(dx,dy,0)), ((0,0,dz),(dx,dy,dz)), ((dx,0,dz),(dx,dy,dz))] )
 
 
-# Mesh calculation and saving
+# Filter elements lying on geometry
+# This way can be used with multiple criterions
 
-mesh.compute()
+# criterion = smesh.GetCriterion(SMESH.VOLUME,SMESH.FT_LyingOnGeom,Sphere,SMESH.FT_LogicalNOT)
+criterion = smesh.GetCriterion(SMESH.VOLUME,SMESH.FT_BelongToGeom,Cavity,SMESH.FT_LogicalNOT, Tolerance=0.7071)
 
-mesh.export()
+filter = smesh.GetFilterFromCriteria([criterion])
+
+isDone = Mesh.RemoveElements( Mesh.GetIdsFromFilter(filter) )
+
+isDone = Mesh.RemoveOrphanNodes()
+
+Mesh.RenumberNodes()
+
+Mesh.RenumberElements()
+
+
+
+
+# Create groups for boundary nodes
+
+
+# Nodes connected to less than 8 elements are on boundary
+
+bnd_criterion = smesh.GetCriterion(SMESH.NODE,SMESH.FT_NodeConnectivityNumber,SMESH.FT_LessThan,8)
+
+bnd_filter = smesh.GetFilterFromCriteria([bnd_criterion])
+
+bnd_ids = Mesh.GetIdsFromFilter(bnd_filter) 
+
+
+
+# Create empty mesh groups based on geometry groups
+
+Mesh_groups = {}
+
+for group in GroupsList:
+
+    Mesh_groups[group.GetName()] = Mesh.CreateEmptyGroup(SMESH.NODE, group.GetName())
+    
+    
+
+# Look closest surface (group) and add to corresponding mesh group
+
+for node in bnd_ids:
+
+    node_xyz = Mesh.GetNodeXYZ( node )
+
+    node_vertex = geompy.MakeVertex(node_xyz[0], node_xyz[1], node_xyz[2])
+
+    dist = float(1000)
+
+    closest_bnd = ""
+
+    for group in GroupsList:
+
+        distAux = geompy.MinDistance( group, node_vertex )
+
+        # print('{} {} {}'.format(node, distAux, group.GetName()))        
+        
+        if distAux < dist:
+
+            closest_bnd = group.GetName()
+
+            dist = distAux
+            
+            
+    Mesh_groups[ closest_bnd ].Add( [node] )
+
+  
+
+
+
+
+
+    
+
+
+
+
+## Set names of Mesh objects
+smesh.SetName(Cartesian_3D.GetAlgorithm(), 'Cartesian_3D')
+smesh.SetName(Body_Fitting_Parameters, 'Body Fitting Parameters')
+smesh.SetName(Local_Length, 'Local Length')
+smesh.SetName(Mesh.GetMesh(), 'Mesh')
+
+
+if salome.sg.hasDesktop():
+  salome.sg.updateObjBrowser()
+
+
+
+
+
+
+  
+  
+
+
+# ##############################
+# #            MESH            #
+# ##############################
+
+# # Mesh creation
+
+# mesh = sm.lbmesh(geompy, Cavity, lattice_model = "D3Q15")
+
+
+# # Set boundaries from geometry groups
+
+# mesh.setGroupsFromGeometry( [Z0,Z1,X0,X1,Y0,Y1] )
+
+
+# # Set periodic boundaries
+
+# mesh.setPeriodicBoundaries( [ ('X0', 'X1'), ('Y0', 'Y1') ] )
+
+
+# # Set explicit periodic corner correction
+
+# mesh.setCorners( [((0,0,0),(dx,0,0)), ((0,dy,0),(dx,dy,0)), ((0,0,0),(dx,0,dz)), ((0,dy,0),(dx,dy,dz))] )
+
+# # mesh.setCorners( [((0,0,0),(dx,0,0)), ((0,dy,0),(dx,dy,0)), ((0,0,0),(dx,0,dz)), ((0,dy,0),(dx,dy,dz)), ((0,0,0),(0,dy,0)), ((dx,0,0),(dx,dy,0)), ((0,0,0),(0,dy,dz)), ((dx,0,0),(dx,dy,dz)), ((0,0,0),(dx,dy,0)), ((dx,0,0),(dx,dy,0)), ((0,0,dz),(dx,dy,dz)), ((dx,0,dz),(dx,dy,dz))] )
+
+
+# # Mesh calculation and saving
+
+# mesh.compute()
+
+# mesh.export()
   
 
 
