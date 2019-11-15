@@ -149,24 +149,26 @@ class lbmesh:
           element_nodes = self.Mesh.GetElemNodes( el )
 
           dist = np.array([0,0,0], dtype=np.int64)
-
+          
           for node in element_nodes:
 
             for nbnode in element_nodes:
 
               for j in range(3):
 
-                dist[j] = points[nbnode-1,j] - points[node-1,j]
+                dist[j] = int( points[nbnode-1,j] - points[node-1,j] )
 
 
               # Corresponding velocity index
 
               vid = self.lmodel.vindex( dist )
-
+              
 
               # Assign neighbour using reverse indexing
 
-              self.neighbours[node-1, reverse[vid]] = nbnode - 1
+              if vid != -1:
+                  self.neighbours[node-1, reverse[vid]] = nbnode - 1
+
               
 
                 

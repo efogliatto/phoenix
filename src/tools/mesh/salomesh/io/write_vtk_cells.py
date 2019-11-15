@@ -32,7 +32,7 @@ def write_vtk_cells( Mesh ):
 
         for node in element_nodes:
 
-            file.write( "%.0f " % node )
+            file.write( "%.0f " % (node-1) )
             
             
         file.write( "\n" )

@@ -29,7 +29,7 @@ def write_boundaries( bd ):
 
 
         for id in value:
-            file.write("%d\n" % id)
+            file.write("%d\n" % (id - 1))
         
     
 

@@ -83,7 +83,7 @@ class D2Q9:
         Return velocity index according to sep
         """
 
-        vid = 0
+        vid = -1
         
         for i, v in enumerate(self.__vel):
 
