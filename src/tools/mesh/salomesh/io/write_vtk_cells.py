@@ -5,7 +5,7 @@ import os
 import numpy
 
     
-def write_vtk_cells( cells ):
+def write_vtk_cells( Mesh ):
 
     directory = "lattice"
     
@@ -14,16 +14,26 @@ def write_vtk_cells( cells ):
     
     file = open(directory + "/vtkCells", 'w')
 
-    file.write( str( len(cells) )  )
-    file.write( " {}\n".format(len(cells[0])) )
+
+    # Elements from Mesh
+
+    elements = Mesh.GetElementsId()    
     
 
-    for cell in cells:
-        
-        for i in cell:
+    file.write( str( len(elements) )  )
+    file.write( " {}\n".format(len( Mesh.GetElemNodes( elements[0] ) )) )
+    
 
-            file.write( "%.0f " % i )
+    # Move over elements and write
+    
+    for el in elements:
+  
+        element_nodes = Mesh.GetElemNodes( el )
 
+        for node in element_nodes:
+
+            file.write( "%.0f " % node )
+            
             
         file.write( "\n" )
 

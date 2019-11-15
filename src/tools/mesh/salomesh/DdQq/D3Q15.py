@@ -77,4 +77,31 @@ class D3Q15:
         """
         Lattice dimension
         """
-        return np.int64(3)    
+        return np.int64(3)
+
+
+    # Velocity space
+
+    def Q(self):
+        """
+        Velocity space
+        """
+        return np.int64(15)
+    
+    
+    # Velocity index
+
+    def vindex(self, sep):
+        """
+        Return velocity index according to sep
+        """
+
+        vid = 0
+        
+        for i, v in enumerate(self.__vel):
+
+            if sep[0] == v[0]  and  sep[1] == v[1]  and  sep[2] == v[2]:
+
+                vid = i
+
+        return vid

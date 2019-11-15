@@ -9,7 +9,7 @@ import numpy
 # from salome.geom import geomtools
 
 
-def write_points( points ):
+def write_points( Mesh ):
 
 
     # Open directory
@@ -25,18 +25,22 @@ def write_points( points ):
     
     # Number of points
     
-    file.write( str(len(points)) )
+    file.write( '{}'.format( Mesh.NbNodes() ) )
     
     file.write( "\n" )
 
 
-
     # Write points
+    
+    for node in Mesh.GetNodesId():
 
-    for p in range( len(points) ):
+      xyz = Mesh.GetNodeXYZ( node )
 
-        file.write( "%.0f " % points[p,0] )
-        file.write( "%.0f " % points[p,1] )
-        file.write( "%.0f\n" % points[p,2] )
+      file.write( "%.0f " % xyz[0] )
+
+      file.write( "%.0f " % xyz[1] )
+
+      file.write( "%.0f\n" % xyz[2] )
+
 
     file.close()

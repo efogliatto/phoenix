@@ -65,3 +65,30 @@ class D2Q9:
         Lattice dimension
         """
         return np.int64(2)
+
+
+    # Velocity space
+
+    def Q(self):
+        """
+        Velocity space
+        """
+        return np.int64(9)
+
+    
+    # Velocity index
+
+    def vindex(self, sep):
+        """
+        Return velocity index according to sep
+        """
+
+        vid = 0
+        
+        for i, v in enumerate(self.__vel):
+
+            if sep[0] == v[0]  and  sep[1] == v[1]:
+
+                vid = i
+
+        return vid

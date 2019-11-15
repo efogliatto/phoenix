@@ -6,30 +6,6 @@ import numpy as np
 
 from salome.geom import geomtools
 
-import time
-
-from .lattice_mesh_points import lattice_mesh_points
-
-from .lattice_neighbours import lattice_neighbours
-
-from .points_in_shape import points_in_shape
-
-from .remove_neighbours import remove_neighbours
-
-from .remove_points import remove_points
-
-from .vtk_cells import vtk_cells
-
-from .lattice_boundaries_weights import lattice_boundaries_weights
-
-from .lattice_periodic_bcs import lattice_periodic_bcs
-
-from .remove_cells import remove_cells
-
-from .update_vtkCells import update_vtkCells
-
-from .check_active_points import check_active_points
-
 from ..DdQq.DdQq import DdQq
 
 from ..io.write_points import write_points
@@ -40,6 +16,10 @@ from ..io.write_vtk_cells import write_vtk_cells
 
 from ..io.write_boundaries import write_boundaries
 
+
+import SMESH, SALOMEDS
+
+from salome.smesh import smeshBuilder
 
 
 class lbmesh:
@@ -53,96 +33,50 @@ class lbmesh:
 
         # Basic elements
         
-        self.__lmodel = DdQq(lattice_model)
+        self.lmodel = DdQq(lattice_model)
 
-        self.__geompy = geompy
+        self.shape = shape
 
-        self.__shape = shape
-       
+        self.geompy = geompy
+        
 
-        self.__fraction = np.float64(0.5)
 
-        self.__boundaries = {}
+        # Integer bounding box
 
-        self.__periodic = []
+        BBox = geompy.BoundingBox(shape, True)
 
-        self.__corners = []
+        Box = geompy.MakeBoxTwoPnt(  geompy.MakeVertex( np.ceil(BBox[0]), np.ceil(BBox[2]), np.ceil(BBox[4]) ),  geompy.MakeVertex( np.ceil(BBox[1]), np.ceil(BBox[3]), np.ceil(BBox[5])) )
+
+        geompy.addToStudy( Box, 'Bounding box' )
+
+        
+
+        # SMESH Hypotesis
+        
+        self.smesh = smeshBuilder.New()
+
+        Local_Length = self.smesh.CreateHypothesis('LocalLength')
+
+        Local_Length.SetLength( 1 )
+
+        Local_Length.SetPrecision( 1e-07 )
+
+        self.Mesh = self.smesh.Mesh( Box )
+
+        Cartesian_3D = self.Mesh.BodyFitted()
+
+        Body_Fitting_Parameters = Cartesian_3D.SetGrid([ [ '1' ], [ 0, 1 ]],[ [ '1' ], [ 0, 1 ]],[ [ '1' ], [ 0, 1 ]],2,0)
+
+        Body_Fitting_Parameters.SetFixedPoint( SMESH.PointStruct ( 0, 0, 0 ), 1 )
+
+        Body_Fitting_Parameters.SetAxesDirs( SMESH.DirStruct( SMESH.PointStruct ( 1, 0, 0 )), SMESH.DirStruct( SMESH.PointStruct ( 0, 1, 0 )), SMESH.DirStruct( SMESH.PointStruct ( 0, 0, 1 )) )
+        
 
         
         pass
 
 
     
-    def setCellFraction(self,f):
-        """
-        Volume fraction used in cell removal
-        """
-
-        self.__fraction = f
-
-        pass
-
-
-
-    def setGroupsFromGeometry(self,groups):
-        """
-        Boundary assignment using geometry groups
-        """
-
-        self.__gfg = groups
-
-        pass
-
-
-    def setPeriodicBoundaries(self, periodic):
-        """
-        Pairs of periodic boundaries
-        """
-
-        self.__periodic = periodic
-
-        pass
-
-
-    def setCorners(self, corners):
-        """
-        Explicit corner correction.
-        """
-
-        self.__corners = corners
-
-        pass
-
-    
-
-    def basicMesh(self):
-
-        """
-        Compute basic mesh 
-        """
-
-        # Point creation
-
-        self.__points, grid = lattice_mesh_points(self.__geompy, self.__shape, self.__lmodel.D())
-
-
-    
-        # Neighbour creation
-
-        self.__nb = lattice_neighbours(self.__points, grid, self.__lmodel)
-
-
-
-        # VTKCells
-
-        self.__vtkCells = vtk_cells(grid, self.__lmodel)
-
-    
-
-        pass
-
-
-
 
     def compute(self):
         """
@@ -151,68 +85,179 @@ class lbmesh:
 
         # Compute basic mesh
 
-        start = time.time()
-        self.basicMesh()
-        end = time.time()
-
-        print('\nBasic mesh computed in {:.4f} seconds\n'.format(end-start))
+        isDone = self.Mesh.Compute()
 
 
-        # Remove extra cells
+        # Filter elements lying on geometry
+        # This way can be used with multiple criterions
 
-        start = time.time()
-        self.__vtkCells, self.__nb = remove_cells(self.__geompy, self.__shape, self.__points, self.__nb, self.__vtkCells, self.__fraction)
-        end = time.time()
-        print('\nExtra cells removed in {:.4f} seconds\n'.format(end-start))
-        
-        
-        # # Activate points
+        criterion = self.smesh.GetCriterion(SMESH.VOLUME,SMESH.FT_BelongToGeom,self.shape,SMESH.FT_LogicalNOT, Tolerance=0.7071)
 
-        # active_points = check_active_points(self.__vtkCells, len(self.__points))
+        filter = self.smesh.GetFilterFromCriteria([criterion])
 
-        
-        # # Remove non-existing points
+        isDone = self.Mesh.RemoveElements( self.Mesh.GetIdsFromFilter(filter) )
 
-        # self.__points, oldToNew = remove_points(self.__points, active_points)
+        isDone = self.Mesh.RemoveOrphanNodes()
+
+        self.Mesh.RenumberNodes()
+
+        self.Mesh.RenumberElements()        
 
 
-        # # Remove non-existing neighbours
 
-        # self.__nb = remove_neighbours( self.__nb, oldToNew, len(self.__points) )
-
-
-        # # Update vtkCells with new indexing
-
-        # self.__vtkCells = update_vtkCells(self.__vtkCells, oldToNew)
+        # ## Set names of Mesh objects
+        # smesh.SetName(Cartesian_3D.GetAlgorithm(), 'Cartesian_3D')
+        # smesh.SetName(Body_Fitting_Parameters, 'Body Fitting Parameters')
+        # smesh.SetName(Local_Length, 'Local Length')
+        self.smesh.SetName(self.Mesh.GetMesh(), 'Mesh')
 
 
-        # # Assign boundaries
 
-        # self.__boundaries = lattice_boundaries_weights(self.__geompy, self.__shape, self.__gfg, self.__points, self.__nb)
+        # Neighbour calculation
+
+        self.neighbours = np.zeros( (self.Mesh.NbNodes(), self.lmodel.Q()), dtype=np.int64 )
+
+        self.neighbours.fill(-1)
 
 
-        # # Assign periodic boundaries
+        # Fill points array
 
-        # if self.__periodic:
-        #     self.__nb = lattice_periodic_bcs(self.__nb, self.__boundaries, self.__periodic, self.__points, self.__corners)
-        
+        points = np.zeros( (self.Mesh.NbNodes(), 3), dtype=np.int64 )
 
-        pass
+        for node in self.Mesh.GetNodesId():
+
+          xyz = self.Mesh.GetNodeXYZ( node )
+
+          for j in range(3):
+  
+            points[node-1,j] = int( xyz[j] )
+
+
+
+        # Element inspection for connectivity
+
+        elements = self.Mesh.GetElementsId()
+
+
+        # Reverse velocity index
+
+        reverse = self.lmodel.reverse()
+
+
+        for el in elements:
+  
+          element_nodes = self.Mesh.GetElemNodes( el )
+
+          dist = np.array([0,0,0], dtype=np.int64)
+
+          for node in element_nodes:
+
+            for nbnode in element_nodes:
+
+              for j in range(3):
+
+                dist[j] = points[nbnode-1,j] - points[node-1,j]
+
+
+              # Corresponding velocity index
+
+              vid = self.lmodel.vindex( dist )
+
+
+              # Assign neighbour using reverse indexing
+
+              self.neighbours[node-1, reverse[vid]] = nbnode - 1
+              
+
+                
+        return isDone
     
     
 
+
+    
+
+    def GroupsFromGeometry(self, geoGroups):
+        """
+        Create node groups from geometry groups
+        """
+
+        # Create groups for boundary nodes
+        # Nodes connected to less than 8 (3D) or 4 (2D) elements are on boundary
+
+
+        ncon = 8
+
+        if self.lmodel.D() == 2:
+            ncon = 4
+
+            
+        
+        bnd_criterion = self.smesh.GetCriterion(SMESH.NODE,SMESH.FT_NodeConnectivityNumber,SMESH.FT_LessThan,ncon)
+
+        bnd_filter = self.smesh.GetFilterFromCriteria([bnd_criterion])
+
+        bnd_ids = self.Mesh.GetIdsFromFilter(bnd_filter) 
+
+
+
+        # Create empty mesh groups based on geometry groups
+
+        Mesh_groups = {}
+
+        self.mg = {}
+
+        for group in geoGroups:
+
+          Mesh_groups[group.GetName()] = self.Mesh.CreateEmptyGroup(SMESH.NODE, group.GetName())
+
+          self.mg[group.GetName()] = []
+    
+    
+
+        # Look closest surface (group) and add to corresponding mesh group
+
+        for node in bnd_ids:
+
+          node_xyz = self.Mesh.GetNodeXYZ( node )
+
+          node_vertex = self.geompy.MakeVertex(node_xyz[0], node_xyz[1], node_xyz[2])
+
+          dist = float(1000)
+
+          closest_bnd = ""
+
+          for group in geoGroups:
+
+            distAux = self.geompy.MinDistance( group, node_vertex )
+        
+            if distAux < dist:
+
+              closest_bnd = group.GetName()
+
+              dist = distAux
+            
+            
+          Mesh_groups[ closest_bnd ].Add( [node] )
+
+          self.mg[closest_bnd].append(node)
+
+
+
+        
+    
 
     def export(self):
         """
         Export lattice mesh
         """
         
-        write_points(self.__points)
+        write_points(self.Mesh)
 
-        write_neighbours(self.__nb)
+        write_neighbours(self.neighbours)
 
-        write_vtk_cells(self.__vtkCells)
+        write_vtk_cells(self.Mesh)
 
-        write_boundaries(self.__boundaries)
+        write_boundaries(self.mg)
 
         pass

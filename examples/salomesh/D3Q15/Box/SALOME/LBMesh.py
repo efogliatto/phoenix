@@ -170,138 +170,223 @@ for group in GroupsList:
 
 
 
-# Integer bounding box
+##############################
+#            MESH            #
+##############################
 
-BBox = geompy.BoundingBox(Cavity, True)
+# Mesh creation
 
-Box = geompy.MakeBoxTwoPnt(  geompy.MakeVertex( np.ceil(BBox[0]), np.ceil(BBox[2]), np.ceil(BBox[4]) ),  geompy.MakeVertex( np.ceil(BBox[1]), np.ceil(BBox[3]), np.ceil(BBox[5])) )
-
-geompy.addToStudy( Box, 'Bounding box' )
+mesh = sm.lbmesh(geompy, Cavity, lattice_model = "D3Q15")
 
 
+# Mesh calculation: castelation from cartesian grid
 
-###
-### SMESH component
-###
+isDone = mesh.compute()
 
-import  SMESH, SALOMEDS
 
-from salome.smesh import smeshBuilder
+# Group creation from geometry
 
-smesh = smeshBuilder.New()
-#smesh.SetEnablePublish( False ) # Set to False to avoid publish in study if not needed or in some particular situations:
-                                 # multiples meshes built in parallel, complex and numerous mesh edition (performance)
+mesh.GroupsFromGeometry(GroupsList)
 
-Local_Length = smesh.CreateHypothesis('LocalLength')
 
-Local_Length.SetLength( 1 )
+# Export mesh in LB format
 
-Local_Length.SetPrecision( 1e-07 )
+mesh.export()
 
-Mesh = smesh.Mesh( Box )
+  
 
-Cartesian_3D = Mesh.BodyFitted()
 
-Body_Fitting_Parameters = Cartesian_3D.SetGrid([ [ '1' ], [ 0, 1 ]],[ [ '1' ], [ 0, 1 ]],[ [ '1' ], [ 0, 1 ]],2,0)
+# # Integer bounding box
 
-Body_Fitting_Parameters.SetFixedPoint( SMESH.PointStruct ( 0, 0, 0 ), 1 )
+# BBox = geompy.BoundingBox(Cavity, True)
 
-Body_Fitting_Parameters.SetAxesDirs( SMESH.DirStruct( SMESH.PointStruct ( 1, 0, 0 )), SMESH.DirStruct( SMESH.PointStruct ( 0, 1, 0 )), SMESH.DirStruct( SMESH.PointStruct ( 0, 0, 1 )) )
+# Box = geompy.MakeBoxTwoPnt(  geompy.MakeVertex( np.ceil(BBox[0]), np.ceil(BBox[2]), np.ceil(BBox[4]) ),  geompy.MakeVertex( np.ceil(BBox[1]), np.ceil(BBox[3]), np.ceil(BBox[5])) )
 
-isDone = Mesh.Compute()
+# geompy.addToStudy( Box, 'Bounding box' )
 
 
 
+# ###
+# ### SMESH component
+# ###
 
-# Filter elements lying on geometry
-# This way can be used with multiple criterions
+# import  SMESH, SALOMEDS
 
-# criterion = smesh.GetCriterion(SMESH.VOLUME,SMESH.FT_LyingOnGeom,Sphere,SMESH.FT_LogicalNOT)
-criterion = smesh.GetCriterion(SMESH.VOLUME,SMESH.FT_BelongToGeom,Cavity,SMESH.FT_LogicalNOT, Tolerance=0.7071)
+# from salome.smesh import smeshBuilder
 
-filter = smesh.GetFilterFromCriteria([criterion])
+# smesh = smeshBuilder.New()
+# #smesh.SetEnablePublish( False ) # Set to False to avoid publish in study if not needed or in some particular situations:
+#                                  # multiples meshes built in parallel, complex and numerous mesh edition (performance)
 
-isDone = Mesh.RemoveElements( Mesh.GetIdsFromFilter(filter) )
+# Local_Length = smesh.CreateHypothesis('LocalLength')
 
-isDone = Mesh.RemoveOrphanNodes()
+# Local_Length.SetLength( 1 )
 
-Mesh.RenumberNodes()
+# Local_Length.SetPrecision( 1e-07 )
 
-Mesh.RenumberElements()
+# Mesh = smesh.Mesh( Box )
 
+# Cartesian_3D = Mesh.BodyFitted()
 
+# Body_Fitting_Parameters = Cartesian_3D.SetGrid([ [ '1' ], [ 0, 1 ]],[ [ '1' ], [ 0, 1 ]],[ [ '1' ], [ 0, 1 ]],2,0)
 
+# Body_Fitting_Parameters.SetFixedPoint( SMESH.PointStruct ( 0, 0, 0 ), 1 )
 
-# Create groups for boundary nodes
+# Body_Fitting_Parameters.SetAxesDirs( SMESH.DirStruct( SMESH.PointStruct ( 1, 0, 0 )), SMESH.DirStruct( SMESH.PointStruct ( 0, 1, 0 )), SMESH.DirStruct( SMESH.PointStruct ( 0, 0, 1 )) )
 
-
-# Nodes connected to less than 8 elements are on boundary
-
-bnd_criterion = smesh.GetCriterion(SMESH.NODE,SMESH.FT_NodeConnectivityNumber,SMESH.FT_LessThan,8)
-
-bnd_filter = smesh.GetFilterFromCriteria([bnd_criterion])
-
-bnd_ids = Mesh.GetIdsFromFilter(bnd_filter) 
-
+# isDone = Mesh.Compute()
 
 
-# Create empty mesh groups based on geometry groups
 
-Mesh_groups = {}
 
-for group in GroupsList:
+# # Filter elements lying on geometry
+# # This way can be used with multiple criterions
 
-    Mesh_groups[group.GetName()] = Mesh.CreateEmptyGroup(SMESH.NODE, group.GetName())
+# # criterion = smesh.GetCriterion(SMESH.VOLUME,SMESH.FT_LyingOnGeom,Sphere,SMESH.FT_LogicalNOT)
+# criterion = smesh.GetCriterion(SMESH.VOLUME,SMESH.FT_BelongToGeom,Cavity,SMESH.FT_LogicalNOT, Tolerance=0.7071)
+
+# filter = smesh.GetFilterFromCriteria([criterion])
+
+# isDone = Mesh.RemoveElements( Mesh.GetIdsFromFilter(filter) )
+
+# isDone = Mesh.RemoveOrphanNodes()
+
+# Mesh.RenumberNodes()
+
+# Mesh.RenumberElements()
+
+
+
+
+# # Create groups for boundary nodes
+
+
+# # Nodes connected to less than 8 elements are on boundary
+
+# bnd_criterion = smesh.GetCriterion(SMESH.NODE,SMESH.FT_NodeConnectivityNumber,SMESH.FT_LessThan,8)
+
+# bnd_filter = smesh.GetFilterFromCriteria([bnd_criterion])
+
+# bnd_ids = Mesh.GetIdsFromFilter(bnd_filter) 
+
+
+
+# # Create empty mesh groups based on geometry groups
+
+# Mesh_groups = {}
+
+# for group in GroupsList:
+
+#   Mesh_groups[group.GetName()] = Mesh.CreateEmptyGroup(SMESH.NODE, group.GetName())
     
     
 
-# Look closest surface (group) and add to corresponding mesh group
+# # Look closest surface (group) and add to corresponding mesh group
 
-for node in bnd_ids:
+# for node in bnd_ids:
 
-    node_xyz = Mesh.GetNodeXYZ( node )
+#   node_xyz = Mesh.GetNodeXYZ( node )
 
-    node_vertex = geompy.MakeVertex(node_xyz[0], node_xyz[1], node_xyz[2])
+#   node_vertex = geompy.MakeVertex(node_xyz[0], node_xyz[1], node_xyz[2])
 
-    dist = float(1000)
+#   dist = float(1000)
 
-    closest_bnd = ""
+#   closest_bnd = ""
 
-    for group in GroupsList:
+#   for group in GroupsList:
 
-        distAux = geompy.MinDistance( group, node_vertex )
-
-        # print('{} {} {}'.format(node, distAux, group.GetName()))        
+#     distAux = geompy.MinDistance( group, node_vertex )
         
-        if distAux < dist:
+#     if distAux < dist:
 
-            closest_bnd = group.GetName()
+#       closest_bnd = group.GetName()
 
-            dist = distAux
+#       dist = distAux
             
             
-    Mesh_groups[ closest_bnd ].Add( [node] )
+#   Mesh_groups[ closest_bnd ].Add( [node] )
 
   
 
 
 
 
+# # Neighbour calculation
+
+# neighbours = np.zeros( (Mesh.NbNodes(), 15), dtype=np.int64 )
+
+# neighbours.fill(-1)
+
+
+# # Fill points array
+
+# points = np.zeros( (Mesh.NbNodes(), 3), dtype=np.int64 )
+
+# for node in Mesh.GetNodesId():
+
+#   xyz = Mesh.GetNodeXYZ( node )
+
+#   for j in range(3):
+  
+#     points[node-1,j] = int( xyz[j] )
+
+
+
+# # Element inspection for connectivity
+
+# elements = Mesh.GetElementsId()
+
+
+# for el in elements:
+  
+#   element_nodes = Mesh.GetElemNodes( el )
+
+#   dist = np.array([0,0,0], dtype=np.int64)
+
+#   for node in element_nodes:
+
+#     for nbnode in element_nodes:
+
+#       for j in range(3):
+
+#         dist[j] = points[nbnode-1,j] - points[node-1,j]
+
+
+#       # # Corresponding velocity index
+
+#       # vid = lbmodel.vindex( dist )
+
+
+#       # # Assign neighbour using reverse indexing
+
+#       # neighbours[node-1, reverse[vid]] = nbnode - 1
 
     
+    
+
+  
 
 
+# # nodesIDs = Mesh.GetNodesId()
+
+# # for n in nodesIDs:
+
+# #   xyz = Mesh.GetNodeXYZ( n )    
+      
+# #   print('{} ({} {} {}) '.format(n-1, xyz[0], xyz[1], xyz[2]) )
+
+# # print('\n')
 
 
-## Set names of Mesh objects
-smesh.SetName(Cartesian_3D.GetAlgorithm(), 'Cartesian_3D')
-smesh.SetName(Body_Fitting_Parameters, 'Body Fitting Parameters')
-smesh.SetName(Local_Length, 'Local Length')
-smesh.SetName(Mesh.GetMesh(), 'Mesh')
+# ## Set names of Mesh objects
+# smesh.SetName(Cartesian_3D.GetAlgorithm(), 'Cartesian_3D')
+# smesh.SetName(Body_Fitting_Parameters, 'Body Fitting Parameters')
+# smesh.SetName(Local_Length, 'Local Length')
+# smesh.SetName(Mesh.GetMesh(), 'Mesh')
 
 
-if salome.sg.hasDesktop():
-  salome.sg.updateObjBrowser()
+# if salome.sg.hasDesktop():
+#   salome.sg.updateObjBrowser()
 
 
 

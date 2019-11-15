@@ -15,11 +15,9 @@ def write_boundaries( bd ):
     file = open(directory + "/boundary", 'w')
 
 
-    # Number of points
+    # Number of groups    
     
-    file.write( str(len(bd.keys())) )
-    file.write( "\n" )
-
+    file.write( '{}\n'.format(len(bd.keys())) )
 
     for key, value in bd.items() :
 
