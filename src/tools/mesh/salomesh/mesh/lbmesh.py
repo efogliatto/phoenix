@@ -199,7 +199,7 @@ class lbmesh:
 
           for j in range(3):
   
-            points[node-1,j] = int( xyz[j] )
+            points[node-1,j] = np.rint( xyz[j] )
 
 
 
@@ -225,13 +225,12 @@ class lbmesh:
 
               for j in range(3):
 
-                dist[j] = int( points[nbnode-1,j] - points[node-1,j] )
+                dist[j] = np.rint( points[nbnode-1,j] - points[node-1,j] )
 
 
               # Corresponding velocity index
 
               vid = self.lmodel.vindex( dist )
-
               
 
               # Assign neighbour using reverse indexing
