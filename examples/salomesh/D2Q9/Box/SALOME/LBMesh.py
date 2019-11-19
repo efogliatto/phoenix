@@ -184,6 +184,11 @@ mesh.GroupsFromGeometry(GroupsList)
 mesh.PeriodicBoundaries( [('X0','X1','X')] )
 
 
+# Connect neighbours from specific nodes
+
+mesh.ForcePeriodicPoints( [((0,0,0),(dx,0,0)), ((0,dy,0),(dx,dy,0))] )
+
+
 # Export mesh in LB format
 
 mesh.export()  
