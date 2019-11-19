@@ -400,8 +400,39 @@ class lbmesh:
 
 
           
+
+    def ForcePeriodicPoints(self, pairsList):
+        """
+        Force neighbouring between pairs of points
+        """
+
+        for pair in pairsList:
+
+            pt_1 = pair[0]
+
+            pt_2 = pair[1]
+
+
+            # Find node indices using closest node
+
+            nd1 = self.Mesh.FindNodeClosestTo( pt_1[0], pt_1[1], pt_1[2] )
+
+            nd2 = self.Mesh.FindNodeClosestTo( pt_2[0], pt_2[1], pt_2[2] )
+
+
+            for k in range( self.lmodel.Q() ):
+
+                if self.neighbours[nd2-1,k] == -1:
+                    self.neighbours[nd2-1,k] = self.neighbours[nd1-1,k]
+
+                if self.neighbours[nd1-1,k] == -1:
+                    self.neighbours[nd1-1,k] = self.neighbours[nd2-1,k]
+            
+        
+        pass
     
 
+    
     def export(self):
         """
         Export lattice mesh
