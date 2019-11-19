@@ -203,6 +203,16 @@ isDone = mesh.compute()
 mesh.GroupsFromGeometry(GroupsList)
 
 
+# Assign periodic boundaries
+
+mesh.PeriodicBoundaries( [('X0','X1','X')] )
+
+
+# Connect neighbours from specific nodes
+
+mesh.ForcePeriodicPoints( [((x0,y1,0),(x3,y1,0)), ((x0,y2,0),(x3,y2,0))] )
+
+
 # Export mesh in LB format
 
 mesh.export()  
