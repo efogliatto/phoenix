@@ -5,7 +5,7 @@ cp -r SALOME/lattice .
 # latticeBox3D
 
 # Lattice partitioning
-latticeMeshPartition
+latticeMeshPartitions
 
-# Field partitioning
-setInitialFields
+# # Field partitioning
+# setInitialFields

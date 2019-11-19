@@ -9,6 +9,14 @@
 
 #include <iostream>
 
+#include "readBasicMesh.H"
+
+#include <dictionary.H>
+
+#include "kmetisDecomp.H"
+
+
+
 /* #include <io.h> */
 /* #include <dictIO.h> */
 /* #include <latticeModel.h> */
@@ -26,40 +34,43 @@
 /* void localIndexing ( basicMesh* mesh, int** local, int** nGhosts, uint* owner, uint np ); */
 
 
+using namespace std;
 
 
 int main(int argc, char** argv) {
 
 
-    
- 
-    printf("\n  MESH PARTITIONING\n\n");
+
+    cout << "                    " << endl;
+    cout << "     o-----o-----o  " << endl;
+    cout << "     | -   |   - |  " << endl;
+    cout << "     |   - | -   |  latticeMeshPartition" << endl;
+    cout << "     o<----o---->o  " << endl;
+    cout << "     |   - | -   |   Mesh decomposition" << endl;
+    cout << "     | -   |   - |  " << endl;
+    cout << "     o-----o-----o  " << endl << endl;
+
 
     uint status;
 
 
-    /* // Read full mesh */
+    // Read full mesh
 
-    /* basicMesh mesh = readBasicMesh(); */
+    basicMesh mesh = readBasicMesh();
     
 
-    /* // Total number of processes */
+    // Total number of processes
 
-    /* uint np = 1; */
+    dictionary parallelDict("properties/parallel");
 
-    /* scalar dn = 4; */
-    
-    /* if( lookUpScalarEntry("properties/parallel","numProc",4, &dn) ) */
-    /* 	np = (uint)dn; */
-    
+    uint np( (uint)parallelDict.lookUpOrDefault<scalar>("numProc",1) );
 
-    /* // Decomposition method */
-    
-    /* char* method; */
-    
-    /* status = lookUpStringEntry("properties/parallel","method",&method, "standard"); */
+   
 
-    /* if(status) {} */
+    // Decomposition method
+    
+    string method( parallelDict.lookUpOrDefault<string>("method","standard") );
+    
 
 
 
@@ -330,40 +341,44 @@ int main(int argc, char** argv) {
     
     
     
-    /* // ******************************************************************** // */
-    /* //                             Processors                               // */
-    /* // ******************************************************************** // */
+    // ******************************************************************** //
+    //                             Processors                               //
+    // ******************************************************************** //
 
 
-    /* printf("Decomposing domain\n\n"); */
+    cout << "Decomposing domain in " << np << " processors" << endl << endl;
 
-    /* // Ownership array */
-    /* uint* owner = (uint*)malloc( mesh.nPoints * sizeof(uint) ); */
+    
+    // Ownership array
 
-    /* // Choose decomposition method */
-    /* if( strcmp(method, "standard") == 0 ) { */
+    vector<uint> owner( mesh.nPoints );
 
-    /* 	standardDecomp( owner, &mesh, np ); */
+    
+    // Choose decomposition method
+    
+    if( method == "standard" ) {
 
-    /* } */
+    	// standardDecomp( owner, &mesh, np );
 
-    /* else { */
+    }
 
-    /* 	if( strcmp(method, "kmetis") == 0 ) { */
+    else {
 
-    /* 	    kmetisDecomp( owner, &mesh, np ); */
+    	if( method == "kmetis" ) {
+
+    	    kmetisDecomp( owner, mesh, np );
 	
-    /* 	} */
+    	}
 
-    /* 	else { */
+    	else {
 
-    /* 	    printf("\n\n  [ERROR]  Unable to recognize decomposition method \"%s\"\n\n\n",method); */
+    	    cout << "\n\n  [ERROR]  Unable to recognize decomposition method " << method << "\n\n\n";
 
-    /* 	    exit(1); */
+    	    exit(1);
 
-    /* 	} */
+    	}
 
-    /* } */
+    }
 
 
 
