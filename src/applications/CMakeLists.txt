@@ -1,6 +1,6 @@
-# # Basic Mesh generators
+# Basic Mesh generators
 
-# add_subdirectory (mesh)
+add_subdirectory (mesh)
 
 
 

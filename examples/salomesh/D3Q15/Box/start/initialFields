@@ -46,7 +46,7 @@ rho
 
         minPoint (0 0 0);
 
-	maxPoint (10000 10000 400);
+	maxPoint (10000 10000 25);
 
     }
 
