@@ -28,7 +28,7 @@ class lbmesh:
     Lattice boltzmann mesh class
     """
 
-    def __init__(self, geompy, shape, lattice_model="D2Q9"):
+    def __init__(self, geompy, shape, lattice_model="D2Q9", maxDim=(0,0,0)):
 
 
         # Basic elements
@@ -38,44 +38,99 @@ class lbmesh:
         self.shape = shape
 
         self.geompy = geompy
+
+        self.Tolerance = 0.707107
         
 
 
         # Integer bounding box
 
-        BBox = geompy.BoundingBox(shape, True)
+        if self.lmodel.D() == 3:
+        
+            BBox = geompy.BoundingBox(shape, True)
 
-        Box = geompy.MakeBoxTwoPnt(  geompy.MakeVertex( np.ceil(BBox[0]), np.ceil(BBox[2]), np.ceil(BBox[4]) ),  geompy.MakeVertex( np.ceil(BBox[1]), np.ceil(BBox[3]), np.ceil(BBox[5])) )
+            self.Box = geompy.MakeBoxTwoPnt(  geompy.MakeVertex( np.ceil(BBox[0]), np.ceil(BBox[2]), np.ceil(BBox[4]) ),  geompy.MakeVertex( np.ceil(BBox[1]), np.ceil(BBox[3]), np.ceil(BBox[5])) )
 
-        geompy.addToStudy( Box, 'Bounding box' )
+            geompy.addToStudy( self.Box, 'Bounding box' )
+
+            
+        else:
+
+            Vertex_0 = geompy.MakeVertex(0, 0, 0)
+            Vertex_1 = geompy.MakeVertex(np.ceil(maxDim[0]), 0, 0)
+            Vertex_2 = geompy.MakeVertex(np.ceil(maxDim[0]), np.ceil(maxDim[1]), 0)
+            Vertex_3 = geompy.MakeVertex(0, np.ceil(maxDim[1]), 0)
+
+            Line_0 = geompy.MakeLineTwoPnt(Vertex_0, Vertex_1)
+            Line_1 = geompy.MakeLineTwoPnt(Vertex_1, Vertex_2)
+            Line_2 = geompy.MakeLineTwoPnt(Vertex_2, Vertex_3)
+            Line_3 = geompy.MakeLineTwoPnt(Vertex_3, Vertex_0)
+
+            Wire_1 = geompy.MakeWire([Line_0, Line_1, Line_2, Line_3], 1e-07)
+            
+            self.Box = geompy.MakeFaceWires([Wire_1], 1)
+
+            geompy.addToStudy( self.Box, 'Bounding box' )            
+
+
+
+            
 
         
 
         # SMESH Hypotesis
+
+        if self.lmodel.D() == 3:
         
-        self.smesh = smeshBuilder.New()
+            self.smesh = smeshBuilder.New()
 
-        Local_Length = self.smesh.CreateHypothesis('LocalLength')
+            Local_Length = self.smesh.CreateHypothesis('LocalLength')
 
-        Local_Length.SetLength( 1 )
+            Local_Length.SetLength( 1 )
 
-        Local_Length.SetPrecision( 1e-07 )
+            Local_Length.SetPrecision( 1e-07 )
 
-        self.Mesh = self.smesh.Mesh( Box )
+            self.Mesh = self.smesh.Mesh( self.Box )
 
-        Cartesian_3D = self.Mesh.BodyFitted()
+            Cartesian_3D = self.Mesh.BodyFitted()
 
-        Body_Fitting_Parameters = Cartesian_3D.SetGrid([ [ '1' ], [ 0, 1 ]],[ [ '1' ], [ 0, 1 ]],[ [ '1' ], [ 0, 1 ]],2,0)
+            Body_Fitting_Parameters = Cartesian_3D.SetGrid([ [ '1' ], [ 0, 1 ]],[ [ '1' ], [ 0, 1 ]],[ [ '1' ], [ 0, 1 ]],2,0)
 
-        Body_Fitting_Parameters.SetFixedPoint( SMESH.PointStruct ( 0, 0, 0 ), 1 )
+            Body_Fitting_Parameters.SetFixedPoint( SMESH.PointStruct ( 0, 0, 0 ), 1 )
 
-        Body_Fitting_Parameters.SetAxesDirs( SMESH.DirStruct( SMESH.PointStruct ( 1, 0, 0 )), SMESH.DirStruct( SMESH.PointStruct ( 0, 1, 0 )), SMESH.DirStruct( SMESH.PointStruct ( 0, 0, 1 )) )
-        
+            Body_Fitting_Parameters.SetAxesDirs( SMESH.DirStruct( SMESH.PointStruct ( 1, 0, 0 )), SMESH.DirStruct( SMESH.PointStruct ( 0, 1, 0 )), SMESH.DirStruct( SMESH.PointStruct ( 0, 0, 1 )) )
+
+
+        else:
+
+            self.smesh = smeshBuilder.New()
+
+            self.Mesh = self.smesh.Mesh(self.Box)
+
+            Regular_1D = self.Mesh.Segment()
+
+            Local_Length_1 = Regular_1D.LocalLength(1,None,1e-07)
+
+            Quadrangle_2D = self.Mesh.Quadrangle(algo=smeshBuilder.QUADRANGLE)
+            
 
         
         pass
 
 
+
+
+    def setTolerance(self,tol=1):
+        """
+        Set mesh filter tolerance
+        """
+
+        self.Tolerance = tol
+
+        pass
+
+
+    
     
 
     def compute(self):
@@ -91,24 +146,38 @@ class lbmesh:
         # Filter elements lying on geometry
         # This way can be used with multiple criterions
 
-        criterion = self.smesh.GetCriterion(SMESH.VOLUME,SMESH.FT_BelongToGeom,self.shape,SMESH.FT_LogicalNOT, Tolerance=0.7071)
+        if self.lmodel.D() == 3:
+            
+            criterion = self.smesh.GetCriterion(SMESH.VOLUME,SMESH.FT_BelongToGeom,self.shape,SMESH.FT_LogicalNOT, self.Tolerance)
 
-        filter = self.smesh.GetFilterFromCriteria([criterion])
+            filter = self.smesh.GetFilterFromCriteria([criterion])
 
-        isDone = self.Mesh.RemoveElements( self.Mesh.GetIdsFromFilter(filter) )
+            isDone = self.Mesh.RemoveElements( self.Mesh.GetIdsFromFilter(filter) )
 
-        isDone = self.Mesh.RemoveOrphanNodes()
+            isDone = self.Mesh.RemoveOrphanNodes()
 
-        self.Mesh.RenumberNodes()
+            self.Mesh.RenumberNodes()        
 
-        self.Mesh.RenumberElements()        
+            self.Mesh.RenumberElements()                    
+
+        else:
+            
+            criterion = self.smesh.GetCriterion(SMESH.ALL,SMESH.FT_BelongToGeom,SMESH.FT_Undefined,self.shape,SMESH.FT_LogicalNOT,SMESH.FT_Undefined,self.Tolerance)
+
+            filter = self.smesh.GetFilterFromCriteria([criterion])
+
+            isDone = self.Mesh.RemoveElements( self.Mesh.GetIdsFromFilter(filter) )
+
+            isDone = self.Mesh.RemoveOrphanNodes()
+
+            nbRemoved = self.Mesh.RenumberNodes()
+
+            self.Mesh.RenumberElements()        
 
 
 
-        # ## Set names of Mesh objects
-        # smesh.SetName(Cartesian_3D.GetAlgorithm(), 'Cartesian_3D')
-        # smesh.SetName(Body_Fitting_Parameters, 'Body Fitting Parameters')
-        # smesh.SetName(Local_Length, 'Local Length')
+        # Set names of Mesh objects
+
         self.smesh.SetName(self.Mesh.GetMesh(), 'Mesh')
 
 
@@ -162,6 +231,7 @@ class lbmesh:
               # Corresponding velocity index
 
               vid = self.lmodel.vindex( dist )
+
               
 
               # Assign neighbour using reverse indexing

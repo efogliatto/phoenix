@@ -172,8 +172,9 @@ for edge in edgeList:
 
 
 
+GroupsList = [Y0,Y1,X0,X1]    
 
-for group in [X0,X1,Y0,Y1]:
+for group in GroupsList:
 
   geompy.addToStudyInFather( Cavity, group, group.GetName() )
 
@@ -182,57 +183,26 @@ for group in [X0,X1,Y0,Y1]:
 
 
 ##############################
-#       MESH CREATION        #
+#            MESH            #
 ##############################
 
-mesh = sm.lbmesh(geompy, Cavity)
+# Mesh creation
 
-mesh.compute()
-  
-mesh.export()
+mesh = sm.lbmesh(geompy, Cavity, maxDim=(5,7,0))
 
-
-
-# # Mesh creation
-
-# points, nb = sm.mesh(geompy, Cavity, "D2Q9")
+mesh.setTolerance( 1e-03 )
 
 
-# # VTKCells
+# Mesh calculation: castelation from cartesian grid
 
-# vtk = sm.vtk_cells(geompy, nb)
-
-
-# # Boundaries detection
-
-# bdWeights = {'X0': 1, 'X1': 1, 'Y0': 2, 'Y1': 2}
-
-# bdDict = sm.lattice_boundaries_weights(geompy, Cavity, [X0,X1,Y0,Y1], points, nb, bdWeights)
+isDone = mesh.compute()
 
 
-# periodicBCs = [ ('X0', 'X1') ]
+# Group creation from geometry
 
-# # corners = [((x0,y0),(x3,y0)),
-# #            ((x0,y1),(x3,y1))] 
-
-# nb = sm.lattice_periodic_bcs(geompy, nb, bdDict, periodicBCs, points)
+mesh.GroupsFromGeometry(GroupsList)
 
 
+# Export mesh in LB format
 
-
-
-# # Write mesh info in LB format
-
-# sm.write_points( geompy, points )
-
-# sm.write_neighbours( geompy, nb )
-
-# sm.write_boundaries( geompy, bdDict )
-
-# sm.write_vtk_cells( geompy, vtk )
-
-
-
-
-# if salome.sg.hasDesktop():
-#   salome.sg.updateObjBrowser(True)
+mesh.export()  
