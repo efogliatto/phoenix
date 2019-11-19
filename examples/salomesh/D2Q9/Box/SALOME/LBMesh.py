@@ -147,7 +147,8 @@ for edge in edgeList:
 
 
 
-GroupsList = [X0,X1,Y0,Y1]    
+# GroupsList = [X0,X1,Y0,Y1]
+GroupsList = [Y0,Y1,X0,X1]
 
 for group in GroupsList:
 
@@ -176,6 +177,11 @@ isDone = mesh.compute()
 # Group creation from geometry
 
 mesh.GroupsFromGeometry(GroupsList)
+
+
+# Assign periodic boundaries
+
+mesh.PeriodicBoundaries( [('X0','X1','X')] )
 
 
 # Export mesh in LB format

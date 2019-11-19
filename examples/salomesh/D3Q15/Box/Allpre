@@ -2,6 +2,7 @@
 
 # Copy SALOME lattice
 cp -r SALOME/lattice .
+# latticeBox3D
 
 # Lattice partitioning
 latticeMeshPartition

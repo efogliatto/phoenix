@@ -315,7 +315,91 @@ class lbmesh:
 
 
 
+
+
+    def PeriodicBoundaries(self, periodic):
+        """
+        Change neighbours for periodic boundaries
         
+        Arguments
+        periodic: list of tuples ('bd1','bd2','dir'), where dir can be X,Y,Z
+        """
+
+
+        for pair in periodic:
+
+
+            # Node indices for each boundary
+            
+            bd1 = self.mg[ pair[0] ]
+
+            bd2 = self.mg[ pair[1] ]
+
+            dir = pair[2]
+
+
+            for nd1 in bd1:
+
+                pos_1 = np.rint(  self.Mesh.GetNodeXYZ( nd1 )  )
+                
+                for nd2 in bd2:
+
+                    pos_2 = np.rint(  self.Mesh.GetNodeXYZ( nd2 )  )
+
+
+                    if dir == 'X':
+
+                        if (pos_1[1] == pos_2[1]):
+
+                            if (pos_1[2] == pos_2[2]):
+
+                                
+                                for k in range( self.lmodel.Q() ):
+
+                                    if self.neighbours[nd2-1,k] == -1:
+                                        self.neighbours[nd2-1,k] = self.neighbours[nd1-1,k]
+
+                                    if self.neighbours[nd1-1,k] == -1:
+                                        self.neighbours[nd1-1,k] = self.neighbours[nd2-1,k]
+                            
+
+                    elif dir == 'Y':
+
+                        if (pos_1[0] == pos_2[0]):
+
+                            if (pos_1[2] == pos_2[2]):
+
+                                for k in range( self.lmodel.Q() ):
+
+                                    if self.neighbours[nd2-1,k] == -1:
+                                        self.neighbours[nd2-1,k] = self.neighbours[nd1-1,k]
+
+                                    if self.neighbours[nd1-1,k] == -1:
+                                        self.neighbours[nd1-1,k] = self.neighbours[nd2-1,k]                                
+                            
+
+                    elif dir == 'Z':
+
+                        if (pos_1[0] == pos_2[0]):
+
+                            if (pos_1[1] == pos_2[1]):
+
+                                
+                                for k in range( self.lmodel.Q() ):
+
+                                    if self.neighbours[nd2-1,k] == -1:
+                                        self.neighbours[nd2-1,k] = self.neighbours[nd1-1,k]
+
+                                    if self.neighbours[nd1-1,k] == -1:
+                                        self.neighbours[nd1-1,k] = self.neighbours[nd2-1,k]                                
+                    
+
+
+        
+        pass
+
+
+          
     
 
     def export(self):
