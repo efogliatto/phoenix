@@ -4,8 +4,12 @@ import os
 
 import numpy
 
+import SMESH, SALOMEDS
+
+import salome
+
     
-def write_vtk_cells( Mesh ):
+def write_vtk_cells( Mesh, lbmodel ):
 
     directory = "lattice"
     
@@ -17,8 +21,14 @@ def write_vtk_cells( Mesh ):
 
     # Elements from Mesh
 
-    elements = Mesh.GetElementsId()    
-    
+    elements = []
+
+    if lbmodel.D() == 2:    
+        elements = Mesh.GetElementsByType(SMESH.FACE)
+
+    else:
+        elements = Mesh.GetElementsByType(SMESH.VOLUME)
+        
 
     file.write( str( len(elements) )  )
     file.write( " {}\n".format(len( Mesh.GetElemNodes( elements[0] ) )) )
@@ -30,9 +40,31 @@ def write_vtk_cells( Mesh ):
   
         element_nodes = Mesh.GetElemNodes( el )
 
-        for node in element_nodes:
 
-            file.write( "%.0f " % (node-1) )
+        # Write with VTK ordering
+
+        if lbmodel.D() == 2:            
+
+            file.write( "%.0f " % (element_nodes[0] - 1) )
+            file.write( "%.0f " % (element_nodes[1] - 1) )
+            file.write( "%.0f " % (element_nodes[3] - 1) )
+            file.write( "%.0f " % (element_nodes[2] - 1) )            
+
+
+        else:
+
+            file.write( "%.0f " % (element_nodes[0] - 1) )
+            file.write( "%.0f " % (element_nodes[3] - 1) )
+            file.write( "%.0f " % (element_nodes[1] - 1) )
+            file.write( "%.0f " % (element_nodes[2] - 1) )
+            file.write( "%.0f " % (element_nodes[4] - 1) )
+            file.write( "%.0f " % (element_nodes[7] - 1) )
+            file.write( "%.0f " % (element_nodes[5] - 1) )
+            file.write( "%.0f " % (element_nodes[6] - 1) )                        
+
+            # for node in element_nodes:
+
+            #     file.write( "%.0f " % (node-1) )
             
             
         file.write( "\n" )

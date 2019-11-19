@@ -6,4 +6,4 @@ Nz 3;
 
 LBModel D3Q15;
 
-boundaryType periodicXY;
+boundaryType generic;

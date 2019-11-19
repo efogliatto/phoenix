@@ -147,15 +147,14 @@ for edge in edgeList:
 
 
 
-for group in [X0,X1,Y0,Y1]:
+GroupsList = [X0,X1,Y0,Y1]    
+
+for group in GroupsList:
 
   geompy.addToStudyInFather( Cavity, group, group.GetName() )
 
 
 
-
-
-  
 
 
 ##############################
@@ -164,26 +163,21 @@ for group in [X0,X1,Y0,Y1]:
 
 # Mesh creation
 
-mesh = sm.lbmesh(geompy, Cavity)
+mesh = sm.lbmesh(geompy, Cavity, maxDim=(dx,dy,0))
+
+mesh.setTolerance( 1e-03 )
 
 
-# Set boundaries from geometry groups
+# Mesh calculation: castelation from cartesian grid
 
-mesh.setGroupsFromGeometry( [Y0,Y1,X0,X1] )
-
-
-# Set periodic boundaries
-
-mesh.setPeriodicBoundaries( [ ('X0', 'X1') ] )
+isDone = mesh.compute()
 
 
-# Set explicit corner correction
+# Group creation from geometry
 
-mesh.setCorners( [((0,0,0),(dx,0,0)), ((0,dy,0),(dx,dy,0))] )
+mesh.GroupsFromGeometry(GroupsList)
 
 
-# Mesh calculation and saving
+# Export mesh in LB format
 
-mesh.compute()
-  
-mesh.export()
+mesh.export()  

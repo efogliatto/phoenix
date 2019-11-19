@@ -327,7 +327,7 @@ class lbmesh:
 
         write_neighbours(self.neighbours)
 
-        write_vtk_cells(self.Mesh)
+        write_vtk_cells(self.Mesh, self.lmodel)
 
         write_boundaries(self.mg)
 
