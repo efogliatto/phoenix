@@ -23,6 +23,8 @@
 
 #include <latticeModelCreator.H>
 
+#include "writeLatticeMesh.H"
+
 
 /* #include <io.h> */
 /* #include <dictIO.h> */
@@ -537,7 +539,9 @@ int main(int argc, char** argv) {
 
 	    localMesh[rpid].mesh.bd.bdNames.resize( mesh.bd.bdNames.size() );
 
-
+	    localMesh[rpid].lattice_D = lbmodel->d();
+		
+	    
 
 
     	    // // Lattice model
@@ -842,16 +846,16 @@ int main(int argc, char** argv) {
     
 
 
-    /* // Write lattice meshes */
-    /* { */
+    // Write lattice meshes
+    {
 
-    /* 	int status = system( "rm -rf processor*" ); */
+    	int status = system( "rm -rf processor*" );
 
-    /* 	if (!status) { */
+    	if (!status) {
 
-    /* 	    for( i = 0 ; i < np ; i++ ) { */
+    	    for( uint i = 0 ; i < np ; i++ ) {
 
-    /* 		writeLatticeMesh( &localMesh[i] ); */
+    		writeLatticeMesh( localMesh[i] );
 
 
 
@@ -896,18 +900,18 @@ int main(int argc, char** argv) {
     /* 		fclose(outFile); */
 		
 
-    /* 	    } */
+    	    }
 
-    /* 	} */
-    /* } */
-
-    
+    	}
+    }
 
     
 
+    
 
 
-    /* printf("Finished domain decomposition\n\n"); */
+
+    cout << "Finished domain decomposition" << endl << endl;
 
 
 

@@ -43,6 +43,8 @@ typedef struct {
 
     // /** EOS information */
     // EOSInfo EOS;            
+
+    uint lattice_D;
     
 } latticeMesh_C;
 
