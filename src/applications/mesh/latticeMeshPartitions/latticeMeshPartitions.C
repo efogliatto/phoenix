@@ -92,9 +92,7 @@ int main(int argc, char** argv) {
 
     computeVirtualNodes( mesh, virtualNodes, lbmodel );
     
-    
-
-    
+        
     
     
     
@@ -603,9 +601,9 @@ int main(int argc, char** argv) {
     		uint count = 0;
 
     		for( uint id = 0 ; id < virtualNodes.size() ; id++ ) {
-
-    		    if( local[ virtualNodes[id][0] ][ i ] != -1 )
-    			count++;
+		    
+		    if( local[ virtualNodes[id][0] ][ i ] != -1 )
+			count++;
 
     		}
 		
@@ -628,8 +626,25 @@ int main(int argc, char** argv) {
 		for( uint id = 0 ; id < virtualNodes.size() ; id++ ) {
 
 		    if( local[ virtualNodes[id][0] ][ i ] != -1 ){
-		    	fprintf(outFile,"%d %d %d %d\n", local[ virtualNodes[id][0] ][ i ], virtualNodes[id][1], local[ virtualNodes[id][2] ][ i ], local[ virtualNodes[id][3] ][ i ]);
+			
+			// fprintf(outFile,"%d %d %d %d\n", local[ virtualNodes[id][0] ][ i ], virtualNodes[id][1], local[ virtualNodes[id][2] ][ i ], local[ virtualNodes[id][3] ][ i ]);
+
+			fprintf(outFile,"%d %d ", local[ virtualNodes[id][0] ][ i ], virtualNodes[id][1]);
+
+			if( virtualNodes[id][2] != -1 ) {
+			    
+			    fprintf(outFile,"%d ", local[ virtualNodes[id][2] ][ i ]);
+			    
+			    if( virtualNodes[id][3] != -1 ) {
+			    
+				fprintf(outFile,"%d\n", local[ virtualNodes[id][3] ][ i ]);			   
+			    
+			    }
+			    
+			}
+			    
 		    }
+
 
 		}
 
