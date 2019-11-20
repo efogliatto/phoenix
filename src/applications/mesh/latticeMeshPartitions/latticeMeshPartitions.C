@@ -25,22 +25,8 @@
 
 #include "writeLatticeMesh.H"
 
+#include "computeVirtualNodes.H"
 
-/* #include <io.h> */
-/* #include <dictIO.h> */
-/* #include <latticeModel.h> */
-/* #include <basic.h> */
-/* #include <writeLatticeMesh.h> */
-
-
-/* // Standard decomposition */
-/* void standardDecomp( uint* owner, basicMesh* mesh, uint np ); */
-
-/* // kmetis decomposition */
-/* void kmetisDecomp( uint* owner, basicMesh* mesh, uint np ); */
-
-/* // Local Indexing */
-/* void localIndexing ( basicMesh* mesh, int** local, int** nGhosts, uint* owner, uint np ); */
 
 
 using namespace std;
@@ -59,8 +45,6 @@ int main(int argc, char** argv) {
     cout << "     | -   |   - |  " << endl;
     cout << "     o-----o-----o  " << endl << endl;
 
-
-    uint status;
 
 
     // Read full mesh
@@ -95,269 +79,21 @@ int main(int argc, char** argv) {
 
 
 
-    /* int** virtualNodes; */
 
-    /* uint nvirtual = 0; */
 
+    // ******************************************************************** //
+    //                           Virtual nodes                              //
+    // ******************************************************************** //
 
+    cout << "Virtual nodes" << endl << endl;
 
-    /* // ******************************************************************** // */
-    /* //                           Virtual nodes                              // */
-    /* // ******************************************************************** // */
 
-    /* { */
+    vector< vector<int> > virtualNodes;
 
+    computeVirtualNodes( mesh, virtualNodes, lbmodel );
+    
+    
 
-    /* 	printf("Virtual nodes\n\n"); */
-	
-
-    /* 	// Lattice model */
-
-    /* 	latticeInfo lattice = setLatticeInfo(); */
-	
-
-	
-    /* 	// Use boundary nodes only */
-	
-    /* 	uint bid, id, node, k; */
-
-    /* 	uint* dist = (uint*)malloc( (mesh.Q) * sizeof(uint) ); */
-
-    /* 	uint* vid = (uint*)malloc( (mesh.Q) * sizeof(vid) ); */
-
-
-
-    /* 	// Compute maximun number of virtual nodes */
-
-    /* 	uint maxvirt = 0; */
-
-    /* 	for( bid = 0 ; bid < mesh.bd.nbd ; bid++ ) { */
-
-    /* 	    maxvirt += mesh.bd.nbdelem[bid]; */
-
-    /* 	} */
-
-    /* 	maxvirt = maxvirt * mesh.Q; */
-
-    /* 	int** vnodes = matrixIntAlloc( maxvirt, 4, -1); */
-
-
-	
-	
-	
-
-    /* 	// Move over boundary nodes */
-
-    /* 	for( bid = 0 ; bid < mesh.bd.nbd ; bid++ ) { */
-
-
-    /* 	    // Move over boundary elements */
-	    
-    /* 	    for( id = 0 ; id < mesh.bd.nbdelem[bid] ; id++ ) { */
-
-
-    /* 		// Node id */
-
-    /* 		node = mesh.bd.bdPoints[bid][id]; */
-
-		
-    /* 		// Move over velocities and check for non-existing neighbour */
-
-    /* 		for( k = 0 ; k < mesh.Q ; k++ ) {		     */
-		    
-    /* 		    if(mesh.nb[node][ lattice.reverse[k] ] == -1) { */
-
-
-    /* 			// First compute distance to other nodes conecting "node" */
-
-    /* 			uint j; */
-
-    /* 			for( j = 0 ; j < mesh.Q ; j++ ) { */
-
-    /* 			    dist[j] = (lattice.vel[j][0] - lattice.vel[k][0]) * (lattice.vel[j][0] - lattice.vel[k][0]) */
-    /* 				    + (lattice.vel[j][1] - lattice.vel[k][1]) * (lattice.vel[j][1] - lattice.vel[k][1]) */
-    /* 				    + (lattice.vel[j][2] - lattice.vel[k][2]) * (lattice.vel[j][2] - lattice.vel[k][2]); */
-
-    /* 			    vid[j] = j; */
-
-    /* 			} */
-
-
-    /* 			// Sort distances */
-
-    /* 			uint perm = 1; */
-
-    /* 			while( perm != 0 ) { */
-
-    /* 			    perm = 0; */
-			    
-    /* 			    for( j = 1 ; j < mesh.Q ; j++ ) { */
-
-    /* 				if( dist[j] < dist[j-1] ) { */
-
-    /* 				    uint swpDist = dist[j-1], */
-    /* 					swpVid = vid[j-1]; */
-
-    /* 				    dist[j-1] = dist[j]; */
-
-    /* 				    dist[j] = swpDist; */
-
-
-    /* 				    vid[j-1] = vid[j]; */
-
-    /* 				    vid[j] = swpVid; */
-
-    /* 				    perm++; */
-
-    /* 				} */
-
-    /* 			    } */
-
-    /* 			} */
-
-
-			
-    /* 			// First distance is node. Check from second */
-
-    /* 			uint d = dist[1]; */
-
-    /* 			uint maxv = 1; */
-
-    /* 			for( j = 2 ; j < mesh.Q ; j++ ) { */
-
-    /* 			    if( dist[j] == d ) */
-    /* 				maxv = j; */
-
-    /* 			} */
-
-
-
-    /* 			// Check if node exists at related velocity and asign closest wall node */
-
-    /* 			uint stj = 1, endj = maxv; */
-
-    /* 			uint wallNode = -1; */
-
-    /* 			uint wallVel = 0; */
-
-    /* 			while(wallNode == -1) { */
-
-    /* 			    for( j = stj ; j <= endj ; j++ ) { */
-
-    /* 				uint neigh = mesh.nb[node][ lattice.reverse[vid[j]] ]; */
-			    
-    /* 				if( neigh != -1 ) { */
-
-    /* 				    wallNode = neigh; */
-
-    /* 				    wallVel = vid[j]; */
-
-    /* 				} */
-
-    /* 			    } */
-
-
-    /* 			    // Move to next distance */
-			    
-    /* 			    if( wallNode == -1 ) { */
-
-    /* 				stj = endj + 1; */
-
-    /* 				d = dist[stj]; */
-
-    /* 				for( j = stj ; j < mesh.Q ; j++ ) { */
-
-    /* 				    if( dist[j] == d ) */
-    /* 					endj = j; */
-
-    /* 				}				 */
-				
-
-    /* 			    } */
-
-    /* 			} */
-
-
-
-
-
-    /* 			// Finally detect fluid node in same direction */
-
-    /* 			int sep[3] = { lattice.vel[wallVel][0] - lattice.vel[k][0], lattice.vel[wallVel][1] - lattice.vel[k][1], lattice.vel[wallVel][2] - lattice.vel[k][2] }; */
-
-    /* 			uint fvel = 0; */
-			
-    /* 			for( j = 0 ; j < mesh.Q ; j++ ) { */
-
-    /* 			    int sep2[3] = { lattice.vel[j][0] - lattice.vel[wallVel][0], lattice.vel[j][1] - lattice.vel[wallVel][1], lattice.vel[j][2] - lattice.vel[wallVel][2] };			     */
-
-    /* 			    if(  ( sep2[0] == sep[0] )   &&   ( sep2[1] == sep[1] )   &&   ( sep2[2] == sep[2] )   ) */
-    /* 				fvel = j; */
-
-    /* 			} */
-
-
-    /* 			// Add to nodes */
-
-    /* 			/\* printf("Node %d: %d %d %d\n", node, k, wallNode, mesh.nb[node][lattice.reverse[fvel]]); *\/ */
-			
-    /* 			vnodes[nvirtual][0] = node; */
-    /* 			vnodes[nvirtual][1] = k; */
-    /* 			vnodes[nvirtual][2] = wallNode; */
-    /* 			vnodes[nvirtual][3] = mesh.nb[node][lattice.reverse[fvel]]; */
-    /* 			nvirtual++; */
-
-		       
-
-			
-			
-
-			
-
-    /* 		    } */
-
-    /* 		} */
-		
-
-    /* 	    } */
-	 
-	   	    
-
-    /* 	} */
-
-
-
-
-    /* 	// Copy to reduced array */
-
-    /* 	virtualNodes = matrixIntAlloc( nvirtual, 4, -1 ); */
-
-    /* 	for( id = 0 ; id < nvirtual ; id++ ) { */
-
-    /* 	    for( k = 0 ; k < 4 ; k++ ) { */
-
-    /* 		virtualNodes[id][k] = vnodes[id][k]; */
-
-    /* 	    } */
-
-    /* 	} */
-	    
-
-
-	
-
-    /* 	for( id = 0 ; id < maxvirt ; id++ ) */
-    /* 	    free(vnodes[id]); */
-
-    /* 	free(vnodes);	 */
-	
-    /* 	free(dist); */
-
-    /* 	free(vid); */
-
-
-
-    /* } */
     
     
     
@@ -862,44 +598,43 @@ int main(int argc, char** argv) {
 
 
 
-    /* 		// Count number of virtual nodes per patch */
+    		// Count number of virtual nodes per patch
 
-    /* 		uint count = 0; */
+    		uint count = 0;
 
-    /* 		uint id; */
+    		for( uint id = 0 ; id < virtualNodes.size() ; id++ ) {
 
-    /* 		for( id = 0 ; id < nvirtual ; id++ ) { */
+    		    if( local[ virtualNodes[id][0] ][ i ] != -1 )
+    			count++;
 
-    /* 		    if( local[ virtualNodes[id][0] ][ i ] != -1 ) */
-    /* 			count++; */
-
-    /* 		} */
+    		}
 		
 
-    /* 		// Write virtual nodes */
+    		// Write virtual nodes
 
-    /* 		char fname[100]; */
+    		char fname[100];
 
-    /* 		FILE *outFile; */
+    		FILE *outFile;
 
-    /* 		sprintf(fname,"processor%d/lattice/virtualNodes", i); */
+    		sprintf(fname,"processor%d/lattice/virtualNodes", i);
     
-    /* 		outFile = fopen(fname,"w"); */
+    		outFile = fopen(fname,"w");
 
 
 		
-    /* 		fprintf(outFile,"%d\n",count); */
+    		fprintf(outFile,"%d\n",count);
 
-    /* 		for( id = 0 ; id < nvirtual ; id++ ) { */
 
-    /* 		    /\* if( local[ virtualNodes[id][0] ][ i ] != -1 ){ *\/ */
-    /* 		    /\* 	fprintf(outFile,"%d %d %d %d\n", local[ virtualNodes[id][0] ][ i ], virtualNodes[id][1], local[ virtualNodes[id][2] ][ i ], local[ virtualNodes[id][3] ][ i ]); *\/ */
-    /* 		    /\* } *\/ */
+		for( uint id = 0 ; id < virtualNodes.size() ; id++ ) {
 
-    /* 		} */
+		    if( local[ virtualNodes[id][0] ][ i ] != -1 ){
+		    	fprintf(outFile,"%d %d %d %d\n", local[ virtualNodes[id][0] ][ i ], virtualNodes[id][1], local[ virtualNodes[id][2] ][ i ], local[ virtualNodes[id][3] ][ i ]);
+		    }
+
+		}
 
 		
-    /* 		fclose(outFile); */
+    		fclose(outFile);
 		
 
     	    }
@@ -915,18 +650,7 @@ int main(int argc, char** argv) {
 
     cout << "Finished domain decomposition" << endl << endl;
 
-
-
-
-
-
-    /* uint id; */
-    
-    /* for( id = 0 ; id < nvirtual ; id++ ) */
-    /* 	free(virtualNodes[id]); */
-
-    /* free(virtualNodes); */
-    
+   
     
     return 0;
 

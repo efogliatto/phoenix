@@ -9,6 +9,7 @@ add_executable(latticeMeshPartitions
   "writeLatticeMesh.C"
   "writeMeshToEnsight.C"
   "updateCaseFile.C"
+  "computeVirtualNodes.C"
   )
 
 target_link_libraries(latticeMeshPartitions ${PROJECT_LINK_LIBS} ${MPI_LIBRARIES} ${PROJECT_LINK_LIBS})
