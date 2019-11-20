@@ -1,9 +1,14 @@
 // #include <stdlib.h>
 // #include <stdio.h>
 // #include <basicMesh.h>
+#include <fstream>
+
+#include <iostream>
+
 #include "kmetisDecomp.H"
 
-#ifdef USE_METIS
+
+// #ifdef USE_METIS
 
 using namespace std;
 
@@ -11,6 +16,7 @@ void kmetisDecomp( vector<uint>& owner, basicMesh& mesh, uint np )  {
 
 
     if( np > 1 ) {
+	
 
     	// Create graph for metis decomposition.
 
@@ -23,7 +29,7 @@ void kmetisDecomp( vector<uint>& owner, basicMesh& mesh, uint np )  {
 
     	    for( uint k = 1 ; k < mesh.Q ; k++ ) {
 
-    		if( mesh->nb[i][k] != -1 ) {
+    		if( mesh.nb[i][k] != -1 ) {
 
     		    nedges++;
 
@@ -38,78 +44,80 @@ void kmetisDecomp( vector<uint>& owner, basicMesh& mesh, uint np )  {
 
 
 
-    // 	// Write graph file
+    	// Write graph file
 
-    // 	FILE* gfile = fopen("lattice/lattice.graph","w");
+	ofstream gfile;
 
-    
-    // 	fprintf(gfile,"%d %d\n", mesh->nPoints, nedges);
-
-    // 	for( i = 0 ; i < mesh->nPoints ; i++ ) {
-
-    // 	    for( k = 1 ; k < mesh->Q ; k++ ) {
-
-    // 		if( mesh->nb[i][k] != -1 ) {
-
-    // 		    fprintf(gfile,"%d ", mesh->nb[i][k]+1);
-
-    // 		}
-
-    // 	    }
-
-    // 	    fprintf(gfile,"\n");
-
-    // 	}
-    
-    
-    // 	fclose(gfile);
+	gfile.open( "lattice/lattice.graph" );	
 
     
+    	gfile << mesh.nPoints << " " << nedges << endl;
+
+    	for( uint i = 0 ; i < mesh.nPoints ; i++ ) {
+
+    	    for( uint k = 1 ; k < mesh.Q ; k++ ) {
+
+    		if( mesh.nb[i][k] != -1 ) {
+
+    		    gfile << mesh.nb[i][k]+1 << " ";
+
+    		}
+
+    	    }
+
+    	    gfile << endl;
+
+    	}
+    
+    
+    	gfile.close();
+
+    
 
 
 
 
-    // 	// Apply metis algorithm. Call external function gpmetis
+    	// Apply metis algorithm. Call external function gpmetis
 
-    // 	char cmd[100];
+    	char cmd[100];
 
-    // 	sprintf(cmd,"gpmetis lattice/lattice.graph %d > log.gpmetis",np);
+    	sprintf(cmd,"gpmetis lattice/lattice.graph %d > log.gpmetis",np);
 
-    // 	uint status = system( cmd );
-
-
-    // 	if (!status) {
+    	uint status = system( cmd );
 
 
-    // 	    // Read gpmetis result and load into owner
+    	if (!status) {
 
-    // 	    sprintf(cmd,"lattice/lattice.graph.part.%d",np);
 
-    // 	    gfile = fopen(cmd,"r");
+    	    // Read gpmetis result and load into owner
+
+    	    sprintf(cmd,"lattice/lattice.graph.part.%d",np);
+
+	    ifstream inFile;
+
+	    inFile.open( cmd );	
+	    
 
 	
-    // 	    for( i = 0 ; i < mesh->nPoints ; i++ ) {
+    	    for( uint i = 0 ; i < mesh.nPoints ; i++ ) {
 
-    // 		status = fscanf(gfile,"%d",&owner[i]);
+    		inFile >> owner[i];
 
-    // 	    }
+    	    }
 	
 	
-    // 	    fclose(gfile);
-	
-
-    // 	    /* status = system("rm lattice/lattice.graph*"); */
+    	    inFile.close();	
 
 	
-    // 	}
+    	}
 
-    // 	else {
+    	else {
 
-    // 	    printf("\n   [ERROR]  gpmetis not executed\n\n");
+    	    cout << "\n   [ERROR]  gpmetis not executed\n\n";
 
-    // 	    exit(1);
+    	    exit(1);
 
-    // 	}
+    	}
 
     
     }
@@ -130,24 +138,24 @@ void kmetisDecomp( vector<uint>& owner, basicMesh& mesh, uint np )  {
 }
 
 
-#endif
+// #endif
 
 
 
 
 
-#ifndef USE_METIS
+// #ifndef USE_METIS
 
-using namespace std;
+// using namespace std;
 
-#include <iostream>
+// #include <iostream>
 
-void kmetisDecomp( vector<uint>& owner, basicMesh& mesh, uint np )  {
+// void kmetisDecomp( vector<uint>& owner, basicMesh& mesh, uint np )  {
 
-    cout << "\n   [ERROR]  METIS library not included\n" << endl;
+//     cout << "\n   [ERROR]  METIS library not included\n" << endl;
 
-    exit(1);
+//     exit(1);
 
-}
+// }
 
-#endif
+// #endif

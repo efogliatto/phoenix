@@ -15,6 +15,13 @@
 
 #include "kmetisDecomp.H"
 
+#include "standardDecomp.H"
+
+#include "localIndexing.H"
+
+#include "../meshInclude/latticeMesh_C.H"
+
+#include <latticeModelCreator.H>
 
 
 /* #include <io.h> */
@@ -59,6 +66,7 @@ int main(int argc, char** argv) {
     basicMesh mesh = readBasicMesh();
     
 
+    
     // Total number of processes
 
     dictionary parallelDict("properties/parallel");
@@ -70,6 +78,17 @@ int main(int argc, char** argv) {
     // Decomposition method
     
     string method( parallelDict.lookUpOrDefault<string>("method","standard") );
+
+
+    
+    // Read model name. Use D2Q9 as default
+
+    dictionary ldict("properties/latticeProperties");
+    
+    latticeModelCreator lbm;
+	
+    latticeModel* lbmodel = lbm.create(ldict.lookUpOrDefault<string>("LBModel","D2Q9"));
+    
     
 
 
@@ -358,7 +377,7 @@ int main(int argc, char** argv) {
     
     if( method == "standard" ) {
 
-    	// standardDecomp( owner, &mesh, np );
+    	standardDecomp( owner, mesh, np );
 
     }
 
@@ -383,367 +402,385 @@ int main(int argc, char** argv) {
 
 
 
+    // Resize local indices array
 
-    /* // Resize local indices array */
-    /* int** local   = matrixIntAlloc( mesh.nPoints, np, -1); */
-    /* int** nGhosts = matrixIntAlloc( np, 2, -1); */
-    /* /\* int** shared  = matrixIntAlloc( np, np, 0); *\/ */
-    /* int** nrecv  = matrixIntAlloc( np, np, 0); */
-    /* int** nsend  = matrixIntAlloc( np, np, 0); */
+    vector< vector<int> > local;
+
+    local.resize(mesh.nPoints);
+
+    for(uint i = 0 ; i < mesh.nPoints ; i++) {
+
+	local[i].resize(np);
+
+	std::fill( local[i].begin(),local[i].end(),-1 );
+
+    }
+
+
+    vector< vector<int> > nGhosts;
+
+    nGhosts.resize(np);
+
+    for(uint i = 0 ; i < np ; i++) {
+
+	nGhosts[i].resize(2);
+
+	std::fill( nGhosts[i].begin(),nGhosts[i].end(),-1 );
+
+    }
+    
+
+    vector< vector<int> > nrecv;
+
+    nrecv.resize(np);
+
+    for(uint i = 0 ; i < np ; i++) {
+
+	nrecv[i].resize(np);
+
+	std::fill( nrecv[i].begin(),nrecv[i].end(), 0 );
+
+    }
+
+
+    vector< vector<int> > nsend;
+
+    nsend.resize(np);
+
+    for(uint i = 0 ; i < np ; i++) {
+
+	nsend[i].resize(np);
+
+	std::fill( nsend[i].begin(),nsend[i].end(), 0 );
+
+    }
+    
+    
+
 
     
-    /* // Creation of local indexing */
-    /* localIndexing( &mesh, local, nGhosts, owner, np ); */
-
-
-    /* // Total number of shared nodes */
-    /* uint i, */
-    /* 	 pid; */
+    // Creation of local indexing
     
-    /* /\* for( i = 0 ; i < mesh.nPoints ; i++ ) { *\/ */
+    localIndexing( mesh, local, nGhosts, owner, np );
+    
 
-    /* /\* 	for( pid = 0 ; pid < np ; pid++) { *\/ */
+
+
+    // Individual send and receive ghosts
+
+    for( uint i = 0 ; i < mesh.nPoints ; i++ ) {
+
+    	for( uint pid = 0 ; pid < np ; pid++) {
 	    
-    /* /\* 	    if( local[i][pid] >= nGhosts[pid][0] ) { *\/ */
-
-    /* /\* 		shared[pid][ owner[i] ]++; *\/ */
-
-    /* /\* 	    } *\/ */
-
-    /* /\* 	} *\/ */
-
-    /* /\* } *\/ */
+    	    if( local[i][pid] >= nGhosts[pid][0] ) {
 
 
+    		uint jj = owner[i];
 
-    /* // Individual send and receive ghosts */
+    		nrecv[jj][pid]++;
 
-    /* for( i = 0 ; i < mesh.nPoints ; i++ ) { */
-
-    /* 	for( pid = 0 ; pid < np ; pid++) { */
-	    
-    /* 	    if( local[i][pid] >= nGhosts[pid][0] ) { */
-
-
-    /* 		uint jj = owner[i]; */
-
-    /* 		nrecv[jj][pid]++; */
-
-    /* 		nsend[pid][jj]++; */
+    		nsend[pid][jj]++;
 		
 
-    /* 	    } */
+    	    }
 
-    /* 	} */
+    	}
 
-    /* } */
-
-
+    }
 
 
-    /* /\* for( i = 0 ; i < np ; i++ ) { *\/ */
 
-    /* /\* 	for( pid = 0 ; pid < np ; pid++) { *\/ */
 
-    /* /\* 	    printf("%d ", nrecv[i][pid]); *\/ */
-
-    /* /\* 	} *\/ */
-
-    /* /\* 	printf("\n"); *\/ */
-
-    /* /\* } *\/ */
-    
-    /* /\* printf("\n\n"); *\/ */
-    
-    /* /\* for( i = 0 ; i < np ; i++ ) { *\/ */
-
-    /* /\* 	for( pid = 0 ; pid < np ; pid++) { *\/ */
-
-    /* /\* 	    printf("%d ", nsend[i][pid]); *\/ */
-
-    /* /\* 	} *\/ */
-
-    /* /\* 	printf("\n"); *\/ */
-
-    /* /\* } *\/ */
     
     
     
-    /* // Local mesh creation */
-    /* latticeMesh* localMesh = (latticeMesh*)malloc( np * sizeof(latticeMesh) ); */
+    // Local mesh creation
 
-    /* // Move over meshes and look for recv ghosts */
-    /* { */
+    vector<latticeMesh_C> localMesh( np );
 
+    // Move over meshes and look for recv ghosts
+    {
+
+       
+
+    	// Counter arrays
+
+	vector< vector<int> > gcount;
+
+	gcount.resize(np);
+
+	for(uint i = 0 ; i < np ; i++) {
+
+	    gcount[i].resize(np);
+
+	    std::fill( gcount[i].begin(),gcount[i].end(), 0 );
+
+	}
 	
-    /* 	uint rpid,spid; */
-
-    /* 	// Counter arrays */
-    /* 	int** gcount = matrixIntAlloc( np, np, 0); */
+	
 	
 
-    /* 	// Move over recv lattices. Basic info and resize arrays */
+    	// Move over recv lattices. Basic info and resize arrays
 	
-    /* 	for( rpid = 0 ; rpid < np ; rpid++ ) { */
+    	for( uint rpid = 0 ; rpid < np ; rpid++ ) {
 
 
-    /* 	    // Add basic info */
+    	    // Add basic info
 	    
-    /* 	    localMesh[rpid].parallel.pid = rpid; */
+    	    localMesh[rpid].parallel.pid = rpid;
 
-    /* 	    localMesh[rpid].parallel.worldSize = np; */
+    	    localMesh[rpid].parallel.worldSize = np;
 
-    /* 	    localMesh[rpid].parallel.nlocal = nGhosts[rpid][0]; */
+    	    localMesh[rpid].parallel.nlocal = nGhosts[rpid][0];
 	
-    /* 	    localMesh[rpid].parallel.nghosts = nGhosts[rpid][1]; */
+    	    localMesh[rpid].parallel.nghosts = nGhosts[rpid][1];
+
+	    localMesh[rpid].mesh.bd.bdNames.resize( mesh.bd.bdNames.size() );
 
 
 
 
-    /* 	    // Lattice model */
+    	    // // Lattice model
 
-    /* 	    localMesh[rpid].lattice = setLatticeInfo(); */
+    	    // localMesh[rpid].lattice = setLatticeInfo();
 
 
 
-    /* 	    /\* // Add sharing info and resize elements *\/ */
+    	    // Add sharing info and resize elements
 	    
-    /* 	    /\* localMesh[rpid].parallel.shared = (uint*)malloc( np * sizeof(uint) ); *\/ */
+    	    localMesh[rpid].parallel.nrg.resize( np );
 
-    /* 	    /\* for( spid = 0 ; spid < np ; spid++ ) { *\/ */
+    	    localMesh[rpid].parallel.nsg.resize( np );
 
-    /* 	    /\* 	localMesh[rpid].parallel.shared[spid] = shared[rpid][spid]; *\/ */
+    	    for( uint spid = 0 ; spid < np ; spid++ ) {
 
-    /* 	    /\* } *\/ */
+    		localMesh[rpid].parallel.nrg[spid] = nrecv[spid][rpid];
+
+    		localMesh[rpid].parallel.nsg[spid] = nsend[spid][rpid];
+
+    	    }
 
 
-    /* 	    // Add sharing info and resize elements */
+    	    // Resize ghost info
 	    
-    /* 	    localMesh[rpid].parallel.nrg = (uint*)malloc( np * sizeof(uint) ); */
+    	    localMesh[rpid].parallel.recvGhosts.resize( np );
 
-    /* 	    localMesh[rpid].parallel.nsg = (uint*)malloc( np * sizeof(uint) ); */
-
-    /* 	    for( spid = 0 ; spid < np ; spid++ ) { */
-
-    /* 		localMesh[rpid].parallel.nrg[spid] = nrecv[spid][rpid]; */
-
-    /* 		localMesh[rpid].parallel.nsg[spid] = nsend[spid][rpid]; */
-
-    /* 	    } */
-
-
-    /* 	    // Resize ghost info */
+    	    localMesh[rpid].parallel.sendGhosts.resize( np );
 	    
-    /* 	    localMesh[rpid].parallel.recvGhosts = (uint**)malloc( np * sizeof(uint*) ); */
+    	    for( uint spid = 0 ; spid < np ; spid++ ) {
 
-    /* 	    localMesh[rpid].parallel.sendGhosts = (uint**)malloc( np * sizeof(uint*) ); */
-	    
-    /* 	    for( spid = 0 ; spid < np ; spid++ ) { */
+    		localMesh[rpid].parallel.recvGhosts[spid].resize( nrecv[spid][rpid] );
 
-    /* 		localMesh[rpid].parallel.recvGhosts[spid] = (uint*)malloc( nrecv[spid][rpid] * sizeof(uint) ); */
-
-    /* 		localMesh[rpid].parallel.sendGhosts[spid] = (uint*)malloc( nsend[spid][rpid] * sizeof(uint) ); */
+    		localMesh[rpid].parallel.sendGhosts[spid].resize( nsend[spid][rpid] );
 		
-    /* 	    } */
+    	    }
 
 
 
 
-    /* 	    // Add points. First local, then ghost */
+    	    // Add points. First local, then ghost
 
-    /* 	    localMesh[rpid].mesh.nPoints = localMesh[rpid].parallel.nlocal + localMesh[rpid].parallel.nghosts; */
+    	    localMesh[rpid].mesh.nPoints = localMesh[rpid].parallel.nlocal + localMesh[rpid].parallel.nghosts;
 	    
-    /* 	    localMesh[rpid].mesh.points = matrixIntAlloc( localMesh[rpid].mesh.nPoints, 3, 0 ); */
+    	    // localMesh[rpid].mesh.points = matrixIntAlloc( localMesh[rpid].mesh.nPoints, 3, 0 );
+	    localMesh[rpid].mesh.points.resize( localMesh[rpid].mesh.nPoints );
 
-    /* 	    for( i = 0 ; i < mesh.nPoints ; i++ ) { */
+	    for( uint i = 0 ; i < localMesh[rpid].mesh.points.size() ; i++ ) {
 
-    /* 		int lid = local[i][rpid]; */
+		localMesh[rpid].mesh.points[i].resize(3,0);
+
+	    }
+	    
+
+    	    for( uint i = 0 ; i < mesh.nPoints ; i++ ) {
+
+    		int lid = local[i][rpid];
 		
-    /* 		if( lid != -1 ) { */
+    		if( lid != -1 ) {
 
-    /* 		    localMesh[rpid].mesh.points[lid][0] = mesh.points[i][0]; */
-    /* 		    localMesh[rpid].mesh.points[lid][1] = mesh.points[i][1]; */
-    /* 		    localMesh[rpid].mesh.points[lid][2] = mesh.points[i][2]; */
+    		    localMesh[rpid].mesh.points[lid][0] = mesh.points[i][0];
+    		    localMesh[rpid].mesh.points[lid][1] = mesh.points[i][1];
+    		    localMesh[rpid].mesh.points[lid][2] = mesh.points[i][2];
 		    
-    /* 		} */
+    		}
 
-    /* 	    } */
+    	    }
 
 
 
-    /* 	    // Add Neighbours. */
+    	    // Add Neighbours.
 	    
-    /* 	    localMesh[rpid].mesh.nb = matrixIntAlloc( localMesh[rpid].parallel.nlocal, mesh.Q, -1 ); */
+    	    // localMesh[rpid].mesh.nb = matrixIntAlloc( localMesh[rpid].parallel.nlocal, mesh.Q, -1 );
+	    localMesh[rpid].mesh.nb.resize( localMesh[rpid].parallel.nlocal );
 
-    /* 	    localMesh[rpid].mesh.Q = mesh.Q; */
+	    for( uint i = 0 ; i < localMesh[rpid].mesh.nb.size() ; i++ )
+		localMesh[rpid].mesh.nb[i].resize(mesh.Q,-1);
+	    
 
-    /* 	    localMesh[rpid].lattice.Q = mesh.Q; */
+    	    localMesh[rpid].mesh.Q = mesh.Q;
 
-    /* 	    for( i = 0 ; i < mesh.nPoints ; i++ ) { */
+    	    // // localMesh[rpid].lattice.Q = mesh.Q;
 
-    /* 		int lid = local[i][rpid]; */
+    	    for( uint i = 0 ; i < mesh.nPoints ; i++ ) {
+
+    	    	int lid = local[i][rpid];
 		
-    /* 		if( lid < localMesh[rpid].parallel.nlocal ) { */
+    	    	if( lid < localMesh[rpid].parallel.nlocal ) {
 
 
-    /* 		    // Move over velocities */
+    	    	    // Move over velocities
 
-    /* 		    uint velId; */
-    /* 		    int nbid; */
+    	    	    for( uint velId = 0 ; velId < mesh.Q ; velId++ ) {
 
-    /* 		    for( velId = 0 ; velId < mesh.Q ; velId++ ) { */
+    	    		int nbid = mesh.nb[i][velId];
 
-    /* 			nbid = mesh.nb[i][velId]; */
-
-    /* 			if( nbid != -1 ) { */
+    	    		if( nbid != -1 ) {
 			    
-    /* 			    localMesh[rpid].mesh.nb[lid][velId] = local[nbid][rpid]; */
+    	    		    localMesh[rpid].mesh.nb[lid][velId] = local[nbid][rpid];
 
-    /* 			} */
+    	    		}
 
-    /* 		    } */
+    	    	    }
 		    
 		    
-    /* 		} */
+    	    	}
 
-    /* 	    } */
-
-
+    	    }
 
 
 
 
 
-    /* 	    // Add vtkCells */
 
-    /* 	    localMesh[rpid].mesh.ncells = 0; */
+
+    	    // Add vtkCells
+
+    	    localMesh[rpid].mesh.ncells = 0;
 	    
-    /* 	    for( i = 0 ; i < mesh.ncells ; i++ ) { */
+    	    for( uint i = 0 ; i < mesh.ncells ; i++ ) {
 
-    /* 		uint cid, */
-    /* 		     find = 0; */
+    		uint find = 0;
 
-    /* 		for( cid = 0 ; cid < mesh.cellType ; cid++ ) { */
+    		for( uint cid = 0 ; cid < mesh.cellType ; cid++ ) {
 
-    /* 		    // Check if all members are local */
-    /* 		    if( local[ mesh.vtkCells[i][cid] ][rpid] == -1 ) { */
+    		    // Check if all members are local
+    		    if( local[ mesh.vtkCells[i][cid] ][rpid] == -1 ) {
 
-    /* 			find++; */
+    			find++;
 
-    /* 		    } */
+    		    }
 
-    /* 		} */
+    		}
 
-    /* 		if( find == 0 ) { */
+    		if( find == 0 ) {
 
-    /* 		    localMesh[rpid].mesh.ncells++; */
+    		    localMesh[rpid].mesh.ncells++;
 
-    /* 		} */
+    		}
 
-    /* 	    } */
-
+    	    }
 
 
-    /* 	    // Resize and add */
 
-    /* 	    localMesh[rpid].mesh.cellType = mesh.cellType; */
+    	    // Resize and add
+
+    	    localMesh[rpid].mesh.cellType = mesh.cellType;
 	    
-    /* 	    localMesh[rpid].mesh.vtkCells = matrixIntAlloc( localMesh[rpid].mesh.ncells, mesh.cellType, -1); */
+    	    // localMesh[rpid].mesh.vtkCells = matrixIntAlloc( localMesh[rpid].mesh.ncells, mesh.cellType, -1);
+	    localMesh[rpid].mesh.vtkCells.resize( localMesh[rpid].mesh.ncells );
 
-    /* 	    uint count = 0; */
+	    for( uint i = 0 ; i < localMesh[rpid].mesh.vtkCells.size() ; i++ )
+		localMesh[rpid].mesh.vtkCells[i].resize(mesh.cellType, -1 );
+
+    	    uint count = 0;
 	    
-    /* 	    for( i = 0 ; i < mesh.ncells ; i++ ) { */
+    	    for( uint i = 0 ; i < mesh.ncells ; i++ ) {
 
-    /* 		uint cid, */
-    /* 		     find = 0; */
+    		uint find = 0;
 
-    /* 		for( cid = 0 ; cid < mesh.cellType ; cid++ ) { */
+    		for( uint cid = 0 ; cid < mesh.cellType ; cid++ ) {
 
-    /* 		    // Check if all members are local */
-    /* 		    if( local[ mesh.vtkCells[i][cid] ][rpid] == -1 ) { */
+    		    // Check if all members are local
+    		    if( local[ mesh.vtkCells[i][cid] ][rpid] == -1 ) {
 
-    /* 			find++; */
+    			find++;
 
-    /* 		    } */
+    		    }
 
-    /* 		} */
+    		}
 
-    /* 		if( find == 0 ) { */
+    		if( find == 0 ) {
 
 		    
-    /* 		    for( cid = 0 ; cid < mesh.cellType ; cid++ ) { */
+    		    for( uint cid = 0 ; cid < mesh.cellType ; cid++ ) {
 
-    /* 			localMesh[rpid].mesh.vtkCells[count][cid] = local[ mesh.vtkCells[i][cid] ][rpid]; */
+    			localMesh[rpid].mesh.vtkCells[count][cid] = local[ mesh.vtkCells[i][cid] ][rpid];
 
-    /* 		    } */
+    		    }
 		    
 		    
-    /* 		    count++; */
+    		    count++;
 
-    /* 		} */
+    		}
 
-    /* 	    } */
-
-
+    	    }
 
 
 
 
 
 
-    /* 	    // Boundaries. Assign boundaries from original mesh */
 
-    /* 	    localMesh[rpid].mesh.bd.nbd = mesh.bd.nbd; */
+
+    	    // Boundaries. Assign boundaries from original mesh
+
+    	    localMesh[rpid].mesh.bd.nbd = mesh.bd.nbd;
 	    
-    /* 	    localMesh[rpid].mesh.bd.nbdelem = (uint*)malloc( mesh.bd.nbd * sizeof(uint) ); */
+    	    localMesh[rpid].mesh.bd.nbdelem.resize( mesh.bd.nbd );
 
-    /* 	    localMesh[rpid].mesh.bd.bdPoints = (uint**)malloc( mesh.bd.nbd * sizeof(uint*) ); */
+    	    localMesh[rpid].mesh.bd.bdPoints.resize( mesh.bd.nbd );
 
-    /* 	    for( i = 0 ; i < localMesh[rpid].mesh.bd.nbd ; i++ ) { */
+    	    for( uint i = 0 ; i < localMesh[rpid].mesh.bd.nbd ; i++ ) {
 
-    /* 		localMesh[rpid].mesh.bd.nbdelem[i] = 0; */
+    	    	localMesh[rpid].mesh.bd.nbdelem[i] = 0;
 
-    /* 		sprintf( localMesh[rpid].mesh.bd.bdNames[i], "%s", mesh.bd.bdNames[i] ); */
+    	    	localMesh[rpid].mesh.bd.bdNames[i] = mesh.bd.bdNames[i];
 
-    /* 		uint bdpid; */
+    	    	for( uint bdpid = 0 ; bdpid < mesh.bd.nbdelem[i] ; bdpid++ ) {
 
-    /* 		for( bdpid = 0 ; bdpid < mesh.bd.nbdelem[i] ; bdpid++ ) { */
+    	    	    if( local[ mesh.bd.bdPoints[i][bdpid] ][rpid] < localMesh[rpid].parallel.nlocal ) {
 
-    /* 		    if( local[ mesh.bd.bdPoints[i][bdpid] ][rpid] < localMesh[rpid].parallel.nlocal ) { */
+    	    		localMesh[rpid].mesh.bd.nbdelem[i]++;
 
-    /* 			localMesh[rpid].mesh.bd.nbdelem[i]++; */
+    	    	    }
 
-    /* 		    } */
+    	    	}
 
-    /* 		} */
-
-    /* 	    } */
+    	    }
 
 
 	    
 	    
 	    
-    /* 	    for( i = 0 ; i < localMesh[rpid].mesh.bd.nbd ; i++ ) { */
+    	    for( uint i = 0 ; i < localMesh[rpid].mesh.bd.nbd ; i++ ) {
 
-    /* 		count = 0; */
+    		uint count = 0;
 		
-    /* 	    	localMesh[rpid].mesh.bd.bdPoints[i] = (uint*)malloc( localMesh[rpid].mesh.bd.nbdelem[i] * sizeof(uint) ); */
+    	    	localMesh[rpid].mesh.bd.bdPoints[i].resize( localMesh[rpid].mesh.bd.nbdelem[i] );
 
-    /* 	    	uint bdpid; */
+    	    	for( uint bdpid = 0 ; bdpid < mesh.bd.nbdelem[i] ; bdpid++ ) {
 
-    /* 	    	for( bdpid = 0 ; bdpid < mesh.bd.nbdelem[i] ; bdpid++ ) { */
+    	    	    if( local[ mesh.bd.bdPoints[i][bdpid] ][rpid] < localMesh[rpid].parallel.nlocal ) {
 
-    /* 	    	    if( local[ mesh.bd.bdPoints[i][bdpid] ][rpid] < localMesh[rpid].parallel.nlocal ) { */
+    	    		localMesh[rpid].mesh.bd.bdPoints[i][count] = local[ mesh.bd.bdPoints[i][bdpid] ][rpid];
 
-    /* 	    		localMesh[rpid].mesh.bd.bdPoints[i][count] = local[ mesh.bd.bdPoints[i][bdpid] ][rpid]; */
+    	    		count++;
 
-    /* 	    		count++; */
+    	    	    }
 
-    /* 	    	    } */
+    	    	}
 
-    /* 	    	} */
-
-    /* 	    } */
+    	    }
 
 
 
@@ -752,7 +789,7 @@ int main(int argc, char** argv) {
 	    
 	    
 
-    /* 	} */
+    	}
 
 
 
@@ -762,33 +799,33 @@ int main(int argc, char** argv) {
 
 
 
-    /* 	// Move over local lattices and add parallel info */
+    	// Move over local lattices and add parallel info
 
-    /* 	for( i = 0 ; i < mesh.nPoints ; i++ ) { */
+    	for( uint i = 0 ; i < mesh.nPoints ; i++ ) {
 	
-    /* 	    for( rpid = 0 ; rpid < np ; rpid++ ) { */
+    	    for( uint rpid = 0 ; rpid < np ; rpid++ ) {
 
-    /* 		if( local[i][rpid] >= nGhosts[rpid][0] ) { */
+    		if( local[i][rpid] >= nGhosts[rpid][0] ) {
 		    
 
-    /* 		    // Add local index as recv ghost */
+    		    // Add local index as recv ghost
 
-    /* 		    spid = owner[i]; */
+    		    uint spid = owner[i];
 		    
-    /* 		    localMesh[rpid].parallel.recvGhosts[ spid ][ gcount[rpid][spid] ]   =  local[i][rpid]; */
+    		    localMesh[rpid].parallel.recvGhosts[ spid ][ gcount[rpid][spid] ]   =  local[i][rpid];
 
 
-    /* 		    // Add local index as send ghost */
+    		    // Add local index as send ghost
 		    
-    /* 		    localMesh[spid].parallel.sendGhosts[ rpid ][ gcount[rpid][spid] ]   =  local[i][spid]; */
+    		    localMesh[spid].parallel.sendGhosts[ rpid ][ gcount[rpid][spid] ]   =  local[i][spid];
 
-    /* 		    gcount[rpid][spid]++; */
+    		    gcount[rpid][spid]++;
 
-    /* 		} */
+    		}
 	    
-    /* 	    } */
+    	    }
 
-    /* 	} */
+    	}
 
 
 
@@ -797,7 +834,7 @@ int main(int argc, char** argv) {
 
 	
 	
-    /* } */
+    }
 
 
 
