@@ -540,6 +540,8 @@ int main(int argc, char** argv) {
 	    localMesh[rpid].mesh.bd.bdNames.resize( mesh.bd.bdNames.size() );
 
 	    localMesh[rpid].lattice_D = lbmodel->d();
+
+	    localMesh[rpid].mesh.Q = lbmodel->q();
 		
 	    
 

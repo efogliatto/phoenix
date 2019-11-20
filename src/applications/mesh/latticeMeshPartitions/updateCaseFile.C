@@ -1,222 +1,92 @@
-// #include <updateCaseFile.h>
-// #include <vtkInfo.h>
-// #include <readVTKInfo.h>
-// #include <stdlib.h>
-// #include <string.h>
-// #include <stdio.h>
-
 #include "updateCaseFile.H"
 
-#include <cstring>
-
 #include <iostream>
+
+#include <dictionary.H>
+
+#include <fstream>
+
+using namespace std;
+
 
 void updateCaseFile( latticeMesh_C& mesh ) {
 
 
-    if(mesh.parallel.pid == 0) {
+    // Dictionary
 
-
+    dictionary dict("start/initialFields");
     
-	FILE *outFile;
-
-	uint ns = 0;
-
-	uint *tsteps = NULL;
     
+    // Fields to be updated
 
+    vector<string> scalarFields = dict.bracedEntry( "scalarFields" );
 
-	// Try to open .case file to get time steps
+    vector<string> vectorFields = dict.bracedEntry( "vectorFields" );
 
-	outFile = fopen("lbm.case", "r");
-
-
-	if( outFile ) {
-
-
-	    // Read Number of steps
-
-	    char word[256];
-
-	    uint find = 0;
-
-	    uint status;
-	    
-	    while(   ( fscanf(outFile, "%s", word) != EOF )   &&   ( find == 0 )   ) {
-
-		if( strcmp(word, "number") == 0 ) {
-
-		    status = fscanf(outFile, "%s", word);
-
-		    if(   ( status != EOF )   &&   ( strcmp(word, "of") == 0 ) ) {
-
-			status = fscanf(outFile, "%s", word);
-
-			if(   ( status != EOF )   &&   ( strcmp(word, "steps:") == 0 ) ) {
-			    
-			    status = fscanf(outFile, "%s", word);
-
-			    ns = atoi( word );
-
-			    tsteps = (uint*)malloc( (ns+1) * sizeof(uint) );
-
-			    find = 1;
-			
-			}			
-			
-		    }
-
-		}
-
-	    }
-
-
-
-
-	    // Read Time list
-
-	    rewind( outFile );
-	    
-	    while(   ( fscanf(outFile, "%s", word) != EOF )   ) {
-
-		if( strcmp(word, "time") == 0 ) {
-
-		    status = fscanf(outFile, "%s", word);
-
-		    if(   ( status != EOF )   &&   ( strcmp(word, "values:") == 0 ) ) {
-
-			uint k;
-
-			for( k = 0 ; k < ns ; k++ ) {
-
-			    status = fscanf(outFile, "%s", word);
-
-			    tsteps[k] = atoi( word );
-
-			}
-			
-		    }
-
-		}
-
-	    }
-
-
-
-	    // Add current time
-
-	    // if( mesh.time.current != tsteps[ns-1] ) {
-
-	    ns++;
-		
-	    tsteps[ns-1] = 0;
-
-	    // }
-
-
-	    fclose(outFile);
-	    
-	    
-
-	}
-
-	else {
-
-	    ns = 1;
-
-	    tsteps = (uint*)malloc( sizeof(uint) );
-
-	    tsteps[0] = 0;
-
-	}    
-
-
-
-
-
-
-
-	// // .case file
-
-	// vtkInfo vtk = readVTKInfo();
+    vector<string> pdfFields = dict.bracedEntry( "pdfFields" );
 
 	
 
-	// // Open File
-	    
-	// outFile = fopen("lbm.case", "w");
+    // Open File
+
+    ofstream outFile;
+
+    outFile.open( "lbm.case" );
 
 
-	// fprintf(outFile,"#\n");
-	// fprintf(outFile,"# EnSight 7.4.1 ((n))\n");
-	// fprintf(outFile,"# Case File: lattice.case\n");
-	// fprintf(outFile,"\n");
-	// fprintf(outFile,"FORMAT\n");
-	// fprintf(outFile,"\n");
-	// fprintf(outFile,"type:  ensight gold\n");
-	// fprintf(outFile,"\n");
-	// fprintf(outFile,"GEOMETRY\n");
-	// fprintf(outFile,"\n");
-	// fprintf(outFile,"model:                     lattice.geo\n");
-	// fprintf(outFile,"\n");
-	// fprintf(outFile,"VARIABLE\n");
-	// fprintf(outFile,"\n");
+    // Header
 
-	// uint fid;
-		
-	// for( fid = 0 ; fid < vtk.nscalar ; fid++ ) {
-
-	//     fprintf(outFile,"scalar per node:           %s lattice.%s_*\n",vtk.scalarFields[fid],vtk.scalarFields[fid]);
-	    
-	// }
-
-	// for( fid = 0 ; fid < vtk.npdf ; fid++ ) {
-
-	//     uint k;
-
-	//     for( k = 0 ; k < mesh.lattice.Q ; k++ ) {
-	    
-	// 	fprintf(outFile,"scalar per node:           %s%d lattice.%s%d_*\n",vtk.pdfFields[fid],k,vtk.pdfFields[fid],k);
-
-	//     }
-	    
-	// }
-	
-	// for( fid = 0 ; fid < vtk.nvector ; fid++ ) {
-
-	//     fprintf(outFile,"vector per node:           %s lattice.%s_*\n",vtk.vectorFields[fid],vtk.vectorFields[fid]);
-	    
-	// }
+    outFile << "#" << endl;
+    outFile << "# EnSight 7.4.1 ((n))\n";
+    outFile << "# Case File: lattice.case\n";
+    outFile << "\n";
+    outFile << "FORMAT\n";
+    outFile << "\n";
+    outFile << "type:  ensight gold\n";
+    outFile << "\n";
+    outFile << "GEOMETRY\n";
+    outFile << "\n";
+    outFile << "model:                     lattice.geo\n";
+    outFile << "\n";
+    outFile << "VARIABLE\n";
+    outFile << "\n";
 
 
-	
-	// fprintf(outFile,"\n");
-	
-	// fprintf(outFile,"TIME\n");
+    // Scalar fields
 
-	// fprintf(outFile,"time set:                  1\n");
-
-	// fprintf(outFile,"number of steps:           %d\n", ns);
-
-	// fprintf(outFile,"filename start number:     0\n");
-
-	// fprintf(outFile,"filename increment:        1\n");
-
-	// fprintf(outFile,"time values:               %d\n", tsteps[0]);
-
-	// for( fid = 1 ; fid < ns ; fid++ ) {
-
-	//     fprintf(outFile,"                           %d\n", tsteps[fid]);
-
-	// }
-
-	// fclose(outFile);
+    for( auto f : scalarFields )
+    	outFile << "scalar per node:           " << f << " lattice." << f << "_*" << endl;
 
 
+    // PDF fields
 
-	// free(tsteps);
+    for( auto f : pdfFields ) {
 
+    	for( uint k = 0 ; k < mesh.mesh.Q ; k++ )	
+    	    outFile << "scalar per node:           " << f << k << " lattice." << f << k << "_*" << endl;
 
     }
+
+
+    // Vector fields
+
+    for( auto f : vectorFields )
+    	outFile << "vector per node:           " << f << " lattice." << f << "_*" << endl;
+    
+
+
+	
+    outFile << "\n";	
+    outFile << "TIME\n";
+    outFile << "time set:                  1\n";
+    outFile << "number of steps:           1\n";
+    outFile << "filename start number:     0\n";
+    outFile << "filename increment:        1\n";
+    outFile << "time values:               0\n";
+
+
+
+    outFile.close();
+
     
 }

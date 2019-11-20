@@ -136,6 +136,12 @@ public:
 
     const std::vector<std::string> bracedEntriesNames( const std::string& ename ) const;
 
+
+    
+    /** Braced entry */
+
+    const std::vector<std::string> bracedEntry( const std::string& ename ) const;    
+
 };
 
 #endif // DICTIONARY_H

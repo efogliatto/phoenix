@@ -311,7 +311,6 @@ const vector<string> dictionary::bracedEntriesNames( const string& ename ) const
     }
 
 
-
     // Copy only names from first level
 
     vector<string> res;
@@ -343,3 +342,42 @@ const vector<string> dictionary::bracedEntriesNames( const string& ename ) const
     return res;
 
 }
+
+
+
+
+/** Braced entry */
+
+const vector<string> dictionary::bracedEntry( const string& ename ) const {
+
+    // Tokenize entry
+
+    vector<string> tokens;
+    
+    string token;
+
+    istringstream tokenStream(ename);
+    
+    while ( getline(tokenStream, token, '/') )    {
+	
+      tokens.push_back(token);
+      
+    }
+
+
+
+    // Look until last entry
+
+    vector<string> out( content );
+    
+    for(uint i = 0 ; i < tokens.size() ; i++ ) {
+
+	out = bracedEntry( tokens[i], out );
+
+    }
+       
+
+    return out;
+
+}
+    
