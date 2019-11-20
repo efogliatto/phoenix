@@ -40,6 +40,8 @@ class lbmesh:
         self.geompy = geompy
 
         self.Tolerance = 0.707107
+
+        self.mg = {}
         
 
 
@@ -191,7 +193,7 @@ class lbmesh:
 
         # Fill points array
 
-        points = np.zeros( (self.Mesh.NbNodes(), 3), dtype=np.int64 )
+        self.points = np.zeros( (self.Mesh.NbNodes(), 3), dtype=np.int64 )
 
         for node in self.Mesh.GetNodesId():
 
@@ -199,7 +201,7 @@ class lbmesh:
 
           for j in range(3):
   
-            points[node-1,j] = np.rint( xyz[j] )
+            self.points[node-1,j] = np.rint( xyz[j] )
 
 
 
@@ -225,7 +227,7 @@ class lbmesh:
 
               for j in range(3):
 
-                dist[j] = np.rint( points[nbnode-1,j] - points[node-1,j] )
+                dist[j] = np.rint( self.points[nbnode-1,j] - self.points[node-1,j] )
 
 
               # Corresponding velocity index
@@ -290,9 +292,11 @@ class lbmesh:
 
         for node in bnd_ids:
 
-          node_xyz = self.Mesh.GetNodeXYZ( node )
-
-          node_vertex = self.geompy.MakeVertex(node_xyz[0], node_xyz[1], node_xyz[2])
+          # node_xyz = self.Mesh.GetNodeXYZ( node )
+          node_xyz = self.points[ node - 1 ]
+            
+          # node_vertex = self.geompy.MakeVertex(node_xyz[0], node_xyz[1], node_xyz[2])
+          node_vertex = self.geompy.MakeVertex(np.float64( node_xyz[0]), np.float64(node_xyz[1]), np.float64(node_xyz[2]) )          
 
           dist = float(1000)
 
@@ -340,11 +344,13 @@ class lbmesh:
 
             for nd1 in bd1:
 
-                pos_1 = np.rint(  self.Mesh.GetNodeXYZ( nd1 )  )
+                # pos_1 = np.rint(  self.Mesh.GetNodeXYZ( nd1 )  )
+                pos_1 = self.points[ nd1-1 ]
                 
                 for nd2 in bd2:
 
-                    pos_2 = np.rint(  self.Mesh.GetNodeXYZ( nd2 )  )
+                    # pos_2 = np.rint(  self.Mesh.GetNodeXYZ( nd2 )  )
+                    pos_2 = self.points[ nd2-1  ]
 
 
                     if dir == 'X':
