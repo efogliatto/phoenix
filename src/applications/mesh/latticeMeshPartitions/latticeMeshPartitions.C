@@ -91,6 +91,19 @@ int main(int argc, char** argv) {
     vector< vector<int> > virtualNodes;
 
     computeVirtualNodes( mesh, virtualNodes, lbmodel );
+
+    // for(auto vn : virtualNodes) {
+
+    // 	for( auto v : vn) {
+
+    // 	    cout << v << " ";
+
+    // 	}
+
+    // 	cout << endl;
+
+    // }
+	
     
         
     
@@ -623,30 +636,30 @@ int main(int argc, char** argv) {
     		fprintf(outFile,"%d\n",count);
 
 
-		for( uint id = 0 ; id < virtualNodes.size() ; id++ ) {
+		// for( uint id = 0 ; id < virtualNodes.size() ; id++ ) {
 
-		    if( local[ virtualNodes[id][0] ][ i ] != -1 ){
+		//     if( local[ virtualNodes[id][0] ][ i ] != -1 ){
 			
-			// fprintf(outFile,"%d %d %d %d\n", local[ virtualNodes[id][0] ][ i ], virtualNodes[id][1], local[ virtualNodes[id][2] ][ i ], local[ virtualNodes[id][3] ][ i ]);
+		// 	// fprintf(outFile,"%d %d %d %d\n", local[ virtualNodes[id][0] ][ i ], virtualNodes[id][1], local[ virtualNodes[id][2] ][ i ], local[ virtualNodes[id][3] ][ i ]);
 
-			fprintf(outFile,"%d %d ", local[ virtualNodes[id][0] ][ i ], virtualNodes[id][1]);
+		// 	fprintf(outFile,"%d %d ", local[ virtualNodes[id][0] ][ i ], virtualNodes[id][1]);
 
-			if( virtualNodes[id][2] != -1 ) {
+		// 	if( virtualNodes[id][2] != -1 ) {
 			    
-			    fprintf(outFile,"%d ", local[ virtualNodes[id][2] ][ i ]);
+		// 	    fprintf(outFile,"%d ", local[ virtualNodes[id][2] ][ i ]);
 			    
-			    if( virtualNodes[id][3] != -1 ) {
+		// 	    if( virtualNodes[id][3] != -1 ) {
 			    
-				fprintf(outFile,"%d\n", local[ virtualNodes[id][3] ][ i ]);			   
+		// 		fprintf(outFile,"%d\n", local[ virtualNodes[id][3] ][ i ]);			   
 			    
-			    }
+		// 	    }
 			    
-			}
+		// 	}
 			    
-		    }
+		//     }
 
 
-		}
+		// }
 
 		
     		fclose(outFile);

@@ -1,6 +1,15 @@
 #include "computeVirtualNodes.H"
 
+#include <algorithm>
+
 using namespace std;
+
+
+
+// Auxiliary sort function
+
+bool compareDist(vector<int>& d1, vector<int>& d2) {   return (d1[0] < d2[0]);  } 
+
 
 void computeVirtualNodes( const basicMesh& mesh, std::vector< std::vector<int> >& virtualNodes, latticeModel* lbmodel ) {
 
@@ -15,22 +24,32 @@ void computeVirtualNodes( const basicMesh& mesh, std::vector< std::vector<int> >
 
     
 
-    // Use boundary nodes only 
+    // // Use boundary nodes only 
+    // // distance[i] = distance, node
     
-    vector<uint> dist( q );
+    // vector< vector<uint> > distance;
 
-    vector<uint> vid( q );
+    // distance.resize(q*q);
+
+    // for(uint i = 0 ; i < q ; i++)
+    // 	distance[i].resize(2,-1);
+
+    
+    
+    // vector<uint> nodeIds( q * q );
+
+    // vector<uint> vid( q * q);
 
 
 
-    // Compute maximum number of virtual nodes
+    // // Compute maximum number of virtual nodes
 
-    uint maxvirt = 0;
+    // uint maxvirt = 0;
 
-    for( uint bid = 0 ; bid < mesh.bd.nbd ; bid++ )
-	maxvirt += mesh.bd.nbdelem[bid];
+    // for( uint bid = 0 ; bid < mesh.bd.nbd ; bid++ )
+    // 	maxvirt += mesh.bd.nbdelem[bid];
 
-    maxvirt = maxvirt * mesh.Q;
+    // maxvirt = maxvirt * mesh.Q * mesh.Q;
 
 
 
@@ -38,10 +57,10 @@ void computeVirtualNodes( const basicMesh& mesh, std::vector< std::vector<int> >
     
     vector< vector<int> > vnodes;
 
-    vnodes.resize( maxvirt );
+    // vnodes.resize( maxvirt );
 
-    for( uint i = 0 ; i < maxvirt ; i++ )
-	vnodes[i].resize(4,-1);
+    // for( uint i = 0 ; i < maxvirt ; i++ )
+    // 	vnodes[i].resize(4,-1);
 
 	
 
@@ -72,145 +91,81 @@ void computeVirtualNodes( const basicMesh& mesh, std::vector< std::vector<int> >
 	    // Move over velocities and check for non-existing neighbour
 
 	    for( uint k = 0 ; k < q ; k++ ) {
+
+		// This velocity sets virtual node position
+		// points[node] + vel[k]
+
+		
 		    
-		if(mesh.nb[node][ reverse[k] ] == -1) {
+		if( mesh.nb[node][ reverse[k] ] == -1 ) {
 
 
 		    // First compute distance to other nodes conecting "node"
+		    // Virtual   node: node + v
+		    // Neighbour node: node + v'
+		    // Distance between virtual and neighbours = (node + v) - (node + v') = v - v'
+		    //
+		    // Velocity sets may not fill all closest neighbours (as in D3Q15), so also check for neighbours of neighbours
+
+
+		    // Distance array
+
+		    vector< vector<int> > distance;
+		    
 
 		    for( uint j = 0 ; j < mesh.Q ; j++ ) {
 
-			dist[j] = (vel[j][0] - vel[k][0]) * (vel[j][0] - vel[k][0])
-			        + (vel[j][1] - vel[k][1]) * (vel[j][1] - vel[k][1])
-			        + (vel[j][2] - vel[k][2]) * (vel[j][2] - vel[k][2]);
-
-			vid[j] = j;
-
-		    }
-
-
-		    // Sort distances
-
-		    uint perm = 1;
-
-		    while( perm != 0 ) {
-
-		    	perm = 0;
-			    
-		    	for( uint j = 1 ; j < q ; j++ ) {
-
-		    	    if( dist[j] < dist[j-1] ) {
-
-		    		uint swpDist = dist[j-1],
-		    		    swpVid = vid[j-1];
-
-		    		dist[j-1] = dist[j];
-
-		    		dist[j] = swpDist;
-
-
-		    		vid[j-1] = vid[j];
-
-		    		vid[j] = swpVid;
-
-		    		perm++;
-
-		    	    }
-
-		    	}
-
-		    }
-
-
 			
-		    // First distance is node. Check from second
+			// If neighbour exists, move over its own neighbours
 
-		    uint d = dist[1];
-
-		    uint maxv = 1;
-
-		    for( uint j = 2 ; j < mesh.Q ; j++ ) {
-
-		    	if( dist[j] == d )
-		    	    maxv = j;
-
-		    }
-
-
-
-		    // Check if node exists at related velocity and asign closest wall node
-
-		    int stj = 1, endj = maxv;
-
-		    int wallNode = -1;
-
-		    int wallVel = 0;
-
-		    while(wallNode == -1) {
-
-		    	for( int j = stj ; j <= endj ; j++ ) {
-
-		    	    int neigh = mesh.nb[node][ reverse[vid[j]] ];
-			    
-		    	    if( neigh != -1 ) {
-
-		    		wallNode = neigh;
-
-		    		wallVel = vid[j];
-
-		    	    }
-
-		    	}
-
-
-		    	// Move to next distance
-			    
-		    	if( wallNode == -1 ) {
-
-		    	    stj = endj + 1;
-
-		    	    d = dist[stj];
-
-		    	    for( int j = stj ; j < (int)q ; j++ ) {
-
-		    		if( dist[j] == d )
-		    		    endj = j;
-
-		    	    }
-				
-
-		    	}
-
-		    }
-
-
-
-
-
-		    // Finally detect fluid node in same direction
-
-		    int sep[3] = { vel[wallVel][0] - vel[k][0], vel[wallVel][1] - vel[k][1], vel[wallVel][2] - vel[k][2] };
-
-		    uint fvel = 0;
+			int nbid = mesh.nb[node][ reverse[j] ];
 			
-		    for( uint j = 0 ; j < q ; j++ ) {
+			if( nbid != -1 ) {
 
-		    	int sep2[3] = { vel[j][0] - vel[wallVel][0], vel[j][1] - vel[wallVel][1], vel[j][2] - vel[wallVel][2] };
+			    for( uint l = 0 ; l < mesh.Q ; l++ ) {
 
-		    	if(  ( sep2[0] == sep[0] )   &&   ( sep2[1] == sep[1] )   &&   ( sep2[2] == sep[2] )   )
-		    	    fvel = j;
+				if( mesh.nb[nbid][ reverse[l] ] != -1 ) {
+
+				    int dist = (vel[l][0] + vel[j][0] - vel[k][0]) * (vel[l][0] + vel[j][0] - vel[k][0])
+			                     + (vel[l][1] + vel[j][1] - vel[k][1]) * (vel[l][1] + vel[j][1] - vel[k][1])
+ 			                     + (vel[l][2] + vel[j][2] - vel[k][2]) * (vel[l][2] + vel[j][2] - vel[k][2]);
+
+				    if( dist <= 3 ) {
+
+					int inNode = mesh.nb[nbid][ reverse[l] ];
+
+					if ( mesh.nb[inNode][ reverse[l] ] != -1 )
+					    inNode = mesh.nb[inNode][ reverse[l] ];
+					
+					distance.push_back( {dist, mesh.nb[nbid][ reverse[l] ], inNode} );
+
+				    }
+
+				}
+
+			    }			    
+
+			}
+
+
 
 		    }
+
+
+		    // Sort distance
+
+		    std::sort( distance.begin(), distance.end(), compareDist );
 
 
 		    // Add to nodes
 
+		    vnodes.push_back( { (int)node, (int)k, distance[0][1], distance[0][2]} );
 			
-		    vnodes[nvirtual][0] = node;
-		    vnodes[nvirtual][1] = k;
-		    vnodes[nvirtual][2] = wallNode;
-		    vnodes[nvirtual][3] = mesh.nb[node][reverse[fvel]];
-		    nvirtual++;
+		    // vnodes[nvirtual][0] = node;
+		    // vnodes[nvirtual][1] = k;
+		    // vnodes[nvirtual][2] = wallNode;
+		    // vnodes[nvirtual][3] = mesh.nb[node][reverse[fvel]];
+		    // nvirtual++;
 
 		       
 
@@ -233,31 +188,14 @@ void computeVirtualNodes( const basicMesh& mesh, std::vector< std::vector<int> >
 
 
 
-
-
-
-
-
-
-
-
     // Copy to reduced array
     
-    virtualNodes.resize( nvirtual );
+    // virtualNodes.resize(  );
 
-    for(uint i = 0 ; i < nvirtual ; i++)
-	virtualNodes[i].resize(4, -1);
+    // for(uint i = 0 ; i < nvirtual ; i++)
+    // 	virtualNodes[i].resize(4, -1);
 	
 
-    for( uint id = 0 ; id < nvirtual ; id++ ) {
-
-	for( uint k = 0 ; k < 4 ; k++ ) {
-
-	    virtualNodes[id][k] = vnodes[id][k];
-
-	}
-
-    }
     
 
 
