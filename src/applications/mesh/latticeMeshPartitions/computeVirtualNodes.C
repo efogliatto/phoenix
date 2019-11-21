@@ -11,7 +11,7 @@ using namespace std;
 bool compareDist(vector<int>& d1, vector<int>& d2) {   return (d1[0] < d2[0]);  } 
 
 
-void computeVirtualNodes( const basicMesh& mesh, std::vector< std::vector<int> >& virtualNodes, latticeModel* lbmodel ) {
+void computeVirtualNodes( const basicMesh& mesh, std::vector< std::vector<int> >& vnodes, latticeModel* lbmodel ) {
 
 
     // Lattice constants
@@ -55,7 +55,7 @@ void computeVirtualNodes( const basicMesh& mesh, std::vector< std::vector<int> >
 
     // First attempt
     
-    vector< vector<int> > vnodes;
+    // vector< vector<int> > vnodes;
 
     // vnodes.resize( maxvirt );
 
@@ -65,9 +65,9 @@ void computeVirtualNodes( const basicMesh& mesh, std::vector< std::vector<int> >
 	
 
 
-    // Count total number of virtual
+    // // Count total number of virtual
 
-    uint nvirtual(0);
+    // uint nvirtual(0);
 
 
     
@@ -94,7 +94,6 @@ void computeVirtualNodes( const basicMesh& mesh, std::vector< std::vector<int> >
 
 		// This velocity sets virtual node position
 		// points[node] + vel[k]
-
 		
 		    
 		if( mesh.nb[node][ reverse[k] ] == -1 ) {
@@ -103,7 +102,8 @@ void computeVirtualNodes( const basicMesh& mesh, std::vector< std::vector<int> >
 		    // First compute distance to other nodes conecting "node"
 		    // Virtual   node: node + v
 		    // Neighbour node: node + v'
-		    // Distance between virtual and neighbours = (node + v) - (node + v') = v - v'
+		    // Possible distance between virtual and neighbours = (node + v) - (node + v') = v - v'
+		    // In order to avoid problems with periodic boundaries, mesh points are used to compute distance
 		    //
 		    // Velocity sets may not fill all closest neighbours (as in D3Q15), so also check for neighbours of neighbours
 
@@ -113,43 +113,69 @@ void computeVirtualNodes( const basicMesh& mesh, std::vector< std::vector<int> >
 		    vector< vector<int> > distance;
 		    
 
-		    for( uint j = 0 ; j < mesh.Q ; j++ ) {
+		    // Find closest nodes from vtkCells
 
-			
-			// If neighbour exists, move over its own neighbours
+		    for( auto cell : mesh.nodeToCells[node] ) {
 
-			int nbid = mesh.nb[node][ reverse[j] ];
-			
-			if( nbid != -1 ) {
+			for( auto nv : mesh.vtkCells[cell] ) {
 
-			    for( uint l = 0 ; l < mesh.Q ; l++ ) {
+			    // Separation vector
 
-				if( mesh.nb[nbid][ reverse[l] ] != -1 ) {
+			    int sep[3] = {  (mesh.points[nv][0]  - mesh.points[node][0] - vel[k][0]),
+				  	    (mesh.points[nv][1]  - mesh.points[node][1] - vel[k][1]),
+					    (mesh.points[nv][2]  - mesh.points[node][2] - vel[k][2])  };
+					 
 
-				    int dist = (vel[l][0] + vel[j][0] - vel[k][0]) * (vel[l][0] + vel[j][0] - vel[k][0])
-			                     + (vel[l][1] + vel[j][1] - vel[k][1]) * (vel[l][1] + vel[j][1] - vel[k][1])
- 			                     + (vel[l][2] + vel[j][2] - vel[k][2]) * (vel[l][2] + vel[j][2] - vel[k][2]);
+			    // Squared distance
+			    
+			    int dist = sep[0]*sep[0] + sep[1]*sep[1] + sep[2]*sep[2];
 
-				    if( dist <= 3 ) {
+			    if( dist <= 3 ) {
 
-					int inNode = mesh.nb[nbid][ reverse[l] ];
 
-					if ( mesh.nb[inNode][ reverse[l] ] != -1 )
-					    inNode = mesh.nb[inNode][ reverse[l] ];
-					
-					distance.push_back( {dist, mesh.nb[nbid][ reverse[l] ], inNode} );
+				// Find node along sep using cell info
+				
+				int inNode = nv;
+
+				for( auto nvCell : mesh.nodeToCells[nv] ) {
+
+				    for( auto vrt : mesh.vtkCells[nvCell] ) {
+
+					int otherSep[3] = {  (mesh.points[vrt][0]  - mesh.points[nv][0]),
+							     (mesh.points[vrt][1]  - mesh.points[nv][1]),
+							     (mesh.points[vrt][2]  - mesh.points[nv][2])  };
+
+					if( otherSep[0] == sep[0] ) {
+					    
+					    if( otherSep[1] == sep[1] ) {
+
+						if( otherSep[2] == sep[2] ) {
+
+						    inNode = vrt;
+
+						}
+
+					    }
+
+					}
 
 				    }
 
 				}
+				
 
-			    }			    
 
+				// Append to distance array
+				
+				distance.push_back( {dist, nv, inNode} );
+
+			    }
+			    
 			}
 
-
-
 		    }
+		    
+
 
 
 		    // Sort distance
@@ -160,19 +186,7 @@ void computeVirtualNodes( const basicMesh& mesh, std::vector< std::vector<int> >
 		    // Add to nodes
 
 		    vnodes.push_back( { (int)node, (int)k, distance[0][1], distance[0][2]} );
-			
-		    // vnodes[nvirtual][0] = node;
-		    // vnodes[nvirtual][1] = k;
-		    // vnodes[nvirtual][2] = wallNode;
-		    // vnodes[nvirtual][3] = mesh.nb[node][reverse[fvel]];
-		    // nvirtual++;
-
-		       
-
-			
-			
-
-			
+						
 
 		}
 
@@ -184,20 +198,7 @@ void computeVirtualNodes( const basicMesh& mesh, std::vector< std::vector<int> >
 	   	    
 
     }
-
-
-
-
-    // Copy to reduced array
-    
-    // virtualNodes.resize(  );
-
-    // for(uint i = 0 ; i < nvirtual ; i++)
-    // 	virtualNodes[i].resize(4, -1);
-	
-
-    
-
+  
 
     
     

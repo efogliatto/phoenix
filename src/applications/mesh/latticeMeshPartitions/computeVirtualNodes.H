@@ -23,6 +23,6 @@
  * @return Mesh structure
  */
 
-void computeVirtualNodes( const basicMesh& mesh, std::vector< std::vector<int> >& virtualNodes, latticeModel* lbmodel );
+void computeVirtualNodes( const basicMesh& mesh, std::vector< std::vector<int> >& vnodes, latticeModel* lbmodel );
 
 #endif // COMPUTEVIRTUALNODES_H

@@ -16,7 +16,7 @@ basicMesh readBasicMesh() {
 
     basicMesh mesh;
 
-    uint i,j;
+    // uint i,j;
 
     uint status;
 
@@ -61,7 +61,7 @@ basicMesh readBasicMesh() {
     
     // Read Mesh points
 
-    for( i = 0 ; i < mesh.nPoints ; i++ ) {
+    for( uint i = 0 ; i < mesh.nPoints ; i++ ) {
 
     	inFile >> mesh.points[i][0];
     	inFile >> mesh.points[i][1];
@@ -187,6 +187,23 @@ basicMesh readBasicMesh() {
 
 
 
+
+    // Assign cell connectivity
+
+    mesh.nodeToCells.resize( mesh.nPoints );
+
+    for( uint i = 0 ; i < mesh.ncells ; i++ ) {
+	
+	for( uint j = 0 ; j < mesh.cellType ; j++ ) {
+
+	    mesh.nodeToCells[ mesh.vtkCells[i][j] ].push_back(i);
+
+	}
+
+    }
+
+
+    
 
 
 

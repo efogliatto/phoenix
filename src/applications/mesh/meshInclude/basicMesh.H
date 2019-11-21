@@ -67,6 +67,11 @@ typedef struct {
     std::vector< std::vector<int> > vtkCells;   /**< VTK cell indices array */
 
 
+    /** Array with cell conectivity */
+
+    std::vector< std::vector<uint> > nodeToCells;
+
+
   /** Flag to check if node is on boundary */
   
     uint* isOnBnd;
