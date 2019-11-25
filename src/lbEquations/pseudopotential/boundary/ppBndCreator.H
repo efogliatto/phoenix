@@ -5,6 +5,8 @@
 
 #include <ppNEBB.H>
 
+#include <ppGeneralNEBB.H>
+
 #include <ppNEExt.H>
 
 #include <ppPeriodic.H>
@@ -13,6 +15,18 @@
 
 class ppBndCreator {
 
+    
+protected:
+
+    
+    // Boundary types
+
+    enum class bdType{ fixedU, periodic, outflow, NEBB, NEExt, G_NEBB };
+
+    std::map<std::string, bdType> _bdMapType;
+
+
+    
 public:
 
     ppBndCond* create( const std::string& eqName,
