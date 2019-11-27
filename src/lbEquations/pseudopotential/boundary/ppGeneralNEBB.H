@@ -12,9 +12,16 @@ protected:
 
     std::map< latticeMesh::normalType, std::vector<uint> > trIndex;
 
-    std::map< latticeMesh::normalType, std::vector<int> > prDirIndex;
 
-    std::map< latticeMesh::normalType, std::vector<int> > prDirSign;        
+    // Rotation matrix
+
+    std::map< latticeMesh::normalType, std::vector< std::vector<scalar> > > rotation;
+
+
+
+    // Rotation matrix along unitary vector
+
+    const std::vector< std::vector<scalar> > rotationMatrix( const scalar u, const scalar v, const scalar w, const scalar theta ) const;
     
     
 public:
