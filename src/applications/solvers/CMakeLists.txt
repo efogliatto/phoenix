@@ -1,6 +1,7 @@
 # Pseudopotential solver
 
 add_subdirectory (multiPhasePP)
+add_subdirectory (multiPhasePP_test)
 
 
 # Pseudopotential solver with heat transfer
