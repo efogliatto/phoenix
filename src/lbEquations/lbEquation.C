@@ -77,18 +77,6 @@ const void lbEquation::streaming() {
     const uint q = mesh.lmodel()->q();
     
     
-    // Copy all values to swap
-
-    for( uint i = 0 ; i < mesh.local() ; i++ ) {
-
-    	for( uint k = 0 ; k < q ; k++ ) {
-
-    	    _swap[i][k] = _pdf[i][k];
-	    
-    	}
-
-    }
-
 
     // Copy only neighbours to swap   
 
@@ -103,6 +91,12 @@ const void lbEquation::streaming() {
     		_swap[i][k] = _pdf[neighId][k];
 
     	    }
+
+	    else {
+
+		_swap[i][k] = _pdf[i][k];
+
+	    }
     
     	}
 
