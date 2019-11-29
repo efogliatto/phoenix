@@ -68,6 +68,20 @@ int main( int argc, char **argv ) {
 
 
 
+
+    // Timing
+    
+    typedef std::chrono::high_resolution_clock clock;
+
+    typedef std::chrono::duration<double, std::ratio<1> > second;
+
+    std::chrono::time_point<clock> beg;
+
+    vector<scalar> elapsed(6);
+    std::fill( elapsed.begin(), elapsed.end(), 0 );
+    
+
+    
    
     
     
@@ -86,21 +100,56 @@ int main( int argc, char **argv ) {
 	
 	// Solve Navier-Stokes equation
 
+	beg = clock::now();
+
 	NS.collision();
+
+	elapsed[0] += (scalar)chrono::duration_cast<second> ( clock::now() - beg ).count();
+
+
+	
+	beg = clock::now();
 
 	NS.streaming();
 
+	elapsed[1] += (scalar)chrono::duration_cast<second> ( clock::now() - beg ).count();	
+
+	
+
+	beg = clock::now();
+
 	NS.updateBoundaries();
 
+	elapsed[2] += (scalar)chrono::duration_cast<second> ( clock::now() - beg ).count();
+	
+
+
+	beg = clock::now();
+
 	f.sync();
+
+	elapsed[3] += (scalar)chrono::duration_cast<second> ( clock::now() - beg ).count();
+
+	
 
 
 	
 	// Update macroscopic fields
 
+	beg = clock::now();
+	
 	NS.updateMacroDensity();
 
+	elapsed[4] += (scalar)chrono::duration_cast<second> ( clock::now() - beg ).count();
+
+	
+
+
+	beg = clock::now();
+	
 	NS.updateMacroVelocity();
+
+	elapsed[5] += (scalar)chrono::duration_cast<second> ( clock::now() - beg ).count();	
 
 	
 
@@ -137,8 +186,18 @@ int main( int argc, char **argv ) {
 
 
     // Print info
-    if(pid == 0)	
+    if(pid == 0) {
+	
     	cout << endl << "  Finished in " << Time.elapsed() << " seconds " << endl << endl;
+
+	cout << "  Collision " << elapsed[0] << " seconds " << endl;
+	cout << "  Streaming " << elapsed[1] << " seconds " << endl;
+	cout << "  Boundary  " << elapsed[2] << " seconds " << endl;
+	cout << "  Sync      " << elapsed[3] << " seconds " << endl;
+	cout << "  Density   " << elapsed[4] << " seconds " << endl;
+	cout << "  Velocity  " << elapsed[5] << " seconds " << endl << endl;	
+
+    }
 	
     
 

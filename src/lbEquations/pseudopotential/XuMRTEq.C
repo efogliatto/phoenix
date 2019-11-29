@@ -65,6 +65,7 @@ const void XuMRTEq::collision() {
     scalarMatrix invM = mesh.lmodel()->MRTInvMatrix();    
 
     const uint nodes = mesh.npoints();
+    // const uint nodes = mesh.local();    
 
     const scalar cs2 = mesh.lmodel()->cs2();
 
@@ -199,6 +200,10 @@ const void XuMRTEq::collision() {
 	
 
     }
+
+
+    if( nodes == mesh.local() )
+	_pdf.sync();
 
     
 
