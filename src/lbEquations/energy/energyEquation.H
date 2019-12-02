@@ -92,7 +92,7 @@ public:
 
     /** Diffusivity constant recovered at macroscopic level */
 
-    virtual const scalar diffusivityConstant() const = 0;
+    virtual const scalar diffusivityConstant(const uint id = 0) const = 0;
     
     
 };

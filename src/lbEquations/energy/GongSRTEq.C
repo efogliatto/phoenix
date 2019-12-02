@@ -319,7 +319,7 @@ const scalar GongSRTEq::thermalCond( const uint& id ) const {
 
 /** Diffusivity constant recovered at macroscopic level */
 
-const scalar GongSRTEq::diffusivityConstant() const {
+const scalar GongSRTEq::diffusivityConstant(const uint id) const {
 
     return (_Tau[0] - 0.5) / 3.0;
 

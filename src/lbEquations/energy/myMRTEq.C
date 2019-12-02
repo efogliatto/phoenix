@@ -416,56 +416,76 @@ const void myMRTEq::collision() {
 /** Update macroscopic temperature */
 
 const void myMRTEq::updateMacroTemperature() {
-
-
+   
+    
     // Compute temperature gradient first
 
     if( localGradT == true ) {
 
 
-	scalar gamma = -6.0 / (4.0 + 3.0*_a1 + 2.0*_a2);
+	// Lattice constants
 
 	const scalarMatrix& M = mesh.lmodel()->MRTMatrix();
+    
+	const uint q = mesh.lmodel()->q();
 
-	const uint q = mesh.lmodel()->q();    
+
+	
+	// Auxiliary variables
+
+	scalar gamma(0);
 
 	vector<scalar> n(q);     // m:  momentum space
     
 	vector<scalar> n_eq(q);  // meq: equilibrium in momentum space
+	
+	
 
+	switch(q) {
 
+	case 9:
+	    
+	    gamma = -6.0 / (4.0 + 3.0*_a1 + 2.0*_a2);   
     
-    
-	for(uint i = 0 ; i < mesh.npoints() ; i++) {
+	    for(uint i = 0 ; i < mesh.npoints() ; i++) {
 
 
-	    // Compute equilibrium in moment space
+		// Compute equilibrium in moment space
 
-	    eqMS(n_eq,i);
+		eqMS(n_eq,i);
 
 	    
-	    // Distribution in moment space
+		// Distribution in moment space
 
-	    M.matDotVec( _pdf[i], n );
+		M.matDotVec( _pdf[i], n );
 	    
 
-	    // Update gradient
+		// Update gradient
 
-	    Tgrad[i][0] = gamma * ( _relax->tau(rho.at(i),3)*(n[3] - n_eq[3]) + _relax->tau(rho.at(i),3)*_relax->tau(rho.at(i),4)*0.5*(n[4] - n_eq[4]) );
+		Tgrad[i][0] = gamma * ( _relax->tau(rho.at(i),3)*(n[3] - n_eq[3]) + _relax->tau(rho.at(i),3)*_relax->tau(rho.at(i),4)*0.5*(n[4] - n_eq[4]) );
 
-	    Tgrad[i][1] = gamma * ( _relax->tau(rho.at(i),5)*(n[5] - n_eq[5]) + _relax->tau(rho.at(i),5)*_relax->tau(rho.at(i),6)*0.5*(n[6] - n_eq[6]) );
+		Tgrad[i][1] = gamma * ( _relax->tau(rho.at(i),5)*(n[5] - n_eq[5]) + _relax->tau(rho.at(i),5)*_relax->tau(rho.at(i),6)*0.5*(n[6] - n_eq[6]) );
 
-	    Tgrad[i][2] = 0;	
+		Tgrad[i][2] = 0;	
 
+
+	    }
+ 
+	    _hs->update(rho, T, U, Tgrad);
+
+
+	    break;
 
 	}
- 
-	_hs->update(rho, T, U, Tgrad);
 
 
+	
     }
 
 
+
+
+    // Update heat source using a finite difference scheme
     
     else {
   
@@ -518,8 +538,29 @@ const scalar myMRTEq::thermalCond( const uint& id ) const {
 
 /** Diffusivity constant recovered at macroscopic level */
 
-const scalar myMRTEq::diffusivityConstant() const {
+const scalar myMRTEq::diffusivityConstant( const uint id ) const {
 
-    return (1/_relax->tau(rho.at(0),3) - 0.5) * (4.0 + 3.0 * _a1  + 2.0 * _a2) / 6.0;
+    scalar alpha(0);    
+
+    
+    switch( mesh.lmodel()->q()) {    
+
+    case 9:
+	
+	alpha = (1/_relax->tau(rho.at(id),3) - 0.5) * (4.0 + 3.0 * _a1  + 2.0 * _a2) / 6.0;
+
+	break;
+
+
+    case 15:
+
+	alpha = (1/_relax->tau(rho.at(id),3) - 0.5) * (6.0 + 11.0 * _a1  + _a2) / 9.0;
+
+	break;
+
+    }
+
+    
+    return alpha;
 
 }

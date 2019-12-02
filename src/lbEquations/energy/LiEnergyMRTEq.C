@@ -294,7 +294,7 @@ const scalar LiEnergyMRTEq::thermalCond( const uint& id ) const {
 
 /** Diffusivity constant recovered at macroscopic level */
 
-const scalar LiEnergyMRTEq::diffusivityConstant() const {
+const scalar LiEnergyMRTEq::diffusivityConstant(const uint id) const {
 
     return ( 1/_Tau[3] - 0.5 ) * mesh.lmodel()->cs2();
 
