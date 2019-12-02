@@ -16,17 +16,7 @@ ppOutflowWithNEBB::ppOutflowWithNEBB( const string& eqName,
     : ppGeneralNEBB(eqName, bdName, mesh, rho, T, U, pdf) {
 
 
-    // Resize neighbour indices, compute normals and check indexing
 
-    _nbid.resize( _nodes.size() );
-
-    // const vector< vector<int> >& nb = mesh.nbArray();
-
-    // const vector<uint>& reverse = mesh.lmodel()->reverse();
-
-    const vector< vector<int> >& vel = mesh.lmodel()->lvel();
-
-    const uint q = mesh.lmodel()->q();
 
 
 
@@ -34,18 +24,23 @@ ppOutflowWithNEBB::ppOutflowWithNEBB( const string& eqName,
 
     dictionary dict("start/boundaries");
 
-    vector<scalar> normal = dict.lookUp< vector<scalar> >( eqName + "/" + bdName + "/meanNormal" );
+    _normal = dict.lookUp< vector<scalar> >( eqName + "/" + bdName + "/meanNormal" );
 
+    
 
     // Detect correspondence with lattice velocities
 
     ln = 0;
 
+    const uint q = _mesh.lmodel()->q();
+
+    const vector< vector<int> >& vel = mesh.lmodel()->lvel();    
+
     for( uint k = 0 ; k < q ; k++ ) {
 	    
-	if(          ( vel[k][0] == (int)normal[0] )
-		 &&  ( vel[k][1] == (int)normal[1] )
-		 &&  ( vel[k][2] == (int)normal[2] )  ) {
+	if(          ( vel[k][0] == (int)_normal[0] )
+		 &&  ( vel[k][1] == (int)_normal[1] )
+		 &&  ( vel[k][2] == (int)_normal[2] )  ) {
 		
 	    ln = k;
 
@@ -60,6 +55,13 @@ ppOutflowWithNEBB::ppOutflowWithNEBB( const string& eqName,
 	exit(1);
 
     }
+
+
+
+    // Pre-allocate density map
+
+    for( auto n : _nodes )
+	_rhow[n] = _rho.at(n);
     
 
     
@@ -72,117 +74,61 @@ ppOutflowWithNEBB::ppOutflowWithNEBB( const string& eqName,
 ppOutflowWithNEBB::~ppOutflowWithNEBB() {}
 
 
+
 /** Update pdf field */
 
 void ppOutflowWithNEBB::update( const pseudoPotEquation* ppeq ) {
 
 
-    // // Lattice constants
+    // Lattice constants
     
-    // const uint q = _mesh.lmodel()->q();
+    const uint q = _mesh.lmodel()->q();
 
-    // // const vector< vector<int> >& nb = _mesh.nbArray();
+    const vector< vector<int> >& nb = _mesh.nbArray();
 
-    // vector<scalar> nvel = { 0,0,0 };
+    vector<scalar> nvel = { 0,0,0 };
 
 
-    // // Move over boundary elements
+    
+    // Move over boundary elements
 
-    // for( uint i = 0 ; i < _nodes.size() ; i++ ) {
+    for( uint i = 0 ; i < _nodes.size() ; i++ ) {
 
 	
-    // 	uint id = _nodes[i];
+    	uint id = _nodes[i];
 
-    // 	uint nid = _nbid[i];
+    	uint nid = nb[id][ln];
 		
 	
-    // 	// Velocity at neighbour node		    
+    	// Velocity at neighbour node		    
 
-    // 	ppeq->localVelocity(nvel, nid, true);
+    	ppeq->localVelocity(nvel, nid, true);
 
-    // 	scalar uAdv(0);
+    	scalar uAdv(0);
 	
-    // 	for(uint j = 0 ; j < 3 ; j++)
-    // 	    uAdv += _normal[i][j] * nvel[j];
+    	for(uint j = 0 ; j < 3 ; j++)
+    	    uAdv += _normal[j] * nvel[j];
 
 
 
-    // 	// Update unknowun distributions for f
-	    
-    // 	for( uint k = 0 ; k < q ; k++ ) {
-		
-    // 	    _pdf.set( id,
-    // 	  	      k,
-    // 		      ( _oldPdf[i][k] + uAdv*_pdf[nid][k] ) / (1+uAdv)
-    // 		);
+	// Transport density to boundary
 
-    // 	}
+	_rhow[id] = ( _rho.at(id) + uAdv*ppeq->localDensity(nid) ) / (1+uAdv);
 
-    // 	for( uint k = 0 ; k < q ; k++ )		
-    // 	    _oldPdf[i][k] = _pdf[id][k];
 
+	// Transport velocity to boundary
+
+	for(uint j = 0 ; j < 3 ; j++)
+	    _bndVal[i][j] = ( _U.at(id)[j] + uAdv*nvel[j] ) / (1+uAdv);
 
 	
-    // }
+    }
 
 
 
     
     // Apply general NEBB
 
-    ppGeneralNEBB::update( ppeq );
+    ppGeneralNEBB::update( ppeq, _rhow );
 
 }
-
-
-
-
-
-// /** Update interaction force */
-    
-// const void ppOutflow::updateIntForce( pseudoPotEquation* ppeq ) const {
-
-
-//     // Lattice constants    
-
-//     vector<scalar> nvel = { 0,0,0 };
-
-//     vector<scalar> Fint = {0,0,0};
-
-
-//     // Move over boundary elements
-
-//     for( uint i = 0 ; i < _nodes.size() ; i++ ) {
-
-	
-// 	uint id = _nodes[i];
-
-// 	uint nid = _nbid[i];
-		
-	
-// 	// Velocity at neighbour node		    
-
-// 	ppeq->localVelocity(nvel, nid, true);
-
-// 	scalar uAdv(0);
-	
-// 	for(uint j = 0 ; j < 3 ; j++)
-// 	    uAdv += _normal[i][j] * nvel[j];
-
-
-
-// 	// Update 
-	    
-// 	for( uint j = 0 ; j < 3 ; j++ )
-// 	    Fint[j] = ppeq->intForce(id,j)   +   uAdv * ppeq->intForce(nid,j) / (1+uAdv);
-
-	
-// 	ppeq->setIntForce( id, Fint );
-	
-	    
-	
-//     }
-
-    
-
-// }

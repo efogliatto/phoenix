@@ -9,24 +9,19 @@ class ppOutflowWithNEBB : public ppGeneralNEBB {
 protected:
 
 
-    // /** Pre-allocated neighbour node ids */
-
-    // std::vector<uint> _nbid;
-
-
-    // /** Boundary normal */
-
-    // std::vector< std::vector<int> > _normal;
-
-    
-    // /** Old values of pdf */
-
-    // std::vector< std::vector<scalar> > _oldPdf;
-
-
     // Lattice index for normal neighbours
 
     uint ln;
+
+
+    // Boundary mean normal
+
+    std::vector<scalar> _normal;
+
+
+    // Pre allocated density map
+
+    std::map< uint, scalar > _rhow;
 
 
 public:
@@ -35,12 +30,12 @@ public:
     /** Constructor */
 
     ppOutflowWithNEBB( const std::string& eqName,
-	       const std::string& bdName,
-	       const latticeMesh& mesh,
-	       const scalarField& rho,
-	       const scalarField& T,
-	       const vectorField& U,
-	       pdfField& pdf);
+		       const std::string& bdName,
+		       const latticeMesh& mesh,
+		       const scalarField& rho,
+		       const scalarField& T,
+		       const vectorField& U,
+		       pdfField& pdf);
 
 
     /** Destructor */

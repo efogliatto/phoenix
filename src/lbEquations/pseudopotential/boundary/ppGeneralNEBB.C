@@ -333,3 +333,168 @@ void ppGeneralNEBB::update( const pseudoPotEquation* ppeq ) {
 
     
 }
+
+
+
+
+
+
+
+
+
+/** Update pdf field using known density distribution at boundary (wall)*/
+
+void ppGeneralNEBB::update( const pseudoPotEquation* ppeq, const map<uint, scalar>& rhow ) {
+
+    
+
+    // Lattice constants
+    
+    const uint q = _mesh.lmodel()->q();  
+
+    const vector< vector<int> >& nb = _mesh.nbArray();
+
+    const vector<uint> reverse = _mesh.lmodel()->reverse();
+
+
+
+    // Auxiliary arrays
+
+    vector<scalar> Uw = {0,0,0};	
+	
+    scalar Ft[3] = {0,0,0};
+
+    scalar rotFt[3] = {0,0,0};
+
+        
+
+    // Move over boundary elements
+
+    for( uint i = 0 ; i < _nodes.size() ; i++ ) {
+
+
+	// Boundary node index (on lattice indexing)
+	
+	uint id = _nodes[i];
+
+	
+
+	// Apply simple bounce back rule for corners
+	
+	if( _normal[i] == latticeMesh::normalType::UNDEF ) {
+
+	    for(uint k = 0 ; k < q ; k++) {
+
+		if ( nb[id][k] == -1 ) {
+
+		    _pdf[id][k] = _pdf[id][reverse[k]];
+
+		}		    
+
+	    }
+
+	}
+
+
+
+	else {
+	    
+	    // Total force at node
+	
+	    ppeq->totalForce(Ft, id);
+
+	    // for(uint j = 0 ; j < 3 ; j++)	    
+	    // 	Uw[j] = _bndVal[i][j];
+
+
+	    // Rotate force and velocity at node
+
+	    vector< vector<scalar> >& rot = rotation[ _normal[i] ];	    
+
+	    for(uint j = 0 ; j < 3 ; j++)	    
+	    	Uw[j] = rot[j][0] * _bndVal[i][0]  +  rot[j][1] * _bndVal[i][1]  +  rot[j][2] * _bndVal[i][2];
+
+	    for(uint j = 0 ; j < 3 ; j++)	    
+	    	rotFt[j] = rot[j][0] * Ft[0]  +  rot[j][1] * Ft[1]  +  rot[j][2] * Ft[2];	    
+
+	    
+
+	    
+	    
+
+	    // Use transformation vectors for general formula
+	    
+	    const vector<uint>& tr = trIndex[ _normal[i] ];
+
+	    scalar rho_w = rhow.at( id );
+
+	    scalar Delta[3] = {0,0,0};
+
+
+
+	    switch( _mesh.lmodel()->type() ) {
+		
+	    
+	    case latticeModel::latticeType::D2Q9:
+
+
+		// Update distribution
+		
+		_pdf[id][ tr[2] ] = _pdf[id][ tr[4] ]  +  (2.0/3.0) * rho_w  *  Uw[1];
+
+		_pdf[id][ tr[5] ] = _pdf[id][ tr[7] ]
+		                  + 0.5 * rho_w * Uw[0]
+		                  + (rho_w/6.0) * Uw[1]
+		                  - 0.5 * ( _pdf[id][ tr[1] ] - _pdf[id][ tr[3] ] )
+		                  - 0.25 * ( rotFt[0] + rotFt[1] );
+
+		_pdf[id][ tr[6] ] = _pdf[id][ tr[8] ]
+		                  - 0.5 * rho_w * Uw[0]
+		                  + (rho_w/6.0) * Uw[1]
+		                  + 0.5 * ( _pdf[id][ tr[1] ] - _pdf[id][ tr[3] ] )
+		                  - 0.25 * ( -rotFt[0] + rotFt[1] );		
+
+
+		break;
+
+
+
+
+
+	    case latticeModel::latticeType::D3Q15:
+
+
+		// Momentum correctors
+		
+		Delta[0] = -rotFt[0] / 8.0;
+
+		Delta[1] = -(_pdf[id][tr[3]] - _pdf[id][tr[4]]) / 4.0   +   rho_w * Uw[1] / 6.0   -   rotFt[1] / 8.0;
+
+		Delta[2] = -(_pdf[id][tr[5]] - _pdf[id][tr[6]]) / 4.0   +   rho_w * Uw[2] / 6.0   -   rotFt[2] / 8.0;
+
+
+		// Update distribution
+
+		_pdf[id][tr[1]]  = _pdf[id][tr[2]]     +    2.0 * rho_w * Uw[0] / 3.0;
+
+		_pdf[id][tr[7]]  = _pdf[id][tr[14]]    +    rho_w * ( Uw[0] + Uw[1] + Uw[2] ) / 12.0    +    Delta[0] + Delta[1] + Delta[2];
+
+		_pdf[id][tr[9]]  = _pdf[id][tr[12]]    +    rho_w * ( Uw[0] - Uw[1] + Uw[2] ) / 12.0    +    Delta[0] - Delta[1] + Delta[2];
+
+		_pdf[id][tr[11]] = _pdf[id][tr[10]]    +    rho_w * ( Uw[0] + Uw[1] - Uw[2] ) / 12.0    +    Delta[0] + Delta[1] - Delta[2];
+
+		_pdf[id][tr[13]] = _pdf[id][tr[8]]     +    rho_w * ( Uw[0] - Uw[1] - Uw[2] ) / 12.0    +    Delta[0] - Delta[1] - Delta[2];
+		
+		
+
+		break;
+
+
+	    }
+
+	}
+	
+
+    }
+
+}

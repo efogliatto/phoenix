@@ -47,6 +47,11 @@ public:
 
     virtual void update( const pseudoPotEquation* ppeq );
 
+
+    /** Update pdf field using known density distribution at boundary (wall)*/
+
+    void update( const pseudoPotEquation* ppeq, const std::map<uint, scalar>& rhow );    
+
 };
 
 #endif // PPGENERALNEBB_H
