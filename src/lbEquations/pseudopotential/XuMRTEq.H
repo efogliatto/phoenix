@@ -41,8 +41,11 @@ public:
     /** Set pdf to equilibrium values */
 
     const void setEquilibrium();
-    
 
+    
+    /** Compute and update isotropic pressure as scalar field */
+
+    const void pressure( const scalarField& phi, scalarField& p );
     
 
 };

@@ -261,3 +261,65 @@ const void XuMRTEq::setEquilibrium() {
     
 
 }
+
+
+
+
+/** Compute and update isotropic pressure as scalar field */
+
+const void XuMRTEq::pressure( const scalarField& phi, scalarField& p ) {
+
+    // Lattice constants   
+    
+    const scalar cs2 = mesh.lmodel()->cs2();
+
+    scalar G(-1.0);
+
+    const scalar c(1);
+
+
+    // Potential gradient
+    
+    scalar grad[3] = {0,0,0};
+
+    scalar phiMag(0);
+
+    
+
+
+    // Compute only at local points
+
+    for(uint i = 0 ; i < mesh.local() ; i++){
+
+
+	// Compute potential gradient
+
+	phi.grad(grad, i);
+
+	phiMag = 0;
+
+	for( uint j = 0 ; j < 3 ; j++ )
+	    phiMag += grad[j] * grad[j];
+
+
+	// Signed potential strength
+
+	G = F.signedPotential(rho.at(i), T.at(i), cs2);
+	
+	
+	// Isotropic pressure
+	
+	p[i] = rho.at(i)*cs2
+	    + (G * c * c / 2.0) * phi.at(i) * phi.at(i)
+	    + (G * c * c * c * c/ 12.0) * phi.at(i) * phi.laplacian(i)
+	    + 2 * G * G * c * c * c * c * _sigma * phiMag
+	    ;
+
+    }
+
+
+    // Sync pressure field
+    
+    p.sync();
+
+}
