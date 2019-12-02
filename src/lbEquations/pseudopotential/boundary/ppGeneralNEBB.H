@@ -45,7 +45,7 @@ public:
 
     /** Update pdf field */
 
-    void update( const pseudoPotEquation* ppeq );
+    virtual void update( const pseudoPotEquation* ppeq );
 
 };
 

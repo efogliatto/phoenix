@@ -20,7 +20,8 @@ ppBndCond* ppBndCreator::create( const string& eqName,
     _bdMapType["outflow"]  = bdType::outflow;
     _bdMapType["NEBB"]     = bdType::NEBB;
     _bdMapType["NEExt"]    = bdType::NEExt;
-    _bdMapType["generalNEBB"]   = bdType::G_NEBB;	
+    _bdMapType["generalNEBB"]   = bdType::G_NEBB;
+    _bdMapType["outflowWithNEBB"]   = bdType::OutflowNEBB;	
 
     
     
@@ -78,7 +79,15 @@ ppBndCond* ppBndCreator::create( const string& eqName,
 
 	    return new ppGeneralNEBB( eqName, bdName, mesh, rho, T, U, pdf );
 
+	    break;
+
+	    
+	case bdType::OutflowNEBB:
+
+	    return new ppOutflowWithNEBB( eqName, bdName, mesh, rho, T, U, pdf );
+
 	    break;	    
+	    
 	    
 	}
 

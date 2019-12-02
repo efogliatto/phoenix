@@ -13,6 +13,8 @@
 
 #include <ppOutflow.H>
 
+#include <ppOutflowWithNEBB.H>
+
 class ppBndCreator {
 
     
@@ -21,7 +23,7 @@ protected:
     
     // Boundary types
 
-    enum class bdType{ fixedU, periodic, outflow, NEBB, NEExt, G_NEBB };
+    enum class bdType{ fixedU, periodic, outflow, NEBB, NEExt, G_NEBB, OutflowNEBB };
 
     std::map<std::string, bdType> _bdMapType;
 
