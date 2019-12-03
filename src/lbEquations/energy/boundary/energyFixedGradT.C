@@ -41,57 +41,114 @@ energyFixedGradT::energyFixedGradT( const std::string& eqName,
 	const uint q = mesh.lmodel()->q();
 
 
+	// First check if mean normal is defined
+
+	dictionary dict("start/boundaries");
+
+	vector<scalar> _normal = dict.lookUpOrDefault< vector<scalar> >( eqName + "/" + bdName + "/meanNormal", {0,0,0} );
+
+
+
+
+	// Use arbitrary normal
+	
+	if( ( _normal[0] == 0 )  &&  ( _normal[1] == 0 )  &&  ( _normal[2] == 0 )  ) {
+
     
-	for( uint i = 0 ; i < _nodes.size() ; i++ ) {
+	    for( uint i = 0 ; i < _nodes.size() ; i++ ) {
 
-	    uint nid = _nodes[i];
+		uint nid = _nodes[i];
 
 
-	    // Check which is the normal direction, using unknown neighbours
+		// Check which is the normal direction, using unknown neighbours
 
-	    scalar normal[3] = {0,0,0};
+		scalar normal[3] = {0,0,0};
 
-	    for( uint k = 0 ; k < q ; k++ ) {
+		for( uint k = 0 ; k < q ; k++ ) {
 
-		if( nb[nid][ reverse[k] ] == -1 ) {
+		    if( nb[nid][ reverse[k] ] == -1 ) {
 
-		    for( uint j = 0 ; j < 3 ; j++ ) {
+			for( uint j = 0 ; j < 3 ; j++ ) {
 
-			normal[j] += (scalar)vel[k][j];
+			    normal[j] += (scalar)vel[k][j];
+
+			}
 
 		    }
 
 		}
 
-	    }
+		scalar nmag(0);
 
-	    scalar nmag(0);
-
-	    for( uint j = 0 ; j < 3 ; j++ )
-		nmag += normal[j] * normal[j];
+		for( uint j = 0 ; j < 3 ; j++ )
+		    nmag += normal[j] * normal[j];
 	    
 
 
-	    if( nmag!=0 ) {
+		if( nmag!=0 ) {
 
-		nmag = sqrt(nmag);
+		    nmag = sqrt(nmag);
 
-		for( uint j = 0 ; j < 3 ; j++ ) {
+		    for( uint j = 0 ; j < 3 ; j++ ) {
 
-		    normal[j] = normal[j] / nmag;
+			normal[j] = normal[j] / nmag;
+
+		    }
+	    
+		}
+
+		else {
+
+		    cout << " [ERROR]  Unable to detect normal on node " << i << " over boundary " << bdName;
+
+		    exit(1);
 
 		}
-	    
-	    }
-
-	    else {
-
-		cout << " [ERROR]  Unable to detect normal on node " << i << " over boundary " << bdName;
-
-		exit(1);
-
-	    }
              
+
+		// Detect correspondence with lattice velocities
+
+		int ln = -1;
+
+		for( uint k = 0 ; k < q ; k++ ) {
+	    
+		    if(      ( vel[k][0] == (int)normal[0] )
+			     &&  ( vel[k][1] == (int)normal[1] )
+			     &&  ( vel[k][2] == (int)normal[2] )  ) {
+		
+			ln = k;
+
+		    }
+
+		}
+
+		if(ln == -1) {
+
+		    cout << " [ERROR]  Unable to detect normal on node " << _nodes[i] << " over boundary " << bdName;
+
+		    exit(1);
+
+		}
+
+		else {
+
+		    _nbid[i] = nb[nid][ln];
+
+		    _snbid[i] = nb[_nbid[i]][ln];		
+
+		}
+	
+
+	    }
+
+
+	}
+
+
+
+	// Use predefined normal
+	
+	else {
 
 	    // Detect correspondence with lattice velocities
 
@@ -99,9 +156,9 @@ energyFixedGradT::energyFixedGradT( const std::string& eqName,
 
 	    for( uint k = 0 ; k < q ; k++ ) {
 	    
-		if(      ( vel[k][0] == (int)normal[0] )
-			 &&  ( vel[k][1] == (int)normal[1] )
-			 &&  ( vel[k][2] == (int)normal[2] )  ) {
+		if(     ( vel[k][0] == (int)_normal[0] )
+		    &&  ( vel[k][1] == (int)_normal[1] )
+		    &&  ( vel[k][2] == (int)_normal[2] )  ) {
 		
 		    ln = k;
 
@@ -109,22 +166,27 @@ energyFixedGradT::energyFixedGradT( const std::string& eqName,
 
 	    }
 
+
 	    if(ln == -1) {
 
-		cout << " [ERROR]  Unable to detect normal on node " << _nodes[i] << " over boundary " << bdName;
+		cout << " [ERROR]  Unable to detect normal on boundary " << bdName;
 
 		exit(1);
 
 	    }
+	    
 
-	    else {
+	    for( uint i = 0 ; i < _nodes.size() ; i++ ) {
+
+		uint nid = _nodes[i];
 
 		_nbid[i] = nb[nid][ln];
 
 		_snbid[i] = nb[_nbid[i]][ln];		
 
 	    }
-	
+
+	    
 
 	}
 	
