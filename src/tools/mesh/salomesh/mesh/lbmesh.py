@@ -135,7 +135,7 @@ class lbmesh:
     
     
 
-    def compute(self):
+    def compute(self, filterShape=False):
         """
         Compute lattice mesh
         """
@@ -148,33 +148,35 @@ class lbmesh:
         # Filter elements lying on geometry
         # This way can be used with multiple criterions
 
-        if self.lmodel.D() == 3:
+        if filterShape:
+
+            if self.lmodel.D() == 3:
             
-            criterion = self.smesh.GetCriterion(SMESH.VOLUME,SMESH.FT_BelongToGeom,self.shape,SMESH.FT_LogicalNOT, self.Tolerance)
+                criterion = self.smesh.GetCriterion(SMESH.VOLUME,SMESH.FT_BelongToGeom,self.shape,SMESH.FT_LogicalNOT, self.Tolerance)
 
-            filter = self.smesh.GetFilterFromCriteria([criterion])
+                filter = self.smesh.GetFilterFromCriteria([criterion])
 
-            isDone = self.Mesh.RemoveElements( self.Mesh.GetIdsFromFilter(filter) )
+                isDone = self.Mesh.RemoveElements( self.Mesh.GetIdsFromFilter(filter) )
 
-            isDone = self.Mesh.RemoveOrphanNodes()
+                isDone = self.Mesh.RemoveOrphanNodes()
 
-            self.Mesh.RenumberNodes()        
+                self.Mesh.RenumberNodes()        
 
-            self.Mesh.RenumberElements()                    
+                self.Mesh.RenumberElements()                    
 
-        else:
+            else:
             
-            criterion = self.smesh.GetCriterion(SMESH.ALL,SMESH.FT_BelongToGeom,SMESH.FT_Undefined,self.shape,SMESH.FT_LogicalNOT,SMESH.FT_Undefined,self.Tolerance)
+                criterion = self.smesh.GetCriterion(SMESH.ALL,SMESH.FT_BelongToGeom,SMESH.FT_Undefined,self.shape,SMESH.FT_LogicalNOT,SMESH.FT_Undefined,self.Tolerance)
 
-            filter = self.smesh.GetFilterFromCriteria([criterion])
+                filter = self.smesh.GetFilterFromCriteria([criterion])
 
-            isDone = self.Mesh.RemoveElements( self.Mesh.GetIdsFromFilter(filter) )
+                isDone = self.Mesh.RemoveElements( self.Mesh.GetIdsFromFilter(filter) )
 
-            isDone = self.Mesh.RemoveOrphanNodes()
+                isDone = self.Mesh.RemoveOrphanNodes()
 
-            nbRemoved = self.Mesh.RenumberNodes()
-
-            self.Mesh.RenumberElements()        
+                nbRemoved = self.Mesh.RenumberNodes()
+                
+                self.Mesh.RenumberElements()        
 
 
 
