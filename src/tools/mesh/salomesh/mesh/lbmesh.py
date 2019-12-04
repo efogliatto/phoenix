@@ -28,7 +28,7 @@ class lbmesh:
     Lattice boltzmann mesh class
     """
 
-    def __init__(self, geompy, shape, lattice_model="D2Q9", maxDim=(0,0,0)):
+    def __init__(self, geompy, shape, lattice_model="D2Q9", maxDim=(0,0,0), bbox=True):
 
 
         # Basic elements
@@ -42,37 +42,40 @@ class lbmesh:
         self.Tolerance = 0.707107
 
         self.mg = {}
+
         
 
-
-        # Integer bounding box
-
-        if self.lmodel.D() == 3:
+        if bbox == True:
         
-            BBox = geompy.BoundingBox(shape, True)
 
-            self.Box = geompy.MakeBoxTwoPnt(  geompy.MakeVertex( np.ceil(BBox[0]), np.ceil(BBox[2]), np.ceil(BBox[4]) ),  geompy.MakeVertex( np.ceil(BBox[1]), np.ceil(BBox[3]), np.ceil(BBox[5])) )
+            # Integer bounding box
 
-            geompy.addToStudy( self.Box, 'Bounding box' )
+            if self.lmodel.D() == 3:
+        
+                BBox = geompy.BoundingBox(shape, True)
+
+                self.Box = geompy.MakeBoxTwoPnt(  geompy.MakeVertex( np.ceil(BBox[0]), np.ceil(BBox[2]), np.ceil(BBox[4]) ),  geompy.MakeVertex( np.ceil(BBox[1]), np.ceil(BBox[3]), np.ceil(BBox[5])) )
+
+                geompy.addToStudy( self.Box, 'Bounding box' )
 
             
-        else:
+            else:
 
-            Vertex_0 = geompy.MakeVertex(0, 0, 0)
-            Vertex_1 = geompy.MakeVertex(np.ceil(maxDim[0]), 0, 0)
-            Vertex_2 = geompy.MakeVertex(np.ceil(maxDim[0]), np.ceil(maxDim[1]), 0)
-            Vertex_3 = geompy.MakeVertex(0, np.ceil(maxDim[1]), 0)
+                Vertex_0 = geompy.MakeVertex(0, 0, 0)
+                Vertex_1 = geompy.MakeVertex(np.ceil(maxDim[0]), 0, 0)
+                Vertex_2 = geompy.MakeVertex(np.ceil(maxDim[0]), np.ceil(maxDim[1]), 0)
+                Vertex_3 = geompy.MakeVertex(0, np.ceil(maxDim[1]), 0)
 
-            Line_0 = geompy.MakeLineTwoPnt(Vertex_0, Vertex_1)
-            Line_1 = geompy.MakeLineTwoPnt(Vertex_1, Vertex_2)
-            Line_2 = geompy.MakeLineTwoPnt(Vertex_2, Vertex_3)
-            Line_3 = geompy.MakeLineTwoPnt(Vertex_3, Vertex_0)
+                Line_0 = geompy.MakeLineTwoPnt(Vertex_0, Vertex_1)
+                Line_1 = geompy.MakeLineTwoPnt(Vertex_1, Vertex_2)
+                Line_2 = geompy.MakeLineTwoPnt(Vertex_2, Vertex_3)
+                Line_3 = geompy.MakeLineTwoPnt(Vertex_3, Vertex_0)
 
-            Wire_1 = geompy.MakeWire([Line_0, Line_1, Line_2, Line_3], 1e-07)
+                Wire_1 = geompy.MakeWire([Line_0, Line_1, Line_2, Line_3], 1e-07)
             
-            self.Box = geompy.MakeFaceWires([Wire_1], 1)
+                self.Box = geompy.MakeFaceWires([Wire_1], 1)
 
-            geompy.addToStudy( self.Box, 'Bounding box' )            
+                geompy.addToStudy( self.Box, 'Bounding box' )            
 
 
 
@@ -80,40 +83,40 @@ class lbmesh:
 
         
 
-        # SMESH Hypotesis
+            # SMESH Hypotesis
 
-        if self.lmodel.D() == 3:
+            if self.lmodel.D() == 3:
         
-            self.smesh = smeshBuilder.New()
+                self.smesh = smeshBuilder.New()
 
-            Local_Length = self.smesh.CreateHypothesis('LocalLength')
+                Local_Length = self.smesh.CreateHypothesis('LocalLength')
 
-            Local_Length.SetLength( 1 )
+                Local_Length.SetLength( 1 )
 
-            Local_Length.SetPrecision( 1e-07 )
+                Local_Length.SetPrecision( 1e-07 )
 
-            self.Mesh = self.smesh.Mesh( self.Box )
+                self.Mesh = self.smesh.Mesh( self.Box )
 
-            Cartesian_3D = self.Mesh.BodyFitted()
+                Cartesian_3D = self.Mesh.BodyFitted()
 
-            Body_Fitting_Parameters = Cartesian_3D.SetGrid([ [ '1' ], [ 0, 1 ]],[ [ '1' ], [ 0, 1 ]],[ [ '1' ], [ 0, 1 ]],2,0)
+                Body_Fitting_Parameters = Cartesian_3D.SetGrid([ [ '1' ], [ 0, 1 ]],[ [ '1' ], [ 0, 1 ]],[ [ '1' ], [ 0, 1 ]],2,0)
 
-            Body_Fitting_Parameters.SetFixedPoint( SMESH.PointStruct ( 0, 0, 0 ), 1 )
+                Body_Fitting_Parameters.SetFixedPoint( SMESH.PointStruct ( 0, 0, 0 ), 1 )
 
-            Body_Fitting_Parameters.SetAxesDirs( SMESH.DirStruct( SMESH.PointStruct ( 1, 0, 0 )), SMESH.DirStruct( SMESH.PointStruct ( 0, 1, 0 )), SMESH.DirStruct( SMESH.PointStruct ( 0, 0, 1 )) )
+                Body_Fitting_Parameters.SetAxesDirs( SMESH.DirStruct( SMESH.PointStruct ( 1, 0, 0 )), SMESH.DirStruct( SMESH.PointStruct ( 0, 1, 0 )), SMESH.DirStruct( SMESH.PointStruct ( 0, 0, 1 )) )
 
 
-        else:
+            else:
 
-            self.smesh = smeshBuilder.New()
+                self.smesh = smeshBuilder.New()
 
-            self.Mesh = self.smesh.Mesh(self.Box)
+                self.Mesh = self.smesh.Mesh(self.Box)
 
-            Regular_1D = self.Mesh.Segment()
+                Regular_1D = self.Mesh.Segment()
 
-            Local_Length_1 = Regular_1D.LocalLength(1,None,1e-07)
+                Local_Length_1 = Regular_1D.LocalLength(1,None,1e-07)
 
-            Quadrangle_2D = self.Mesh.Quadrangle(algo=smeshBuilder.QUADRANGLE)
+                Quadrangle_2D = self.Mesh.Quadrangle(algo=smeshBuilder.QUADRANGLE)
             
 
         
@@ -121,6 +124,17 @@ class lbmesh:
 
 
 
+
+    def updateShape(self, shape):
+        """
+        Change shape
+        """
+
+        self.shape = shape
+
+        pass
+
+    
 
     def setTolerance(self,tol=1):
         """
@@ -135,7 +149,7 @@ class lbmesh:
     
     
 
-    def compute(self, filterShape=False):
+    def compute(self, filterShape=True, computeNeighbours=True, name='Mesh'):
         """
         Compute lattice mesh
         """
@@ -182,69 +196,15 @@ class lbmesh:
 
         # Set names of Mesh objects
 
-        self.smesh.SetName(self.Mesh.GetMesh(), 'Mesh')
+        self.smesh.SetName(self.Mesh.GetMesh(), name)
 
 
+        if computeNeighbours == True:
 
-        # Neighbour calculation
-
-        self.neighbours = np.zeros( (self.Mesh.NbNodes(), self.lmodel.Q()), dtype=np.int64 )
-
-        self.neighbours.fill(-1)
+            updateNeighbours()
 
 
-        # Fill points array
-
-        self.points = np.zeros( (self.Mesh.NbNodes(), 3), dtype=np.int64 )
-
-        for node in self.Mesh.GetNodesId():
-
-          xyz = self.Mesh.GetNodeXYZ( node )
-
-          for j in range(3):
-  
-            self.points[node-1,j] = np.rint( xyz[j] )
-
-
-
-        # Element inspection for connectivity
-
-        elements = self.Mesh.GetElementsId()
-
-
-        # Reverse velocity index
-
-        reverse = self.lmodel.reverse()
-
-
-        for el in elements:
-  
-          element_nodes = self.Mesh.GetElemNodes( el )
-
-          dist = np.array([0,0,0], dtype=np.int64)
-          
-          for node in element_nodes:
-
-            for nbnode in element_nodes:
-
-              for j in range(3):
-
-                dist[j] = np.rint( self.points[nbnode-1,j] - self.points[node-1,j] )
-
-
-              # Corresponding velocity index
-
-              vid = self.lmodel.vindex( dist )
-              
-
-              # Assign neighbour using reverse indexing
-
-              if vid != -1:
-                  self.neighbours[node-1, reverse[vid]] = nbnode - 1
-
-              
-
-                
+            
         return isDone
     
     
@@ -438,6 +398,75 @@ class lbmesh:
             
         
         pass
+
+
+
+
+    def updateNeighbours(self):
+
+        """
+        Compute neighbours
+        """
+
+        # Neighbour calculation
+
+        self.neighbours = np.zeros( (self.Mesh.NbNodes(), self.lmodel.Q()), dtype=np.int64 )
+
+        self.neighbours.fill(-1)
+
+
+        # Fill points array
+
+        self.points = np.zeros( (self.Mesh.NbNodes(), 3), dtype=np.int64 )
+
+        for node in self.Mesh.GetNodesId():
+
+            xyz = self.Mesh.GetNodeXYZ( node )
+
+            for j in range(3):
+  
+                self.points[node-1,j] = np.rint( xyz[j] )
+
+
+
+        # Element inspection for connectivity
+
+        elements = self.Mesh.GetElementsId()
+
+
+        # Reverse velocity index
+
+        reverse = self.lmodel.reverse()
+
+
+        for el in elements:
+            
+            element_nodes = self.Mesh.GetElemNodes( el )
+
+            dist = np.array([0,0,0], dtype=np.int64)
+          
+            for node in element_nodes:
+
+                for nbnode in element_nodes:
+
+                    for j in range(3):
+
+                        dist[j] = np.rint( self.points[nbnode-1,j] - self.points[node-1,j] )
+
+
+                # Corresponding velocity index
+
+                vid = self.lmodel.vindex( dist )
+              
+
+                # Assign neighbour using reverse indexing
+
+                if vid != -1:
+                    self.neighbours[node-1, reverse[vid]] = nbnode - 1
+
+
+        pass
+
     
 
     
