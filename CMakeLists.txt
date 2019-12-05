@@ -119,12 +119,28 @@ endif()
 
 
 
-# Armadillo
+# # Armadillo
 
-set(ARMADILLO_LIBRARY "/users/fogliate/Programas/armadillo-9.300.2/install/lib")
+# set(ARMADILLO_LIBRARY "/users/fogliate/Programas/armadillo-9.300.2/install/lib")
 
-set(ARMADILLO_INCLUDE_DIR "/users/fogliate/Programas/armadillo-9.300.2/install/include")
+# set(ARMADILLO_INCLUDE_DIR "/users/fogliate/Programas/armadillo-9.300.2/install/include")
 
+
+
+
+# Optional: CGAL
+
+option(WITH_CGAL "Compile GCAL applications" ON)
+
+if(WITH_CGAL)
+  
+  find_package(CGAL REQUIRED)
+
+  add_definitions(-DUSE_CGAL)
+
+  message("-- Use CGAL")  
+  
+endif()
 
 
 
