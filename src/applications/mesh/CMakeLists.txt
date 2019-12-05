@@ -6,3 +6,9 @@
 
 # latticeMeshPartition
 add_subdirectory (latticeMeshPartitions)
+
+# salomeToPhoenix
+add_subdirectory (salomeToPhoenix)
+
+# cartesianMesh
+add_subdirectory (cartesianMesh)

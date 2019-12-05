@@ -16,6 +16,8 @@ from ..io.write_vtk_cells import write_vtk_cells
 
 from ..io.write_boundaries import write_boundaries
 
+import os
+
 
 import SMESH, SALOMEDS
 
@@ -422,6 +424,8 @@ class bodyFittingMesh:
         Export lattice mesh
         """
 
+        print('\nWriting mesh')
+        
         # Clear directory
         
         os.system( 'rm -rf lattice' )
