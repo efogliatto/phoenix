@@ -7,4 +7,6 @@ from .DdQq.DdQq import DdQq
 
 from .mesh.lbmesh import lbmesh
 
+from .mesh.bodyFittingMesh import bodyFittingMesh
+
 from .mesh.mergeMeshes import mergeMeshes

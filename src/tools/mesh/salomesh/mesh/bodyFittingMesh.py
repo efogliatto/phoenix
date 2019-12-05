@@ -22,10 +22,12 @@ import SMESH, SALOMEDS
 from salome.smesh import smeshBuilder
 
 
-class lbmesh:
+class bodyFittingMesh:
 
     """
-    Lattice boltzmann mesh class
+    Lattice boltzmann mesh class. 
+
+    Compute using body fitting algorithm
     """
 
     def __init__(self, geompy, shape, lattice_model="D2Q9", maxDim=(0,0,0)):
@@ -43,41 +45,6 @@ class lbmesh:
 
         self.mg = {}
         
-
-
-        # Integer bounding box
-
-        if self.lmodel.D() == 3:
-        
-            BBox = geompy.BoundingBox(shape, True)
-
-            self.Box = geompy.MakeBoxTwoPnt(  geompy.MakeVertex( np.ceil(BBox[0]), np.ceil(BBox[2]), np.ceil(BBox[4]) ),  geompy.MakeVertex( np.ceil(BBox[1]), np.ceil(BBox[3]), np.ceil(BBox[5])) )
-
-            geompy.addToStudy( self.Box, 'Bounding box' )
-
-            
-        else:
-
-            Vertex_0 = geompy.MakeVertex(0, 0, 0)
-            Vertex_1 = geompy.MakeVertex(np.ceil(maxDim[0]), 0, 0)
-            Vertex_2 = geompy.MakeVertex(np.ceil(maxDim[0]), np.ceil(maxDim[1]), 0)
-            Vertex_3 = geompy.MakeVertex(0, np.ceil(maxDim[1]), 0)
-
-            Line_0 = geompy.MakeLineTwoPnt(Vertex_0, Vertex_1)
-            Line_1 = geompy.MakeLineTwoPnt(Vertex_1, Vertex_2)
-            Line_2 = geompy.MakeLineTwoPnt(Vertex_2, Vertex_3)
-            Line_3 = geompy.MakeLineTwoPnt(Vertex_3, Vertex_0)
-
-            Wire_1 = geompy.MakeWire([Line_0, Line_1, Line_2, Line_3], 1e-07)
-            
-            self.Box = geompy.MakeFaceWires([Wire_1], 1)
-
-            geompy.addToStudy( self.Box, 'Bounding box' )            
-
-
-
-            
-
         
 
         # SMESH Hypotesis
@@ -92,7 +59,7 @@ class lbmesh:
 
             Local_Length.SetPrecision( 1e-07 )
 
-            self.Mesh = self.smesh.Mesh( self.Box )
+            self.Mesh = self.smesh.Mesh( self.shape )
 
             Cartesian_3D = self.Mesh.BodyFitted()
 
@@ -107,7 +74,7 @@ class lbmesh:
 
             self.smesh = smeshBuilder.New()
 
-            self.Mesh = self.smesh.Mesh(self.Box)
+            self.Mesh = self.smesh.Mesh( self.shape )
 
             Regular_1D = self.Mesh.Segment()
 
@@ -135,112 +102,143 @@ class lbmesh:
     
     
 
-    def compute(self, filterShape=False):
+    def compute(self, name='Mesh'):
         """
         Compute lattice mesh
         """
 
         # Compute basic mesh
 
+        print('\nComputing basic mesh\n')
+        
         isDone = self.Mesh.Compute()
 
 
-        # Filter elements lying on geometry
-        # This way can be used with multiple criterions
 
-        if filterShape:
+        # Remove non tetra/hexa
 
-            if self.lmodel.D() == 3:
+        print('\nRemoving non orthogonal elements\n')
+        
+        elements = self.Mesh.GetElementsId()
+
+        rm_elements = []
+        
+        if self.lmodel.D() == 3:
+
+            for el in elements:
+
+                if np.isclose(self.Mesh.GetVolume(elemId = el), 1, rtol=1e-05, atol=1e-08, equal_nan=False) == False:
+                    
+                    rm_elements.append( el )                        
+
+        else:
+
+            for el in elements:
+
+                if np.isclose(self.Mesh.GetArea(elemId = el), 1, rtol=1e-05, atol=1e-08, equal_nan=False) == False:
+                    
+                    rm_elements.append( el )            
+
+
+        # smesh.RemoveElements( rm_elements )
+                    
+        
+        # # Filter elements lying on geometry
+        # # This way can be used with multiple criterions
+
+        # if filterShape:
+
+        #     if self.lmodel.D() == 3:
             
-                criterion = self.smesh.GetCriterion(SMESH.VOLUME,SMESH.FT_BelongToGeom,self.shape,SMESH.FT_LogicalNOT, self.Tolerance)
+        #         criterion = self.smesh.GetCriterion(SMESH.VOLUME,SMESH.FT_BelongToGeom,self.shape,SMESH.FT_LogicalNOT, self.Tolerance)
 
-                filter = self.smesh.GetFilterFromCriteria([criterion])
+        #         filter = self.smesh.GetFilterFromCriteria([criterion])
 
-                isDone = self.Mesh.RemoveElements( self.Mesh.GetIdsFromFilter(filter) )
+        #         isDone = self.Mesh.RemoveElements( self.Mesh.GetIdsFromFilter(filter) )
 
-                isDone = self.Mesh.RemoveOrphanNodes()
+        #         isDone = self.Mesh.RemoveOrphanNodes()
 
-                self.Mesh.RenumberNodes()        
+        #         self.Mesh.RenumberNodes()        
 
-                self.Mesh.RenumberElements()                    
+        #         self.Mesh.RenumberElements()                    
 
-            else:
+        #     else:
             
-                criterion = self.smesh.GetCriterion(SMESH.ALL,SMESH.FT_BelongToGeom,SMESH.FT_Undefined,self.shape,SMESH.FT_LogicalNOT,SMESH.FT_Undefined,self.Tolerance)
+        #         criterion = self.smesh.GetCriterion(SMESH.ALL,SMESH.FT_BelongToGeom,SMESH.FT_Undefined,self.shape,SMESH.FT_LogicalNOT,SMESH.FT_Undefined,self.Tolerance)
 
-                filter = self.smesh.GetFilterFromCriteria([criterion])
+        #         filter = self.smesh.GetFilterFromCriteria([criterion])
 
-                isDone = self.Mesh.RemoveElements( self.Mesh.GetIdsFromFilter(filter) )
+        #         isDone = self.Mesh.RemoveElements( self.Mesh.GetIdsFromFilter(filter) )
 
-                isDone = self.Mesh.RemoveOrphanNodes()
+        #         isDone = self.Mesh.RemoveOrphanNodes()
 
-                nbRemoved = self.Mesh.RenumberNodes()
+        #         nbRemoved = self.Mesh.RenumberNodes()
                 
-                self.Mesh.RenumberElements()        
+        #         self.Mesh.RenumberElements()        
 
 
 
         # Set names of Mesh objects
 
-        self.smesh.SetName(self.Mesh.GetMesh(), 'Mesh')
+        self.smesh.SetName(self.Mesh.GetMesh(), name)
 
 
 
-        # Neighbour calculation
+        # # Neighbour calculation
 
-        self.neighbours = np.zeros( (self.Mesh.NbNodes(), self.lmodel.Q()), dtype=np.int64 )
+        # self.neighbours = np.zeros( (self.Mesh.NbNodes(), self.lmodel.Q()), dtype=np.int64 )
 
-        self.neighbours.fill(-1)
+        # self.neighbours.fill(-1)
 
 
-        # Fill points array
+        # # Fill points array
 
-        self.points = np.zeros( (self.Mesh.NbNodes(), 3), dtype=np.int64 )
+        # self.points = np.zeros( (self.Mesh.NbNodes(), 3), dtype=np.int64 )
 
-        for node in self.Mesh.GetNodesId():
+        # for node in self.Mesh.GetNodesId():
 
-          xyz = self.Mesh.GetNodeXYZ( node )
+        #   xyz = self.Mesh.GetNodeXYZ( node )
 
-          for j in range(3):
+        #   for j in range(3):
   
-            self.points[node-1,j] = np.rint( xyz[j] )
+        #     self.points[node-1,j] = np.rint( xyz[j] )
 
 
 
-        # Element inspection for connectivity
+        # # Element inspection for connectivity
 
-        elements = self.Mesh.GetElementsId()
-
-
-        # Reverse velocity index
-
-        reverse = self.lmodel.reverse()
+        # elements = self.Mesh.GetElementsId()
 
 
-        for el in elements:
+        # # Reverse velocity index
+
+        # reverse = self.lmodel.reverse()
+
+
+        # for el in elements:
   
-          element_nodes = self.Mesh.GetElemNodes( el )
+        #   element_nodes = self.Mesh.GetElemNodes( el )
 
-          dist = np.array([0,0,0], dtype=np.int64)
+        #   dist = np.array([0,0,0], dtype=np.int64)
           
-          for node in element_nodes:
+        #   for node in element_nodes:
 
-            for nbnode in element_nodes:
+        #     for nbnode in element_nodes:
 
-              for j in range(3):
+        #       for j in range(3):
 
-                dist[j] = np.rint( self.points[nbnode-1,j] - self.points[node-1,j] )
+        #         dist[j] = np.rint( self.points[nbnode-1,j] - self.points[node-1,j] )
 
 
-              # Corresponding velocity index
+        #       # Corresponding velocity index
 
-              vid = self.lmodel.vindex( dist )
+        #       vid = self.lmodel.vindex( dist )
               
 
-              # Assign neighbour using reverse indexing
+        #       # Assign neighbour using reverse indexing
 
-              if vid != -1:
-                  self.neighbours[node-1, reverse[vid]] = nbnode - 1
+        #       if vid != -1:
+        #           self.neighbours[node-1, reverse[vid]] = nbnode - 1
 
               
 
@@ -445,10 +443,15 @@ class lbmesh:
         """
         Export lattice mesh
         """
+
+        # Clear directory
+        
+        os.system( 'rm -rf lattice' )
+
         
         write_points(self.Mesh)
 
-        write_neighbours(self.neighbours)
+        # write_neighbours(self.neighbours)
 
         write_vtk_cells(self.Mesh, self.lmodel)
 
