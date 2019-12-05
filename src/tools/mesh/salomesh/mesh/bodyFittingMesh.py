@@ -109,7 +109,7 @@ class bodyFittingMesh:
 
         # Compute basic mesh
 
-        print('\nComputing basic mesh\n')
+        print('\nComputing basic mesh')
         
         isDone = self.Mesh.Compute()
 
@@ -117,64 +117,37 @@ class bodyFittingMesh:
 
         # Remove non tetra/hexa
 
-        print('\nRemoving non orthogonal elements\n')
-        
-        elements = self.Mesh.GetElementsId()
+        print('\nRemoving non orthogonal elements')        
 
-        rm_elements = []
-        
         if self.lmodel.D() == 3:
+            
+            criterion = self.smesh.GetCriterion(SMESH.VOLUME,SMESH.FT_EntityType,SMESH.FT_Undefined,SMESH.Entity_Hexa,SMESH.FT_LogicalNOT)
 
-            for el in elements:
+            filter = self.smesh.GetFilterFromCriteria([criterion])
 
-                if np.isclose(self.Mesh.GetVolume(elemId = el), 1, rtol=1e-05, atol=1e-08, equal_nan=False) == False:
-                    
-                    rm_elements.append( el )                        
+            isDone = self.Mesh.RemoveElements( self.Mesh.GetIdsFromFilter(filter) )
+
+            isDone = self.Mesh.RemoveOrphanNodes()
+
+            self.Mesh.RenumberNodes()        
+
+            self.Mesh.RenumberElements()                    
 
         else:
-
-            for el in elements:
-
-                if np.isclose(self.Mesh.GetArea(elemId = el), 1, rtol=1e-05, atol=1e-08, equal_nan=False) == False:
-                    
-                    rm_elements.append( el )            
-
-
-        # smesh.RemoveElements( rm_elements )
-                    
-        
-        # # Filter elements lying on geometry
-        # # This way can be used with multiple criterions
-
-        # if filterShape:
-
-        #     if self.lmodel.D() == 3:
             
-        #         criterion = self.smesh.GetCriterion(SMESH.VOLUME,SMESH.FT_BelongToGeom,self.shape,SMESH.FT_LogicalNOT, self.Tolerance)
-
-        #         filter = self.smesh.GetFilterFromCriteria([criterion])
-
-        #         isDone = self.Mesh.RemoveElements( self.Mesh.GetIdsFromFilter(filter) )
-
-        #         isDone = self.Mesh.RemoveOrphanNodes()
-
-        #         self.Mesh.RenumberNodes()        
-
-        #         self.Mesh.RenumberElements()                    
-
-        #     else:
+            criterion = self.smesh.GetCriterion(SMESH.ALL,SMESH.FT_BelongToGeom,SMESH.FT_Undefined,self.shape,SMESH.FT_LogicalNOT,SMESH.FT_Undefined,self.Tolerance)
+            # criterion = self.smesh.GetCriterion(SMESH.VOLUME,SMESH.FT_EntityType,SMESH.FT_Undefined,SMESH.Entity_Tetra,SMESH.FT_LogicalNOT)
             
-        #         criterion = self.smesh.GetCriterion(SMESH.ALL,SMESH.FT_BelongToGeom,SMESH.FT_Undefined,self.shape,SMESH.FT_LogicalNOT,SMESH.FT_Undefined,self.Tolerance)
+            filter = self.smesh.GetFilterFromCriteria([criterion])
+            
+            isDone = self.Mesh.RemoveElements( self.Mesh.GetIdsFromFilter(filter) )
 
-        #         filter = self.smesh.GetFilterFromCriteria([criterion])
+            isDone = self.Mesh.RemoveOrphanNodes()
 
-        #         isDone = self.Mesh.RemoveElements( self.Mesh.GetIdsFromFilter(filter) )
-
-        #         isDone = self.Mesh.RemoveOrphanNodes()
-
-        #         nbRemoved = self.Mesh.RenumberNodes()
+            nbRemoved = self.Mesh.RenumberNodes()
                 
-        #         self.Mesh.RenumberElements()        
+            self.Mesh.RenumberElements()        
+                 
 
 
 
@@ -184,7 +157,9 @@ class bodyFittingMesh:
 
 
 
-        # # Neighbour calculation
+        # Neighbour calculation
+
+        # print('\nComputing neighbours')
 
         # self.neighbours = np.zeros( (self.Mesh.NbNodes(), self.lmodel.Q()), dtype=np.int64 )
 
@@ -255,6 +230,9 @@ class bodyFittingMesh:
         Create node groups from geometry groups
         """
 
+        print('\nBoundary assignment')
+
+        
         # Create groups for boundary nodes
         # Nodes connected to less than 8 (3D) or 4 (2D) elements are on boundary
 
@@ -293,7 +271,7 @@ class bodyFittingMesh:
         for node in bnd_ids:
 
           # node_xyz = self.Mesh.GetNodeXYZ( node )
-          node_xyz = self.points[ node - 1 ]
+          node_xyz = self.Mesh.GetNodeXYZ( node )
             
           # node_vertex = self.geompy.MakeVertex(node_xyz[0], node_xyz[1], node_xyz[2])
           node_vertex = self.geompy.MakeVertex(np.float64( node_xyz[0]), np.float64(node_xyz[1]), np.float64(node_xyz[2]) )          
