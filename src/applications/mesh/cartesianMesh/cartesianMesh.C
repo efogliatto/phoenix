@@ -15,12 +15,11 @@
 
 #include <STLToPolyhedron.H>
 
+#include <STLToNefPolyhedron.H>
+
 #include <createLatticeGrid.H>
 
 #include <createLatticeCells.H>
-
-
-
 
 
 
@@ -58,7 +57,8 @@ int main(int argc, char** argv) {
 
     vector< vector<double> > bbox = {{0,0,0}, {0,0,0}};
     
-    Polyhedron P = STLToPolyhedron(  propDict.lookUp<string>("Geometry/name"), bbox  );
+    Nef_polyhedron P = STLToNefPolyhedron(  propDict.lookUp<string>("Geometry/name"), bbox );
+
 
 
     
@@ -71,7 +71,7 @@ int main(int argc, char** argv) {
     uint nz( bbox[1][2] - bbox[0][2] );
 
 
-    cout << endl << "Building base grid" << endl;
+    cout << endl << "Building base grid with " << nx*ny*nz << " points" << endl;
 	
     vector< vector<uint> > basePoints;
 
@@ -79,7 +79,7 @@ int main(int argc, char** argv) {
 
 
 
-    cout << endl << "Building base cells" << endl;
+    cout << endl << "Building base cells with " << (nx-1)*(ny-1)*(nz-1) << " cells" << endl;
 	
     vector< vector<uint> > baseCells;
 
