@@ -138,6 +138,8 @@ if(WITH_CGAL)
 
   add_definitions(-DUSE_CGAL)
 
+  add_definitions(-DCGAL_USE_BASIC_VIEWER)  
+
   message("-- Use CGAL")  
   
 endif()
