@@ -25,6 +25,8 @@
 
 #include <updatePointsAndCells.H>
 
+#include <computeNeighboursFromCells.H>
+
 
 
 using namespace std;
@@ -64,52 +66,74 @@ int main(int argc, char** argv) {
     Polyhedron P = STLToPolyhedron(  propDict.lookUp<string>("Geometry/name"), bbox );
 
 
+
+
+    // Build mesh
+
+    vector< vector<uint> > meshCells;
+
+    vector< vector<uint> > meshPoints;    
     
-    // Build base mesh
 
-    uint nx( bbox[1][0] - bbox[0][0] );
+    {
+    
+	// Build base mesh
 
-    uint ny( bbox[1][1] - bbox[0][1] );
+	uint nx( bbox[1][0] - bbox[0][0] );
 
-    uint nz( bbox[1][2] - bbox[0][2] );
+	uint ny( bbox[1][1] - bbox[0][1] );
+
+	uint nz( bbox[1][2] - bbox[0][2] );
 
 
-    cout << endl << "Building base grid with " << nx*ny*nz << " points" << endl;
+	cout << endl << "Building base grid with " << nx*ny*nz << " points" << endl;
 	
-    vector< vector<uint> > basePoints;
+	vector< vector<uint> > basePoints;
 
-    createLatticeGrid( basePoints, lbmodel, nx, ny, nz );
+	createLatticeGrid( basePoints, lbmodel, nx, ny, nz );
 
 
 
-    cout << endl << "Building base cells with " << (nx-1)*(ny-1)*(nz-1) << " cells" << endl;
+	cout << endl << "Building base cells with " << (nx-1)*(ny-1)*(nz-1) << " cells" << endl;
 	
-    vector< vector<uint> > baseCells;
+	vector< vector<uint> > baseCells;
 
-    createLatticeCells( baseCells, lbmodel, nx, ny, nz );    
+	createLatticeCells( baseCells, lbmodel, nx, ny, nz );    
 
 
     
 
-    // Check which cell centers are inside Polyhedron
+	// Check which cell centers are inside Polyhedron
 
-    vector<bool> isInside;
+	cout << endl << "Finding base cell centers inside main geometry" << endl;
 
-    cellsInsidePolyhedron( isInside, P, basePoints, baseCells );
+	vector<bool> isInside;
+
+	cellsInsidePolyhedron( isInside, P, basePoints, baseCells );
     
 
 
-    // Clear unused points and cells
+	// Clear unused points and cells
 
-    vector< vector<uint> > newCells;
+	cout << endl << "Reducing mesh:" << endl;
 
-    vector< vector<uint> > newPoints;
-
-    updatePointsAndCells( basePoints, baseCells, newPoints, newCells, isInside );
+	updatePointsAndCells( basePoints, baseCells, meshPoints, meshCells, isInside );
 
     
-    
-	
+    }
+
+
+    cout << "Final mesh with " << meshPoints.size() << " points and " << meshCells.size() << " cells" << endl;
+
+
+
+    // Neighbours
+
+    cout << endl << "Computing neighbours using cell information" << endl;
+
+    vector< vector<int> > nb;
+
+    computeNeighboursFromCells( nb, meshPoints, meshCells, lbmodel );
 
 
 

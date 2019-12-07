@@ -138,7 +138,12 @@ public:
 
     const scalarMatrix& MRTMatrix() const { return M; }
 
-    const scalarMatrix& MRTInvMatrix() const { return invM; }    
+    const scalarMatrix& MRTInvMatrix() const { return invM; }
+
+
+    /** Index matching velocity */
+
+    const int velocityIndex( const int i, const int j, const int k ) const;
 
 };
 

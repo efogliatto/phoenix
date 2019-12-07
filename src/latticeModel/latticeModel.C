@@ -77,3 +77,37 @@ const vector<uint>& latticeModel::reverse() const {
   return _reverse;
   
 }
+
+
+/** Index matching velocity */
+
+const int latticeModel::velocityIndex( const int i, const int j, const int k ) const {
+
+
+    int idx(-1);
+
+
+    for( uint vid = 0 ; vid < _q ; vid++ ) {
+
+	if( _lvel[vid][0] == i ) {
+
+	    if( _lvel[vid][1] == j ) {
+
+	    	if( _lvel[vid][2] == k ) {
+
+		    idx = vid;
+
+		    vid = _q;
+
+		}
+
+	    }	    
+
+	}
+
+    }
+    
+
+    return idx;
+
+}

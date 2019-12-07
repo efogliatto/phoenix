@@ -6,5 +6,6 @@ add_library(mesh SHARED
   localIndexer.C
   mpiInfo.C
   createLatticeGrid.C
-  createLatticeCells.C  
+  createLatticeCells.C
+  computeNeighboursFromCells.C
   )
