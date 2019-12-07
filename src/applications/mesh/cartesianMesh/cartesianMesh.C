@@ -57,10 +57,9 @@ int main(int argc, char** argv) {
 
     // Load Main Geometry
 
-    vector< vector<double> > bbox = {{0,0,0}, {0,0,0}};
+    vector< vector<double> > bbox;
     
     Polyhedron P = STLToPolyhedron(  propDict.lookUp<string>("Geometry/name"), bbox );
-
 
 
     
@@ -96,6 +95,8 @@ int main(int argc, char** argv) {
 
     cellsInsidePolyhedron( isInside, P, basePoints, baseCells );
     
+
+
     
 
 

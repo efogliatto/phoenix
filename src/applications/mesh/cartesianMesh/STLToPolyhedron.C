@@ -14,7 +14,7 @@ Polyhedron STLToPolyhedron( const string& name, vector< vector<double> >& bbox )
 
     // Load geometry
 
-    ifstream input( name.c_str(), ios::binary);
+    ifstream input( name.c_str() );
     
     vector< CGAL::cpp11::array<double,3> > points;
     
@@ -25,12 +25,22 @@ Polyhedron STLToPolyhedron( const string& name, vector< vector<double> >& bbox )
     cout << "Reading geometry with " << points.size() << " points and "  << triangles.size() << " triangles" << endl << endl;
 
 
+    double minX(100000),
+	maxX(-100000),
+	minY(100000),
+	maxY(-100000),
+	minZ(100000),
+	maxZ(-100000);
+	
+    
 
     // Out to OFF format
 
     ofstream output( (name + ".off").c_str() );
 
-    output << points.size() << " " << triangles.size() << endl;
+    output << "OFF" << endl;
+
+    output << points.size() << " " << triangles.size() << " 0" << endl << endl;
 
     for(auto p : points) {
 	
@@ -39,25 +49,28 @@ Polyhedron STLToPolyhedron( const string& name, vector< vector<double> >& bbox )
 
 	// Check bounding box
 	
-	if(p[0] < bbox[0][0])
-	    bbox[0][0] = p[0];
+	if(p[0] < minX)
+	    minX = p[0];
 
-	if(p[0] > bbox[1][0])
-	    bbox[1][0] = p[0];
+	if(p[0] > maxX)
+	    maxX = p[0];
 
-	if(p[1] < bbox[0][1])
-	    bbox[0][1] = p[1];
+	if(p[1] < minY)
+	    minY = p[1];
 
-	if(p[1] > bbox[1][1])
-	    bbox[1][1] = p[1];
+	if(p[1] > maxY)
+	    maxY = p[1];
 
-	if(p[2] < bbox[0][2])
-	    bbox[0][2] = p[2];
+	if(p[2] < minZ)
+	    minZ = p[2];
 
-	if(p[1] > bbox[1][2])
-	    bbox[1][2] = p[2];		
+	if(p[2] > maxZ)
+	    maxZ = p[2];		
 
     }
+
+
+    bbox = { {minX, minY, minZ}, {maxX, maxY, maxZ} };
 	
 
     for(auto t : triangles)

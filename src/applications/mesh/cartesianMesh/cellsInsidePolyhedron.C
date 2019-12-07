@@ -29,7 +29,6 @@ using namespace std;
 
 
 
-
 void cellsInsidePolyhedron( vector<bool>& isInside, const Polyhedron& P, const vector< vector<uint> >& points, const vector< vector<uint> >& cells ) {
 
 
