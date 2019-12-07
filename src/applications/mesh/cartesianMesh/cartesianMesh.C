@@ -21,6 +21,8 @@
 
 #include <createLatticeCells.H>
 
+#include <cellsInsidePolyhedron.H>
+
 
 
 using namespace std;
@@ -57,7 +59,7 @@ int main(int argc, char** argv) {
 
     vector< vector<double> > bbox = {{0,0,0}, {0,0,0}};
     
-    Nef_polyhedron P = STLToNefPolyhedron(  propDict.lookUp<string>("Geometry/name"), bbox );
+    Polyhedron P = STLToPolyhedron(  propDict.lookUp<string>("Geometry/name"), bbox );
 
 
 
@@ -90,9 +92,9 @@ int main(int argc, char** argv) {
 
     // Check which cell centers are inside Polyhedron
 
-    vector<uint> isInside;
+    vector<bool> isInside;
 
-    
+    cellsInsidePolyhedron( isInside, P, basePoints, baseCells );
     
     
 

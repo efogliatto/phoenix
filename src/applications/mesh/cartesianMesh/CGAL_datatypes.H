@@ -1,7 +1,7 @@
 #ifndef CGAL_DATATYPES_H
 #define CGAL_DATATYPES_H
 
-// #include <CGAL/Simple_cartesian.h>
+#include <CGAL/Simple_cartesian.h>
 
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 
