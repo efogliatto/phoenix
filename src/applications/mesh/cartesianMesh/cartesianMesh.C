@@ -23,6 +23,8 @@
 
 #include <cellsInsidePolyhedron.H>
 
+#include <updatePointsAndCells.H>
+
 
 
 using namespace std;
@@ -97,7 +99,17 @@ int main(int argc, char** argv) {
     
 
 
+    // Clear unused points and cells
+
+    vector< vector<uint> > newCells;
+
+    vector< vector<uint> > newPoints;
+
+    updatePointsAndCells( basePoints, baseCells, newPoints, newCells, isInside );
+
     
+    
+	
 
 
 

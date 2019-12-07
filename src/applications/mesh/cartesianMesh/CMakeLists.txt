@@ -5,6 +5,7 @@ add_executable(cartesianMesh
   "STLToPolyhedron.C"
   "STLToNefPolyhedron.C"
   "cellsInsidePolyhedron.C"
+  "updatePointsAndCells.C"
   )
 
 target_link_libraries(cartesianMesh ${PROJECT_LINK_LIBS} ${MPI_LIBRARIES} ${PROJECT_LINK_LIBS} CGAL::CGAL)
