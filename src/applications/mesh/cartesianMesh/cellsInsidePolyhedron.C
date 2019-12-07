@@ -78,8 +78,10 @@ void cellsInsidePolyhedron( vector<bool>& isInside, const Polyhedron& P, const v
 	// Create point and check if is inside poly
 
 	Point query( com[0], com[1], com[2] );
+
+	auto in = inside_tester(query);
 	
-	isInside[i] = ( inside_tester(query) == CGAL::ON_BOUNDED_SIDE );
+	isInside[i] = ( in == CGAL::ON_BOUNDED_SIDE )  ||  ( in == CGAL::ON_BOUNDARY ) ;
 	
 
     }
