@@ -27,6 +27,8 @@
 
 #include <computeNeighboursFromCells.H>
 
+#include <findClosestBoundary.H>
+
 
 
 using namespace std;
@@ -134,6 +136,40 @@ int main(int argc, char** argv) {
     vector< vector<int> > nb;
 
     computeNeighboursFromCells( nb, meshPoints, meshCells, lbmodel );
+
+
+    
+    // Assign boundaries
+
+    cout << endl << "Boundary assignment" << endl << endl;
+
+    map< string, vector<uint> > boundaries;
+
+    {
+
+	// Boundaries names
+	
+	vector<string> bdnames = propDict.bracedEntry( "Geometry/boundary" );
+
+
+	// Polyhedrons for each boundary
+
+	vector< pair<string, Polyhedron> > bdPolyMap;
+
+	for( auto bd : bdnames ) {
+
+	    vector< vector<double> > bbox;
+	    
+	    bdPolyMap.push_back( std::make_pair(  bd, STLToPolyhedron( bd, bbox ))  ) ;
+
+	}
+
+
+	// Check for closest boundary
+
+	findClosestBoundary( boundaries, meshPoints, nb, bdPolyMap );
+	
+    }
 
 
 
