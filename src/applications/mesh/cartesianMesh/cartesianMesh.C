@@ -29,6 +29,8 @@
 
 #include <findClosestBoundary.H>
 
+#include <writeBasicMesh.H>
+
 
 
 using namespace std;
@@ -173,7 +175,19 @@ int main(int argc, char** argv) {
 
 
 
-    cout << endl << "Finished meshing" << endl << endl;
+    
+
+
+    // Write final mesh
+
+    cout << endl << "Writing mesh" << endl << endl;
+
+    writeBasicMesh( meshPoints, nb, meshCells, boundaries );
+
+
+
+    
+    cout << endl << "Finished meshing in " << 0 << " seconds" << endl << endl;
 
    
     

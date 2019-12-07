@@ -7,6 +7,7 @@ add_executable(cartesianMesh
   "cellsInsidePolyhedron.C"
   "updatePointsAndCells.C"
   "findClosestBoundary.C"
+  "writeBasicMesh.C"
   )
 
 target_link_libraries(cartesianMesh ${PROJECT_LINK_LIBS} ${MPI_LIBRARIES} ${PROJECT_LINK_LIBS} CGAL::CGAL)
