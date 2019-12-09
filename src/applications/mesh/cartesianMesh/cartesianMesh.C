@@ -31,6 +31,8 @@
 
 #include <writeBasicMesh.H>
 
+#include <periodicBoundaryCorrection.H>
+
 
 
 using namespace std;
@@ -173,6 +175,35 @@ int main(int argc, char** argv) {
 
 	findClosestBoundary( boundaries, meshPoints, nb, bdPolyMap );
 	
+    }
+
+
+
+    // Periodic correction
+
+    cout << endl << "Applying periodic correction" << endl << endl;
+
+    {
+
+	// Read pairs
+
+	map< pair<string,string>, vector<scalar> > periodicPairs;
+
+	vector<string> bdnames = propDict.bracedEntriesNames( "periodicPairs" );
+
+	for( auto bd : bdnames ) {
+
+	    string other = propDict.lookUp<string>( "periodicPairs/" + bd + "/periodicBoundary" );
+
+	    periodicPairs[ make_pair(bd,other) ] = propDict.lookUp< vector<scalar> >( "periodicPairs/" + bd + "/direction" );
+
+	}
+
+
+	// Apply correction
+
+	periodicBoundaryCorrection( nb, periodicPairs, meshPoints, boundaries );
+
     }
 
 
