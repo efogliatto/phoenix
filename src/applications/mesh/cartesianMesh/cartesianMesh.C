@@ -151,7 +151,7 @@ int main(int argc, char** argv) {
 
 	// Boundaries names
 	
-	vector<string> bdnames = propDict.bracedEntry( "Geometry/boundary" );
+	vector<string> bdnames = propDict.bracedEntriesNames( "Geometry/boundary" );
 
 
 	// Polyhedrons for each boundary
@@ -161,8 +161,10 @@ int main(int argc, char** argv) {
 	for( auto bd : bdnames ) {
 
 	    vector< vector<double> > bbox;
+
+	    cout << "Reading surface " << bd << endl;
 	    
-	    bdPolyMap.push_back( std::make_pair(  bd, STLToPolyhedron( bd, bbox ))  ) ;
+	    bdPolyMap.push_back( std::make_pair(  bd, STLToPolyhedron( propDict.lookUp<string>("Geometry/boundary/"+bd+"/file"), bbox ))  ) ;
 
 	}
 

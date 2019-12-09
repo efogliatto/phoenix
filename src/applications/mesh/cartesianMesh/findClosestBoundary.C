@@ -65,7 +65,7 @@ void findClosestBoundary( map< string, vector<uint> >& boundaries,
 	if( isOnBnd ) {
 
 	    for( auto poly : bdPolyMap )
-		dstMap[i][poly.first] = -1;
+		dstMap[i][poly.first] = 0;
 
 
 	}
@@ -77,14 +77,14 @@ void findClosestBoundary( map< string, vector<uint> >& boundaries,
 
     // Construct AABB trees for each boundary
 
-    for( auto poly : bdPolyMap ) {
+    for( auto& poly : bdPolyMap ) {
 
     	Tree tree( faces(poly.second).first, faces(poly.second).second, poly.second );
 
     	tree.accelerate_distance_queries();
 
 
-    	for( auto dst : dstMap ) {
+    	for( auto& dst : dstMap ) {
 
     	    Point query( meshPoints[dst.first][0], meshPoints[dst.first][1], meshPoints[dst.first][2] );
 
@@ -101,13 +101,13 @@ void findClosestBoundary( map< string, vector<uint> >& boundaries,
 
     // Check closest surface
 
-    for( auto dst : dstMap ) {
+    for( auto& dst : dstMap ) {
 
 	FT minDist = 1000000;
 
 	string closest;
 
-	for( auto surf : dst.second ) {
+	for( auto& surf : dst.second ) {
 
 	    if( surf.second < minDist ) {
 
