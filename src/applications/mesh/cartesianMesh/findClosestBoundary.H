@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include <map>
+#include <unordered_map>
 
 #include <dataTypes.H>
 
@@ -11,7 +11,7 @@
 
 #include <utility>
 
-void findClosestBoundary( std::map< std::string, std::vector<uint> >& boundaries,
+void findClosestBoundary( std::unordered_map< std::string, std::vector<uint> >& boundaries,
 			  const std::vector< std::vector<uint> >& meshPoints,
 			  const std::vector< std::vector<int> >& nb,
 			  const std::vector< std::pair<std::string, Polyhedron> >& bdPolyMap );

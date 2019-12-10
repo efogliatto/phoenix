@@ -29,7 +29,7 @@ typedef CGAL::AABB_tree<Traits> Tree;
 
 using namespace std;
 
-void findClosestBoundary( map< string, vector<uint> >& boundaries,
+void findClosestBoundary( unordered_map< string, vector<uint> >& boundaries,
 			  const vector< vector<uint> >& meshPoints,
 			  const vector< vector<int> >& nb,
 			  const vector< pair<string, Polyhedron> >& bdPolyMap ) {
@@ -38,7 +38,16 @@ void findClosestBoundary( map< string, vector<uint> >& boundaries,
 
     // Distance map
 
-    map< uint, map<string, FT> > dstMap;
+    map< uint, unordered_map<string, FT> > dstMap;
+
+    
+    // Priority weight
+
+    map<string, uint> priority;
+
+    for( uint i = 0 ; i < bdPolyMap.size() ; i++ )
+	priority[ bdPolyMap[i].first ] = i;
+   
 
     
     // Constants
@@ -95,8 +104,7 @@ void findClosestBoundary( map< string, vector<uint> >& boundaries,
     	}	
 
     }
-
-
+  
 
 
     // Check closest surface
@@ -118,6 +126,11 @@ void findClosestBoundary( map< string, vector<uint> >& boundaries,
 	    }
 
 	}
+
+
+	// Need to sort according to priority
+
+	
 
 
 	// Append to boundaries dictionary

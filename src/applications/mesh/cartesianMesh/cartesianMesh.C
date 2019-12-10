@@ -33,6 +33,8 @@
 
 #include <periodicBoundaryCorrection.H>
 
+#include <unordered_map>
+
 
 
 using namespace std;
@@ -85,13 +87,14 @@ int main(int argc, char** argv) {
     
 	// Build base mesh
 
-	uint nx( bbox[1][0] - bbox[0][0] );
+	uint nx( bbox[1][0] - bbox[0][0] + 1);
 
-	uint ny( bbox[1][1] - bbox[0][1] );
+	uint ny( bbox[1][1] - bbox[0][1] + 1);
 
-	uint nz( bbox[1][2] - bbox[0][2] );
+	uint nz( bbox[1][2] - bbox[0][2] + 1);
 
 
+	
 	cout << endl << "Building base grid with " << nx*ny*nz << " points" << endl;
 	
 	vector< vector<uint> > basePoints;
@@ -147,7 +150,7 @@ int main(int argc, char** argv) {
 
     cout << endl << "Boundary assignment" << endl << endl;
 
-    map< string, vector<uint> > boundaries;
+    unordered_map< string, vector<uint> > boundaries;
 
     {
 
@@ -179,32 +182,32 @@ int main(int argc, char** argv) {
 
 
 
-    // Periodic correction
+    // // Periodic correction
 
-    cout << endl << "Applying periodic correction" << endl << endl;
+    // cout << endl << "Applying periodic correction" << endl << endl;
 
-    {
+    // {
 
-	// Read pairs
+    // 	// Read pairs
 
-	map< pair<string,string>, vector<scalar> > periodicPairs;
+    // 	map< pair<string,string>, vector<scalar> > periodicPairs;
 
-	vector<string> bdnames = propDict.bracedEntriesNames( "periodicPairs" );
+    // 	vector<string> bdnames = propDict.bracedEntriesNames( "periodicPairs" );
 
-	for( auto bd : bdnames ) {
+    // 	for( auto bd : bdnames ) {
 
-	    string other = propDict.lookUp<string>( "periodicPairs/" + bd + "/periodicBoundary" );
+    // 	    string other = propDict.lookUp<string>( "periodicPairs/" + bd + "/periodicBoundary" );
 
-	    periodicPairs[ make_pair(bd,other) ] = propDict.lookUp< vector<scalar> >( "periodicPairs/" + bd + "/direction" );
+    // 	    periodicPairs[ make_pair(bd,other) ] = propDict.lookUp< vector<scalar> >( "periodicPairs/" + bd + "/direction" );
 
-	}
+    // 	}
 
 
-	// Apply correction
+    // 	// Apply correction
 
-	periodicBoundaryCorrection( nb, periodicPairs, meshPoints, boundaries );
+    // 	periodicBoundaryCorrection( nb, periodicPairs, meshPoints, boundaries );
 
-    }
+    // }
 
 
 

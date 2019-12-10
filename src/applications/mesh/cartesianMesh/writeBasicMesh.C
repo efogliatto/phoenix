@@ -7,7 +7,7 @@ using namespace std;
 void writeBasicMesh( const std::vector< std::vector<uint> >& points,
 		     const std::vector< std::vector<int> >& nb,
 		     const std::vector< std::vector<uint> >& cells,
-		     const std::map< std::string, std::vector<uint> >& boundaries ) {
+		     const std::unordered_map< std::string, std::vector<uint> >& boundaries ) {
 
 
     // uint i,j;
