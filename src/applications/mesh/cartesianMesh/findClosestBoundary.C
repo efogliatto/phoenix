@@ -125,6 +125,22 @@ void findClosestBoundary( unordered_map< string, vector<uint> >& boundaries,
 
 	    }
 
+	    else {
+
+		if( surf.second == minDist ) {
+
+		    if( priority[surf.first] > priority[closest] ) {		    
+
+			minDist = surf.second;
+
+			closest = surf.first;
+
+		    }
+
+		}
+
+	    }
+
 	}
 
 
