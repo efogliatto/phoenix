@@ -5,16 +5,18 @@
 
 #include <vector>
 
-#include <map>
+#include <unordered_map>
 
 #include <string>
 
 #include <utility>
 
+#include <periodicBnds.H>
+
 
 void periodicBoundaryCorrection( std::vector< std::vector<int> >& nb,
-				 const std::map< std::pair<std::string,std::string>, std::vector<scalar> >& periodicPairs,
+				 const std::vector<periodicBnds>& periodicPairs,
 				 const std::vector< std::vector<uint> >& points,
-				 const std::map< std::string, std::vector<uint> >& boundaries );
+				 const std::unordered_map< std::string, std::vector<uint> >& boundaries );
 
 #endif // PERIODICBOUNDARYCORRECTION_H

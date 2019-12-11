@@ -57,6 +57,7 @@ int main(int argc, char** argv) {
 
 
     
+    
     // Read model name. Use D2Q9 as default
 
     dictionary propDict("properties/cartesianMeshProperties");
@@ -182,32 +183,38 @@ int main(int argc, char** argv) {
 
 
 
-    // // Periodic correction
+    // Periodic correction
 
-    // cout << endl << "Applying periodic correction" << endl << endl;
+    cout << endl << "Applying periodic correction" << endl << endl;
 
-    // {
+    {
 
-    // 	// Read pairs
+    	// Read pairs
 
-    // 	map< pair<string,string>, vector<scalar> > periodicPairs;
+    	vector<periodicBnds> periodicPairs;
 
-    // 	vector<string> bdnames = propDict.bracedEntriesNames( "periodicPairs" );
+    	vector<string> bdnames = propDict.bracedEntriesNames( "periodicPairs" );
 
-    // 	for( auto bd : bdnames ) {
+    	for( auto bd : bdnames ) {
 
-    // 	    string other = propDict.lookUp<string>( "periodicPairs/" + bd + "/periodicBoundary" );
+	    periodicBnds bnd;
 
-    // 	    periodicPairs[ make_pair(bd,other) ] = propDict.lookUp< vector<scalar> >( "periodicPairs/" + bd + "/direction" );
+    	    bnd.bd1 = propDict.lookUp<string>( "periodicPairs/" + bd + "/boundary1" );
 
-    // 	}
+    	    bnd.bd2 = propDict.lookUp<string>( "periodicPairs/" + bd + "/boundary2" );
+
+	    bnd.direction = propDict.lookUp< vector<scalar> >( "periodicPairs/" + bd + "/direction" );
+
+    	    periodicPairs.push_back( bnd ); 
+
+    	}
 
 
-    // 	// Apply correction
+    	// Apply correction
 
-    // 	periodicBoundaryCorrection( nb, periodicPairs, meshPoints, boundaries );
+    	periodicBoundaryCorrection( nb, periodicPairs, meshPoints, boundaries );
 
-    // }
+    }
 
 
 

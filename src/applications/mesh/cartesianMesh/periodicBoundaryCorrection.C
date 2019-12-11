@@ -1,11 +1,13 @@
 #include <periodicBoundaryCorrection.H>
 
+#include <iostream>
+
 using namespace std;
 
 void periodicBoundaryCorrection( vector< vector<int> >& nb,
-				 const map< pair<string,string>, vector<scalar> >& periodicPairs,
+				 const vector<periodicBnds>& periodicPairs,
 				 const vector< vector<uint> >& points,
-				 const map< string, vector<uint> >& boundaries ) {
+				 const unordered_map< string, vector<uint> >& boundaries ) {
 
 
     // Move over pairs and check
@@ -13,30 +15,20 @@ void periodicBoundaryCorrection( vector< vector<int> >& nb,
     for( const auto& bdpair : periodicPairs ) {
 
 
-	// Boundaries names
-
-	string bd1_name = bdpair.first.first;
-
-	string bd2_name = bdpair.first.second;
-
-	vector<scalar> sepVec = bdpair.second;
-	
-	
-
 	
 	// Indices list for each boundary
 
-	vector<uint> bd1 = boundaries.at( bd1_name );
+	vector<uint> bd1Points = boundaries.at( bdpair.bd1 );
 
-	vector<uint> bd2 = boundaries.at( bd2_name );
+	vector<uint> bd2Points = boundaries.at( bdpair.bd2 );
 
 
 	
 	// Move over point lists and check separation
 
-	for( const auto& pt1 : bd1 ) {
+	for( const auto& pt1 : bd1Points ) {
 
-	    for( const auto& pt2 : bd2 ) {
+	    for( const auto& pt2 : bd2Points ) {
 
 
 		// Separation vector between points
@@ -45,35 +37,14 @@ void periodicBoundaryCorrection( vector< vector<int> >& nb,
 
 		for( uint j = 0 ; j < 3 ; j++ )
 		    sep[j] = points[pt2][j] - points[pt1][j];
-
-
-		scalar sepMag(0);
-
-		for( uint j = 0 ; j < 3 ; j++ )
-		    sepMag += sep[j] * sep[j];
-
-		sepMag = sepMag * sepMag;
-
-
-		
-		// Difference with forced direction
-
-		scalar forcedSepMag(0);
-
-		for( uint j = 0 ; j < 3 ; j++ )
-		    forcedSepMag += sep[j] * sepVec[j];
-
-		forcedSepMag = forcedSepMag * forcedSepMag;
 		
 
 
-		// Apply correction if magnitudes are equal
-		
-		if( sepMag == forcedSepMag ) {
+		if(  ( sep[0] == bdpair.direction[0] )   &&   ( sep[1] == bdpair.direction[1] )   &&   ( sep[2] == bdpair.direction[2] )  ) {
 
 		    for( uint k = 0 ; k < nb[pt1].size() ; k++ ) {
-
-			if( nb[pt1][k] == -1 )
+			
+			if( nb[pt1][k] == -1 )		    
 			    nb[pt1][k] = nb[pt2][k];
 
 			if( nb[pt2][k] == -1 )
@@ -82,7 +53,7 @@ void periodicBoundaryCorrection( vector< vector<int> >& nb,
 		    }
 
 		}
-		
+
 		
 
 	    }
