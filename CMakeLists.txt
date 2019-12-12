@@ -139,27 +139,27 @@ endif()
 
 # Optional: CGAL
 
-set(CGAL_DIR "system" CACHE STRING "CGAL installation type")
+set(CGAL_BASE_DIR "system" CACHE STRING "CGAL installation type")
 
-if(CGAL_DIR STREQUAL "system")
+if(CGAL_BASE_DIR STREQUAL "system")
   
   find_package(CGAL REQUIRED)
 
   add_definitions(-DUSE_CGAL)
 
-  add_definitions(-DCGAL_USE_BASIC_VIEWER)  
+  add_definitions(-DCGAL_USE_BASIC_VIEWER)
 
-  message("-- Use CGAL")
+  message("-- Use system CGAL")
 
 else()
 
-  if(CGAL_DIR STREQUAL "none")
+  if(CGAL_BASE_DIR STREQUAL "none")
 
     message("-- Do not use CGAL")  
 
   else()
 
-    set(CGAL_INCLUDEDIR "${CGAL_DIR}")    
+    set(CGAL_DIR "${CGAL_BASE_DIR}")    
 
     add_definitions(-DUSE_CGAL)
 
