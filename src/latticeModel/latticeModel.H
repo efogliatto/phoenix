@@ -15,6 +15,8 @@
 
 #include <scalarMatrix.H>
 
+#include <map>
+
 
 
 
@@ -60,11 +62,13 @@ protected:
     scalarMatrix M;
 
     scalarMatrix invM;
+
+
+    /** Symmetric indices */
+
+    std::map< std::string, std::vector<uint> > _symIdx;
     
   
-
-
-
 
   
 
@@ -145,6 +149,11 @@ public:
 
     const int velocityIndex( const int i, const int j, const int k ) const;
 
+    
+    /** Symmetric indices */
+
+    const std::vector<uint> symIdx( const std::string& symPlane ) const;
+    
 };
 
 

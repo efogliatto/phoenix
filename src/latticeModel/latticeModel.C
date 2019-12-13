@@ -111,3 +111,30 @@ const int latticeModel::velocityIndex( const int i, const int j, const int k ) c
     return idx;
 
 }
+
+
+
+
+/** Symmetric indices */
+
+const vector<uint> latticeModel::symIdx( const string& symPlane ) const {
+
+    vector<uint> idx;
+    
+    if( _symIdx.find( symPlane )  !=  _symIdx.end()  ) {
+	
+	idx = _symIdx.at( symPlane );
+
+    }
+
+    else {
+
+	cout << endl << " [ERROR]  Unable to match symmetry plane " << symPlane << " with lattice model " << name() << endl;
+
+	exit(1);
+
+    }
+
+    return idx;
+
+}

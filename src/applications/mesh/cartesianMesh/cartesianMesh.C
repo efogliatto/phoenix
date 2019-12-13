@@ -33,7 +33,7 @@
 
 #include <periodicBoundaryCorrection.H>
 
-#include <unordered_map>
+#include <symmetryPlanesCorrection.H>
 
 
 
@@ -218,6 +218,27 @@ int main(int argc, char** argv) {
 
 
 
+    // Periodic correction
+
+    cout << endl << "Neighbours for symmetric planes" << endl << endl;
+
+    {
+
+	vector<string> symPlanes = propDict.bracedEntriesNames( "symmetryPlanes" );
+
+	for( auto sp : symPlanes ) {
+
+	    string plane = propDict.lookUp<string>( "symmetryPlanes/" + sp + "/plane" );
+
+	    scalar offset = propDict.lookUpOrDefault<scalar>( "symmetryPlanes/" + sp + "/offset", 0 );
+	    
+	    symmetryPlanesCorrection(nb, plane, offset, meshPoints, boundaries, lbmodel);
+
+	}
+
+    }
+
+    
     
 
 
