@@ -575,17 +575,29 @@ const scalar vectorField::div( const uint& id ) const {
 
 		scalar fval(0);
 
-		if( second != -1 ) {
 
-		    fval = 2*field[first][j] - field[second][j];
+		if( first != -1 ) {
+		
+		    if( second != -1 ) {
+
+			fval = 2*field[first][j] - field[second][j];
+
+		    }
+
+		    else {
+
+			fval = field[first][j];
+
+		    }
 
 		}
 
 		else {
 
-		    fval = field[first][j];
+		    fval = field[id][j];
 
 		}
+		
 
 
 		// Add virtual node contribution
