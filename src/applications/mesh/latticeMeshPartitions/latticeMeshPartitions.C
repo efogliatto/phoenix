@@ -15,6 +15,8 @@
 
 #include "kmetisDecomp.H"
 
+#include "mlevelKmetisDecomp.H"
+
 #include "standardDecomp.H"
 
 #include "localIndexing.H"
@@ -126,13 +128,24 @@ int main(int argc, char** argv) {
 	
     	}
 
-    	else {
+	else {
 
-    	    cout << "\n\n  [ERROR]  Unable to recognize decomposition method " << method << "\n\n\n";
+	    if( method == "multiLevelKmetis" ) {
 
-    	    exit(1);
+		mlevelKmetisDecomp( owner, mesh, np );
+	    
+	    }
 
-    	}
+	    
+	    else {
+
+		cout << "\n\n  [ERROR]  Unable to recognize decomposition method " << method << "\n\n\n";
+
+		exit(1);
+
+	    }
+
+	}
 
     }
 
