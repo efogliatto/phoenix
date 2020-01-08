@@ -81,7 +81,7 @@ void kmetisDecomp( vector<uint>& owner, basicMesh& mesh, uint np )  {
 
     	char cmd[100];
 
-    	sprintf(cmd,"gpmetis lattice/lattice.graph %d > log.gpmetis",np);
+    	sprintf(cmd,"gpmetis lattice/lattice.graph %d -contig > log.gpmetis",np);
 
     	uint status = system( cmd );
 
