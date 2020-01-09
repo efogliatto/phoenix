@@ -35,7 +35,17 @@ void mlevelKmetisDecomp( vector<uint>& owner, basicMesh& mesh, uint np )  {
 	cout << "Multi-level decomposition" << endl;
 	cout << coarseLevel << " coarse grains with " << coarseMethod << endl;
 	cout << fineLevel << " fine grains with kmetis" << endl << endl;
-	
+
+
+
+	// Restrict neighbouring to main directions
+
+	uint Q(5);	
+
+	if( mesh.D == 3 )	    
+	    Q = 7;
+
+
 
 
 
@@ -59,7 +69,7 @@ void mlevelKmetisDecomp( vector<uint>& owner, basicMesh& mesh, uint np )  {
 
 	    else {
 		
-		kmetisDecomp( coarseOwner, mesh, coarseLevel );
+		kmetisDecomp( coarseOwner, mesh, coarseLevel, Q );
 
 	    }
 
@@ -116,7 +126,7 @@ void mlevelKmetisDecomp( vector<uint>& owner, basicMesh& mesh, uint np )  {
 	    	for( const auto id : ownerToNodes ) {
 		    
 		    
-		    for( uint k = 1 ; k < mesh.Q ; k++ ) {
+		    for( uint k = 1 ; k < Q ; k++ ) {
 
 			if( mesh.nb[id][k] != -1 ) {
 
@@ -153,7 +163,7 @@ void mlevelKmetisDecomp( vector<uint>& owner, basicMesh& mesh, uint np )  {
 	    	for( const auto id : ownerToNodes ) {
 		    
 		    
-		    for( uint k = 1 ; k < mesh.Q ; k++ ) {
+		    for( uint k = 1 ; k < Q ; k++ ) {
 
 			if( mesh.nb[id][k] != -1 ) {
 

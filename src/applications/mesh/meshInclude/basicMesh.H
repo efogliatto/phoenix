@@ -50,6 +50,8 @@ typedef struct {
 
     
     uint Q;   /**< Total number of neighbours */
+
+    uint D;
     
     char lbm[100];   /**< LB lattice model (DdQq type) */
     

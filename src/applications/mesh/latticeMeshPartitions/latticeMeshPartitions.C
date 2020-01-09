@@ -76,6 +76,8 @@ int main(int argc, char** argv) {
     latticeModelCreator lbm;
 	
     latticeModel* lbmodel = lbm.create(ldict.lookUpOrDefault<string>("LBModel","D2Q9"));
+
+    mesh.D = lbmodel->d();
     
     
 
@@ -124,7 +126,7 @@ int main(int argc, char** argv) {
 
     	if( method == "kmetis" ) {
 
-    	    kmetisDecomp( owner, mesh, np );
+    	    kmetisDecomp( owner, mesh, np, mesh.Q );
 	
     	}
 

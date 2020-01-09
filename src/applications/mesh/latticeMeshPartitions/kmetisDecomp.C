@@ -12,7 +12,7 @@
 
 using namespace std;
 
-void kmetisDecomp( vector<uint>& owner, basicMesh& mesh, uint np )  {
+void kmetisDecomp( vector<uint>& owner, basicMesh& mesh, uint np, uint maxneigh )  {
 
 
     if( np > 1 ) {
@@ -27,7 +27,7 @@ void kmetisDecomp( vector<uint>& owner, basicMesh& mesh, uint np )  {
 
     	for( uint i = 0 ; i < mesh.nPoints ; i++ ) {
 
-    	    for( uint k = 1 ; k < mesh.Q ; k++ ) {
+    	    for( uint k = 1 ; k < maxneigh ; k++ ) {
 
     		if( mesh.nb[i][k] != -1 ) {
 
@@ -55,7 +55,7 @@ void kmetisDecomp( vector<uint>& owner, basicMesh& mesh, uint np )  {
 
     	for( uint i = 0 ; i < mesh.nPoints ; i++ ) {
 
-    	    for( uint k = 1 ; k < mesh.Q ; k++ ) {
+    	    for( uint k = 1 ; k < maxneigh ; k++ ) {
 
     		if( mesh.nb[i][k] != -1 ) {
 
