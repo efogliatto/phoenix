@@ -64,15 +64,22 @@ const void XuMRTEq::collision() {
 
     scalarMatrix invM = mesh.lmodel()->MRTInvMatrix();    
 
-    const uint nodes = mesh.npoints();
-    // const uint nodes = mesh.local();    
-
     const scalar cs2 = mesh.lmodel()->cs2();
 
     const scalar q = mesh.lmodel()->q();
 
     scalar Ft[3];
 
+
+    
+    // Collision range depends on surface tension model
+    
+    uint nodes( mesh.npoints() );
+
+    if( F.sTModel() == surfaceTension::stType::liST )
+	nodes = mesh.local();
+    
+    
     
     // Partial distributions
     
@@ -82,7 +89,7 @@ const void XuMRTEq::collision() {
 
     vector<scalar> S(15);     // MRT force
 
-    // vector<scalar> C(9);     // Surface tension term
+    vector<scalar> C(15);     // Surface tension term
 
 
 
@@ -183,12 +190,22 @@ const void XuMRTEq::collision() {
 
 
 
+	// Surface tension extra term
+
+	F.addSurfaceTension(id, C, localTau);
+	
+
+	
 
 	// Collision in moment space
 	
 	for( uint k = 0 ; k < q ; k++ ) {
 
-	    m[k] = m[k]  -  localTau[k]*( m[k] - m_eq[k] )  +  ( 1 - 0.5*localTau[k] ) * S[k];
+	    m[k] = m[k]
+		 - localTau[k]*( m[k] - m_eq[k] )
+		 + ( 1 - 0.5*localTau[k] ) * S[k]
+		 +  C[k]
+		 ;		
 	    
 	}
 
@@ -202,9 +219,12 @@ const void XuMRTEq::collision() {
     }
 
 
-    if( nodes == mesh.local() )
-	_pdf.sync();
 
+
+    // Extra sync only for Li's surface tension model
+    
+    if( F.sTModel() == surfaceTension::stType::liST )
+	_pdf.sync();    
     
 
 }
@@ -277,6 +297,8 @@ const void XuMRTEq::pressure( const scalarField& phi, scalarField& p ) {
 
     const scalar c(1);
 
+    const scalar kappa( F.stension()->kappa() );
+
 
     // Potential gradient
     
@@ -311,7 +333,7 @@ const void XuMRTEq::pressure( const scalarField& phi, scalarField& p ) {
 	
 	p[i] = rho.at(i)*cs2
 	    + (G * c * c / 2.0) * phi.at(i) * phi.at(i)
-	    + (G * c * c * c * c/ 12.0) * phi.at(i) * phi.laplacian(i)
+	    + (G * c * c * c * c/ 12.0) * (1+2*kappa) * phi.at(i) * phi.laplacian(i)
 	    + 2 * G * G * c * c * c * c * _sigma * phiMag
 	    ;
 

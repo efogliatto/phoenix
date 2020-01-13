@@ -130,6 +130,11 @@ public:
     /** Surface tension model */
 
     const surfaceTension::stType sTModel() const { return _St->sTModel(); }
+
+
+    /** Reference to surface tension term */
+
+    const surfaceTension* stension() const { return _St; }
     
     
 };

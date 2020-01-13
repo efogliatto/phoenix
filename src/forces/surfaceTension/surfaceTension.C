@@ -17,3 +17,12 @@ surfaceTension::surfaceTension( const string& dictName,
 /** Destructor */
 
 surfaceTension::~surfaceTension() {}
+
+
+/** Model constant value */
+
+const scalar surfaceTension::kappa() const {
+
+    return 0;
+
+}
