@@ -26,7 +26,7 @@ protected:
     std::vector< std::vector<uint> > _location;
     
 
-    /** Spots */
+    /** Spots. Centre (node id) and radius */
 
     std::vector< std::pair<uint,uint> > _spots;
 
