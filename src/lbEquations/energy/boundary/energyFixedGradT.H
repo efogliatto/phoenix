@@ -10,7 +10,7 @@ protected:
 
     /** Gradient value */
 
-    scalar _grad;
+    std::vector<scalar> _grad;
 
 
     /** Pre-allocated neighbour node ids */

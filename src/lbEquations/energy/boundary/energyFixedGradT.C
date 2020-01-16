@@ -22,7 +22,7 @@ energyFixedGradT::energyFixedGradT( const std::string& eqName,
 
 	// Initialize gradient
 
-	_grad = _bndVal[0];
+	_grad.resize( _bndVal.size(), _bndVal[0] );
 
 
     
@@ -212,7 +212,7 @@ void energyFixedGradT::update( const energyEquation* eeq ) {
     // First compute value over boundary according to _grad
 
     for( uint i = 0 ; i < _nodes.size() ; i++ )
-	_bndVal[i] = _T.at(_nodes[i]) + _grad;
+	_bndVal[i] = _T.at(_nodes[i]) + _grad[i];
 
     
     energyFixedT::update( eeq );
