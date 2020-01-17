@@ -4,6 +4,8 @@
 
 #include <vector>
 
+#include <fstream>
+
 using namespace std;
 
 
@@ -49,7 +51,19 @@ void standardDecomp( vector<uint>& owner, basicMesh& mesh, uint np )  {
 	    
     	}
 
-    }   
+    }
+
+    
+
+    // Write lattice.graph.part for other purposes
+
+    ofstream outFile;
+
+    outFile.open( "lattice/lattice.graph.part." + std::to_string(np) );
+
+
+    for( const auto o : owner )
+	outFile << o << endl;
 
     
 }
