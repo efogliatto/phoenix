@@ -58,13 +58,29 @@ set ( PROJECT_LINK_LIBS
 link_directories( ${CMAKE_SOURCE_DIR}/lib )
 
 
-# # Optional: Metis decomposition
 
-# option(WITH_METIS "Compile with METIS" ON)
+# Modules path
 
-# if(WITH_METIS)
-#   add_definitions(-DUSE_METIS)
-# endif()
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
+
+
+# Optional: Metis decomposition
+
+option(WITH_METIS "Compile with METIS" ON)
+
+if(WITH_METIS)
+
+  message("-- Compile with Metis")
+
+  find_package( METIS REQUIRED )
+
+  include_directories(${METIS_INCLUDE_DIRS})
+  
+  set(LIBS ${LIBS} ${METIS_LIBRARIES})
+
+  add_definitions(-DUSE_METIS)
+  
+endif()
 
 
 

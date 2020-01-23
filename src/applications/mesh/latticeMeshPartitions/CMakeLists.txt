@@ -14,4 +14,4 @@ add_executable(latticeMeshPartitions
   "computeVirtualNodes.C"
   )
 
-target_link_libraries(latticeMeshPartitions ${PROJECT_LINK_LIBS} ${MPI_LIBRARIES} ${PROJECT_LINK_LIBS})
+target_link_libraries(latticeMeshPartitions ${PROJECT_LINK_LIBS} ${MPI_LIBRARIES} ${PROJECT_LINK_LIBS} ${METIS_LIBRARIES})

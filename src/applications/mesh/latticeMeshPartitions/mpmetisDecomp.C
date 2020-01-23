@@ -4,8 +4,14 @@
 
 #include "mpmetisDecomp.H"
 
+#include <dictionary.H>
 
-// #ifdef USE_METIS
+
+
+#ifdef USE_METIS
+
+#include <metis.h>
+
 
 using namespace std;
 
@@ -15,59 +21,88 @@ void mpmetisDecomp( vector<uint>& owner, basicMesh& mesh, uint np )  {
     if( np > 1 ) {
 	
 
-    	// // Create graph for metis decomposition.
+	// Read multi-level information
+
+	dictionary pdict( "properties/parallel" );
+
+	uint coarseLevel( (uint)pdict.lookUpOrDefault<scalar>("coarseLevel",np) );
+
+
+       
+	
+    	// Create mesh for metis decomposition.
 
     
-    	// // Count total number of edges (counted twice)
+    	// Resize METIS mesh arrays
 
-    	// uint nedges = 0;
+    	uint nadj = mesh.ncells * mesh.cellType;
 
-    	// for( uint i = 0 ; i < mesh.nPoints ; i++ ) {
+	idx_t* eptr = (idx_t*)malloc( (mesh.ncells+1) * sizeof(idx_t) );
 
-    	//     for( uint k = 1 ; k < maxneigh ; k++ ) {
-
-    	// 	if( mesh.nb[i][k] != -1 ) {
-
-    	// 	    nedges++;
-
-    	// 	}
-
-    	//     }
-
-    	// }
+	idx_t* eind = (idx_t*)malloc( nadj * sizeof(idx_t) );
 
 
-    	// nedges = nedges / 2;
+	// Fill METIS mesh arrays
+
+	for( uint i = 0 ; i < mesh.ncells ; i++ ) {
+
+	    eptr[i] = (idx_t)i*mesh.cellType;
+
+
+	    for( uint j = 0 ; j < mesh.cellType ; j++ )
+	    	eind[ eptr[i] + j ] = mesh.vtkCells[i][j];
+
+	}
+
+	eptr[mesh.ncells] = nadj;
 
 
 
-    // 	// Write graph file
+	
 
-    // 	ofstream gfile;
+	// Apply METIS algorithm
 
-    // 	gfile.open( "lattice/lattice.graph" );	
+	idx_t ne = mesh.ncells;
 
-    
-    // 	gfile << mesh.nPoints << " " << nedges << endl;
+	idx_t nn = mesh.nPoints;
 
-    // 	for( uint i = 0 ; i < mesh.nPoints ; i++ ) {
+	idx_t nparts = np;
 
-    // 	    for( uint k = 1 ; k < maxneigh ; k++ ) {
+	idx_t objval;
 
-    // 		if( mesh.nb[i][k] != -1 ) {
+	idx_t* epart = (idx_t*)malloc( ne * sizeof(idx_t) );
 
-    // 		    gfile << mesh.nb[i][k]+1 << " ";
+	idx_t* npart = (idx_t*)malloc( nn * sizeof(idx_t) );		
 
-    // 		}
+	int status =  METIS_PartMeshNodal( &ne, &nn, eptr, eind, NULL, NULL, &nparts, NULL, NULL, &objval, epart, npart);
 
-    // 	    }
 
-    // 	    gfile << endl;
 
-    // 	}
-    
-    
-    // 	gfile.close();
+	if(status) {
+	    
+	    cout << "Finished METIS nodal decomposition" << endl << endl;
+
+	}
+
+	else {
+
+    	    cout << "\n   [ERROR]  Unsuccesful METIS decomposition\n\n";
+
+    	    exit(1);
+
+	}
+
+
+
+
+
+
+	// Copy partition to owner array
+
+	for( uint i = 0 ; i < mesh.nPoints ; i++ )	    
+	    owner[i] = npart[i];
+
+
 
     
 
@@ -135,24 +170,25 @@ void mpmetisDecomp( vector<uint>& owner, basicMesh& mesh, uint np )  {
 }
 
 
-// #endif
+#endif
 
 
 
 
 
-// #ifndef USE_METIS
+#ifndef USE_METIS
 
-// using namespace std;
+using namespace std;
 
-// #include <iostream>
+#include <iostream>
 
-// void kmetisDecomp( vector<uint>& owner, basicMesh& mesh, uint np )  {
+void kmetisDecomp( vector<uint>& owner, basicMesh& mesh, uint np )  {
 
-//     cout << "\n   [ERROR]  METIS library not included\n" << endl;
+    cout << "\n   [ERROR]  METIS library not included\n" << endl;
 
-//     exit(1);
+    exit(1);
 
-// }
+}
 
-// #endif
+
+#endif
