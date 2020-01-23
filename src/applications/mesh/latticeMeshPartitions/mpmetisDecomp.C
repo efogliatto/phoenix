@@ -17,15 +17,17 @@ using namespace std;
 
 void mpmetisDecomp( vector<uint>& owner, basicMesh& mesh, uint np )  {
 
+    
 
     if( np > 1 ) {
+
 	
 
 	// Read multi-level information
 
 	dictionary pdict( "properties/parallel" );
 
-	uint coarseLevel( (uint)pdict.lookUpOrDefault<scalar>("coarseLevel",np) );
+	uint clevel( (uint)pdict.lookUpOrDefault<scalar>("coarseLevel",np) );
 
 
        
@@ -97,59 +99,195 @@ void mpmetisDecomp( vector<uint>& owner, basicMesh& mesh, uint np )  {
 
 
 
-	// Copy partition to owner array
+	// Partition clustering:
+	// partitions are reorderer in clevel groups
 
-	for( uint i = 0 ; i < mesh.nPoints ; i++ )	    
-	    owner[i] = npart[i];
+	// First set communication matrix
+
+	vector< vector<uint> > commMat( np );
+
+	for( uint i = 0 ; i < np ; i++ )
+	    commMat[i].resize(np,0);
 
 
+	// Move over points and add weight
+
+	for( uint i = 0 ; i < mesh.nPoints ; i++ ) {
+
+	    for( uint k = 1 ; k < mesh.Q ; k++ ) {
+
+		int nbid = mesh.nb[i][k];
+
+		if( nbid != -1 )
+		    commMat[ npart[i] ][ npart[nbid] ]++;
+
+	    }
+
+	}
+
+
+
+
+	// Create graph for partition communication
+
+	vector<uint> newOwnerId(np);
+	
+
+	{
+
+	    // Count adjacency
+
+	    uint npadj(0);
+
+	    for( uint i = 0 ; i < np ; i++ ) {
+
+		for( uint j = 0 ; j < np ; j++ ) {
+
+		    if( i != j ) {
+
+			if( commMat[i][j] != 0 )
+			    npadj++;
+
+		    }
+
+		}
+
+	    }
+
+
+
+	    // Allocate graph info
+
+	    idx_t* xadj = (idx_t*)malloc( (np+1) * sizeof(idx_t) );
+
+	    idx_t* adjncy = (idx_t*)malloc( npadj * sizeof(idx_t) );
+
+	    uint count(0);
+
+	    for( uint i = 0 ; i < np ; i++ ) {
+
+		xadj[i] = count;
+
+		for( uint j = 0 ; j < np ; j++ ) {
+
+		    if( i != j ) {
+
+			if( commMat[i][j] != 0 ) {
+
+			    adjncy[count] = j;
+
+			    count++;
+			    
+			}
+
+		    }
+
+		}
+
+	    }
+
+	    xadj[np] = npadj;
+
+
+
+
+	    
+	    
+	    // Apply graph decomposition
+
+	    idx_t nvtxs = np;
+
+	    idx_t ncon = 1;
+
+	    idx_t nparts_proc = clevel;
+
+	    idx_t objval_proc;
+
+	    idx_t* part_proc = (idx_t*)malloc( np * sizeof(idx_t) );		
+
+	    status =  METIS_PartGraphRecursive( &nvtxs, &ncon, xadj, adjncy, NULL, NULL, NULL, &nparts_proc, NULL, NULL, NULL, &objval_proc, part_proc );
+
+
+
+
+	    if(status) {
+	    
+	    	cout << "Finished graph partitioning for decomposed domain" << endl << endl;
+
+	    }
+
+	    else {
+
+	    	cout << "\n   [ERROR]  Unsuccesful METIS decomposition\n\n";
+
+	    	exit(1);
+
+	    }
+
+
+	    
+
+
+	    // Reassign processor number
+
+	    {
+
+		uint procId(0);
+
+		for( uint i = 0 ; i < clevel ; i++ ) {
+
+		    for( uint j = 0 ; j < np ; j++ ) {
+
+			if( (uint)part_proc[j] == i ) {
+
+			    newOwnerId[j] = procId;
+
+			    procId++;
+
+			}
+
+		    }
+
+		}
+
+		    
+	    }
+
+
+
+	    // Release memory
+
+	    free(xadj);
+	    free(adjncy);
+	    free(part_proc);
 
     
 
+	}
 
 
-
-    // 	// Apply metis algorithm. Call external function gpmetis
-
-    // 	char cmd[100];
-
-    // 	sprintf(cmd,"gpmetis lattice/lattice.graph %d -contig > log.gpmetis",np);
-
-    // 	uint status = system( cmd );
-
-
-    // 	if (!status) {
-
-
-    // 	    // Read gpmetis result and load into owner
-
-    // 	    sprintf(cmd,"lattice/lattice.graph.part.%d",np);
-
-    // 	    ifstream inFile;
-
-    // 	    inFile.open( cmd );	
-	    
+       
+	
 
 	
-    // 	    for( uint i = 0 ; i < mesh.nPoints ; i++ ) {
 
-    // 		inFile >> owner[i];
 
-    // 	    }
-	
-	
-    // 	    inFile.close();	
+	// Copy partition to owner array
 
-	
-    // 	}
+	for( uint i = 0 ; i < mesh.nPoints ; i++ )	    
+	    owner[i] = newOwnerId[ npart[i] ];
 
-    // 	else {
+   
 
-    // 	    cout << "\n   [ERROR]  gpmetis not executed\n\n";
+	// Deallocate ugly memory
 
-    // 	    exit(1);
+	free(eptr);
+	free(eind);
+	free(epart);
+	free(npart);
 
-    // 	}
+
+
 
     
     }
