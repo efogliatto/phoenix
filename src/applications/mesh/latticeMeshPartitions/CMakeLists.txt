@@ -5,6 +5,7 @@ add_executable(latticeMeshPartitions
   "readBasicMesh.C"
   "standardDecomp.C"
   "kmetisDecomp.C"
+  "mpmetisDecomp.C"
   "mlevelKmetisDecomp.C"
   "localIndexing.C"
   "writeLatticeMesh.C"
