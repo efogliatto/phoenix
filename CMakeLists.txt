@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 2.8.9)
 
 project(phoenix LANGUAGES CXX C)
 
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules")
 
 set(CMAKE_BUILD_TYPE Release)
 
@@ -59,10 +59,6 @@ link_directories( ${CMAKE_SOURCE_DIR}/lib )
 
 
 
-# Modules path
-
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
-
 
 # Optional: Metis decomposition
 
@@ -72,11 +68,14 @@ if(WITH_METIS)
 
   message("-- Compile with Metis")
 
+  
   find_package( METIS REQUIRED )
+  # find_package( METIS REQUIRED PATHS /users/fogliate/Programas/metis-5.1.0 )  
 
   include_directories(${METIS_INCLUDE_DIRS})
   
   set(LIBS ${LIBS} ${METIS_LIBRARIES})
+  
 
   add_definitions(-DUSE_METIS)
   

@@ -74,13 +74,31 @@ void mpmetisDecomp( vector<uint>& owner, basicMesh& mesh, uint np )  {
 
 	idx_t* epart = (idx_t*)malloc( ne * sizeof(idx_t) );
 
-	idx_t* npart = (idx_t*)malloc( nn * sizeof(idx_t) );		
-
-	int status =  METIS_PartMeshNodal( &ne, &nn, eptr, eind, NULL, NULL, &nparts, NULL, NULL, &objval, epart, npart);
+	idx_t* npart = (idx_t*)malloc( nn * sizeof(idx_t) );
 
 
+	idx_t options[METIS_NOPTIONS];
 
-	if(status) {
+	METIS_SetDefaultOptions(options);       
+
+	options[METIS_OPTION_OBJTYPE] = METIS_OBJTYPE_VOL;
+
+	options[METIS_OPTION_NUMBERING] = 0;
+
+	options[METIS_OPTION_CONTIG] = 1;
+
+	options[METIS_OPTION_UFACTOR] = 1;
+
+
+
+
+	
+
+	int status =  METIS_PartMeshNodal( &ne, &nn, eptr, eind, NULL, NULL, &nparts, NULL, options, &objval, epart, npart);
+
+
+
+	if(status == METIS_OK) {
 	    
 	    cout << "Finished METIS nodal decomposition" << endl << endl;
 
@@ -133,7 +151,7 @@ void mpmetisDecomp( vector<uint>& owner, basicMesh& mesh, uint np )  {
 	vector<uint> newOwnerId(np);
 	
 
-	{
+	if( clevel > 1 ) {
 
 	    // Count adjacency
 
@@ -210,7 +228,7 @@ void mpmetisDecomp( vector<uint>& owner, basicMesh& mesh, uint np )  {
 
 
 
-	    if(status) {
+	    if(status == METIS_OK) {
 	    
 	    	cout << "Finished graph partitioning for decomposed domain" << endl << endl;
 
@@ -274,10 +292,20 @@ void mpmetisDecomp( vector<uint>& owner, basicMesh& mesh, uint np )  {
 
 	// Copy partition to owner array
 
-	for( uint i = 0 ; i < mesh.nPoints ; i++ )	    
-	    owner[i] = newOwnerId[ npart[i] ];
+	if( clevel > 1 ) {
 
-   
+	    for( uint i = 0 ; i < mesh.nPoints ; i++ )	    
+		owner[i] = newOwnerId[ npart[i] ];
+
+	}
+
+	else {
+
+	    for( uint i = 0 ; i < mesh.nPoints ; i++ )	    
+		owner[i] = npart[i];
+
+	}
+	
 
 	// Deallocate ugly memory
 
