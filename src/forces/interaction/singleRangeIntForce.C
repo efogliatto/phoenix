@@ -172,19 +172,31 @@ void singleRangeIntForce::update( scalarField& rho, scalarField& T ) {
 
 				
 
-				// Compute apparent angle first
+				// // Compute apparent angle first
 				
-				if( _hysteresis.at(i)[0] != _hysteresis.at(i)[1] ) {
+				// if( _hysteresis.at(i)[0] != _hysteresis.at(i)[1] ) {
 			    					
-				    _contactAngle.at(i) = apangle;
+				//     _contactAngle.at(i) = apangle;
 				    
-				}
+				// }
+
+
+				// We need density gradients along the boundary
+
+				scalar gradRho[3] = {0,0,0};
+
+				rho.grad(gradRho, i);
+
+				scalar gmag = sqrt( gradRho[0]*gradRho[0] + gradRho[1]*gradRho[1] );
+
+				
 
 
 
 				// Neigbour over wall. Needs changes for parallel computation
 							
-				_rho = rho.at(second) + tan( M_PI/2 - _contactAngle.at(i) ) * abs( rho.at(nb[i][3]) - rho.at(nb[i][1]) );
+				// _rho = rho.at(second) + tan( M_PI/2 - _contactAngle.at(i) ) * abs( rho.at(nb[i][3]) - rho.at(nb[i][1]) );
+				_rho = rho.at(second) + 2*tan( M_PI/2 - _contactAngle.at(i) ) * gmag;				
 
 				_T = T.at( first );
 
