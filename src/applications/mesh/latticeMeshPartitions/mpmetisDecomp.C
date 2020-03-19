@@ -348,7 +348,7 @@ using namespace std;
 
 #include <iostream>
 
-void kmetisDecomp( vector<uint>& owner, basicMesh& mesh, uint np )  {
+void mpmetisDecomp( vector<uint>& owner, basicMesh& mesh, uint np )  {
 
     cout << "\n   [ERROR]  METIS library not included\n" << endl;
 
