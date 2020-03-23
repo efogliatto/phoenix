@@ -2,6 +2,10 @@
 
 #include "boxBoundedScalarField.H"
 
+#include "uniformScalarField.H"
+
+#include "bgSphereBoundedScalarField.H"
+
 
 using namespace std;
 
@@ -14,7 +18,8 @@ initialScalarField::initialScalarField() {
 
     _spMapType["box"]        = ishape::box;
     _spMapType["random"]     = ishape::random;
-    _spMapType["bgSphere"]   = ishape::bgsphere;    
+    _spMapType["bgSphere"]   = ishape::bgsphere;
+    _spMapType["uniform"]    = ishape::uniform;        
 
 }
 
@@ -51,8 +56,17 @@ void initialScalarField::updateField( scalarField& field, const latticeMesh& mes
     	    break;
 
 
+    	case ishape::uniform:
+
+	    uniformScalarField(field, mesh, fname, sptype);
+	    
+    	    break;	    
+
+
     	case ishape::bgsphere:
 
+	    bgSphereBoundedScalarField(field, mesh, fname, sptype);
+	    
     	    break;	    
 	    
 	    

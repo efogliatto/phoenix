@@ -14,7 +14,7 @@ protected:
     
     // Initial types
 
-    enum class ishape{ box, random, bgsphere };
+    enum class ishape{ uniform, box, random, bgsphere };
 
     std::map<std::string, ishape> _spMapType;
     
