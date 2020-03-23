@@ -1,5 +1,7 @@
 #include <flatCavity.H>
 
+#include <math.h>
+
 #include <algorithm>
 
 
@@ -60,21 +62,47 @@ const vector< pair<uint, scalar> > flatCavity::coeffs(const vector<uint>& nodes,
 
 
 
-    	// Assign min_gads to node and neighbours
+    	// // Assign min_gads to node and neighbours
 
-    	if(find) {
+    	// if(find) {
 	
-    	    for( uint j = 0 ; j <= sp.second ; j++ ) {
+    	//     for( uint j = 0 ; j <= sp.second ; j++ ) {
 
-    		if( (i+j) < Gads.size() )
-    		    Gads[i+j] = make_pair( nodes[i+j], min_gads );
+    	// 	if( (i+j) < Gads.size() )
+    	// 	    Gads[i+j] = make_pair( nodes[i+j], min_gads );
 
-    		if( (i-j) > 0 )
-    		    Gads[i-j] = make_pair( nodes[i-j], min_gads );	    
+    	// 	if( (i-j) > 0 )
+    	// 	    Gads[i-j] = make_pair( nodes[i-j], min_gads );	    
 	    
-    	    }
+    	//     }
 
-    	}
+    	// }
+
+
+	// Check for distance and use linear interpolation
+
+	if(find) {	   
+
+	    for( uint nd = 0 ; nd < loc.size() ; nd++ ) {
+
+		scalar dist = sqrt(   (loc[nd][0] - loc[i][0]) * (loc[nd][0] - loc[i][0])
+		                    + (loc[nd][1] - loc[i][1]) * (loc[nd][1] - loc[i][1])
+				    + (loc[nd][2] - loc[i][2]) * (loc[nd][2] - loc[i][2])   );
+				
+		
+		if( dist <= sp.second ) {
+		    
+		    Gads[nd] = make_pair( nodes[nd], min_gads );
+
+		}
+
+
+	    }
+
+	    
+
+	}
+
 	
 
     }
