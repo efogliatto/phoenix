@@ -4,6 +4,8 @@
 
 #include "uniformScalarField.H"
 
+#include "randomScalarField.H"
+
 #include "bgSphereBoundedScalarField.H"
 
 
@@ -53,6 +55,8 @@ void initialScalarField::updateField( scalarField& field, const latticeMesh& mes
 	    
     	case ishape::random:
 
+	    randomScalarField(field, mesh, fname, sptype);
+	    
     	    break;
 
 
