@@ -148,7 +148,7 @@ pdfField::pdfField( const latticeMesh& m, timeOptions& t, const std::string& nm,
 
 	// Add to time list
 
-	Time.addPdfField(name);
+	Time.addPdfField(name, mesh.lmodel()->q());
 
 	break;
 
