@@ -6,6 +6,8 @@
 
 #include "randomScalarField.H"
 
+#include "linearScalarField.H"
+
 #include "bgSphereBoundedScalarField.H"
 
 
@@ -21,7 +23,8 @@ initialScalarField::initialScalarField() {
     _spMapType["box"]        = ishape::box;
     _spMapType["random"]     = ishape::random;
     _spMapType["bgSphere"]   = ishape::bgsphere;
-    _spMapType["uniform"]    = ishape::uniform;        
+    _spMapType["uniform"]    = ishape::uniform;
+    _spMapType["linear"]     = ishape::linear;            
 
 }
 
@@ -71,7 +74,15 @@ void initialScalarField::updateField( scalarField& field, const latticeMesh& mes
 
 	    bgSphereBoundedScalarField(field, mesh, fname, sptype);
 	    
+    	    break;
+
+
+    	case ishape::linear:
+
+	    linearScalarField(field, mesh, fname, sptype);
+	    
     	    break;	    
+	    
 	    
 	    
     	}
