@@ -24,7 +24,9 @@ void periodicX( basicMesh& mesh, const uint nx, const uint ny ) {
 
     // Move over X-boundary points
 
-    for( uint j = 0 ; j < ny ; j++ ) {
+    for( uint j = 1 ; j < (ny-1) ; j++ ) {
+    
+    // for( uint j = 0 ; j < ny ; j++ ) {
 
     	mesh.bd.bdPoints[0][j-1] = j*nx;
 	
