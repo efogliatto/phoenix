@@ -29,7 +29,7 @@ void linearScalarField( scalarField& field, const latticeMesh& mesh, const strin
 
     vector<scalar> end = dict.lookUp< vector<scalar> >( auxName + "endPoint" );
 
-    scalar endval = dict.lookUp<scalar>( auxName + "endValue" );    
+    scalar endval = dict.lookUp<scalar>( auxName + "endValue" );
     
 
 
@@ -39,11 +39,11 @@ void linearScalarField( scalarField& field, const latticeMesh& mesh, const strin
 	         + (end[1]-start[1])*(end[1]-start[1])
 	         + (end[2]-start[2])*(end[2]-start[2])  );
 
-    dmag = dmag*(endval-stval);
+    dmag = (endval-stval) / dmag;
 
-    scalar A[3] = { (end[0]-start[0]) / dmag,
-                    (end[1]-start[1]) / dmag,
-                    (end[2]-start[2]) / dmag };
+    scalar A[3] = { (end[0]-start[0]) * dmag,
+                    (end[1]-start[1]) * dmag,
+                    (end[2]-start[2]) * dmag };
 
     
 
