@@ -174,7 +174,7 @@ int main(int argc, char** argv) {
 
     		int newId = pointId   +   vel[ reverse[velId] ][0]   +   vel[ reverse[velId] ][1] * nx;
 
-    		if( newId >= 0   &&   newId <= nx*ny-1 ) {
+    		if( newId >= 0   &&   newId <= (int)(nx*ny-1) ) {
 
     		    if ( (  abs( mesh.points[pointId][0] - mesh.points[newId][0] ) <= 1  )   &&   (  abs( mesh.points[pointId][1] - mesh.points[newId][1] ) <= 1  )  ) {
 	    
@@ -205,7 +205,7 @@ int main(int argc, char** argv) {
 
     		int newId = pointId   +   vel[ reverse[velId] ][0]   +   vel[ reverse[velId] ][1] * nx;
 
-    		if( newId >= 0   &&   newId <= nx*ny-1 ) {
+    		if( newId >= 0   &&   newId <= (int)(nx*ny-1) ) {
 
     		    if ( (  abs( mesh.points[pointId][0] - mesh.points[newId][0] ) <= 1  )   &&   (  abs( mesh.points[pointId][1] - mesh.points[newId][1] ) <= 1  )  ) {
 	    

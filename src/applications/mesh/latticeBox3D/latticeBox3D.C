@@ -170,7 +170,7 @@ int main(int argc, char** argv) {
 
     			int newId = idx   +   vel[ reverse[vid] ][0]   +   vel[ reverse[vid] ][1] * nx   +   vel[ reverse[vid] ][2] * nx * ny;
 
-    			if( newId >= 0   &&   newId <= nx*ny*nz-1 ) {
+    			if( newId >= 0   &&   newId <= (int)(nx*ny*nz-1) ) {
 
     			    if (      (  abs( mesh.points[idx][0] - mesh.points[newId][0] ) <= 1  )
     			         &&   (  abs( mesh.points[idx][1] - mesh.points[newId][1] ) <= 1  )

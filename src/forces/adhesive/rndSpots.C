@@ -15,15 +15,15 @@ rndSpots::rndSpots( const string& dictName,
 
 
     
-    // Update adhesive constant distribution
+    // // Update adhesive constant distribution
 
-    const map< string, vector<uint> >& boundary = _mesh.boundaries();
+    // const map< string, vector<uint> >& boundary = _mesh.boundaries();
 
-    dictionary dict("start/boundaries");
+    // dictionary dict("start/boundaries");
         
-    for( const auto &bd : boundary ) {
+    // for( const auto &bd : boundary ) {
 
-	int nspots = dict.lookUpOrDefault<int>( eqName + "/" + bd.first + "/nspots", 0 );
+	// int nspots = dict.lookUpOrDefault<int>( eqName + "/" + bd.first + "/nspots", 0 );
 
 	
 	
@@ -39,7 +39,8 @@ rndSpots::rndSpots( const string& dictName,
 
 	// }
 
-    }    
+    // } 
+    
 
 }
 

@@ -78,6 +78,11 @@ if(WITH_METIS)
   
 
   add_definitions(-DUSE_METIS)
+
+  
+else()
+
+  message("-- Do not compile with Metis")
   
 endif()
 

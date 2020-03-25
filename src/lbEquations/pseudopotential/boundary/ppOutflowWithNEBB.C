@@ -82,7 +82,7 @@ void ppOutflowWithNEBB::update( const pseudoPotEquation* ppeq ) {
 
     // Lattice constants
     
-    const uint q = _mesh.lmodel()->q();
+    // const uint q = _mesh.lmodel()->q();
 
     const vector< vector<int> >& nb = _mesh.nbArray();
 

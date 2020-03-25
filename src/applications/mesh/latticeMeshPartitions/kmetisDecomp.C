@@ -1,6 +1,3 @@
-// #include <stdlib.h>
-// #include <stdio.h>
-// #include <basicMesh.h>
 #include <fstream>
 
 #include <iostream>
@@ -8,9 +5,14 @@
 #include "kmetisDecomp.H"
 
 
-// #ifdef USE_METIS
+
+#ifdef USE_METIS
+
+#include <metis.h>
+
 
 using namespace std;
+
 
 void kmetisDecomp( vector<uint>& owner, basicMesh& mesh, uint np, uint maxneigh )  {
 
@@ -138,24 +140,24 @@ void kmetisDecomp( vector<uint>& owner, basicMesh& mesh, uint np, uint maxneigh 
 }
 
 
-// #endif
+#endif
 
 
 
 
 
-// #ifndef USE_METIS
+#ifndef USE_METIS
 
-// using namespace std;
+using namespace std;
 
-// #include <iostream>
+#include <iostream>
 
-// void kmetisDecomp( vector<uint>& owner, basicMesh& mesh, uint np )  {
+void kmetisDecomp( vector<uint>& owner, basicMesh& mesh, uint np, uint maxneigh )  {
 
-//     cout << "\n   [ERROR]  METIS library not included\n" << endl;
+    cout << "\n   [ERROR]  METIS library not included\n" << endl;
 
-//     exit(1);
+    exit(1);
 
-// }
+}
 
-// #endif
+#endif

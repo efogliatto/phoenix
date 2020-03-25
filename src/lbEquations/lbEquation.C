@@ -18,7 +18,7 @@ lbEquation::lbEquation( const string& name,
 
     // Read coefficients from dictionary (DEPRECATED)
 
-    #warning Single Tau use is DEPRECATED
+    #pragma message( "Single Tau use is DEPRECATED" )
 
     dictionary dict("properties/macroProperties");
 

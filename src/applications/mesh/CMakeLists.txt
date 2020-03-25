@@ -10,6 +10,14 @@ add_subdirectory (latticeMeshPartitions)
 # salomeToPhoenix
 add_subdirectory (salomeToPhoenix)
 
+
+
 # cartesianMesh
-add_subdirectory (cartesianMesh)
+
+if(NOT CGAL_BASE_DIR STREQUAL "none")
+
+  add_subdirectory (cartesianMesh)
+
+endif()
+
 
