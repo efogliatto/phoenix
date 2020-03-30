@@ -183,11 +183,17 @@ void singleRangeIntForce::update( scalarField& rho, scalarField& T ) {
 
 				// We need density gradients along the boundary
 
-				scalar gradRho[3] = {0,0,0};
+				// scalar gradRho[3] = {0,0,0};
 
-				rho.grad(gradRho, i);
+				// rho.grad(gradRho, i);
+				
+
+				scalar gradRho[3] = { 0.5*( rho.at(nb[i][2]) - rho.at(nb[i][1]) ),
+						      0.5*( rho.at(nb[i][4]) - rho.at(nb[i][3]) ),
+						      0};
 
 				scalar gmag = sqrt( gradRho[0]*gradRho[0] + gradRho[1]*gradRho[1] );
+				
 
 				
 
@@ -196,7 +202,21 @@ void singleRangeIntForce::update( scalarField& rho, scalarField& T ) {
 				// Neigbour over wall. Needs changes for parallel computation
 							
 				// _rho = rho.at(second) + tan( M_PI/2 - _contactAngle.at(i) ) * abs( rho.at(nb[i][3]) - rho.at(nb[i][1]) );
-				_rho = rho.at(second) + 2*tan( M_PI/2 - _contactAngle.at(i) ) * gmag;				
+
+
+				// Two point derivative
+				
+				_rho = rho.at(second) + 2*tan( M_PI/2 - _contactAngle.at(i) ) * gmag;
+
+
+				// // Three point derivative
+
+				// _rho = - 3.0 * rho.at(first) / 2.0
+				//        + 3.0 * rho.at(second)
+				//        - rho.at( nb[i][6] ) / 2.0
+				//        + 3*tan( M_PI/2 - _contactAngle.at(i) ) * gmag;
+
+				
 
 				_T = T.at( first );
 
