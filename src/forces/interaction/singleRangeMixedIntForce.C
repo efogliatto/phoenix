@@ -140,25 +140,78 @@ void singleRangeMixedIntForce::update( scalarField& rho, scalarField& T ) {
 				// }
 
 
+
+				/*********************************************/
+				/*             Explicit scheme               */
+				/*********************************************/
+				
+				
 				// We need density gradients along the boundary
 
 				scalar gradRho[3] = {0,0,0};
 
-				rho.grad(gradRho, i);
-
+				rho.grad(gradRho, first);
+				
 				scalar gmag = sqrt( gradRho[0]*gradRho[0] + gradRho[1]*gradRho[1] );
+				
+
+
+				// Two point derivative
+				
+				_rho = rho.at(second) + 2*tan( M_PI/2 - _contactAngle.at(i) ) * gmag;
+
+				_T = T.at( first );
+
+
+
+
+
+
+
+
+
 
 				
 
 
+				// /*********************************************/
+				// /*             Implicit scheme               */
+				// /*********************************************/
+				
+				
+				// // We need density gradients along the boundary
 
-				// Neigbour over wall. Needs changes for parallel computation
-							
-				_rho = rho.at(second) + 2*tan( M_PI/2 - _contactAngle.at(i) ) * gmag;
 
-				_T = 2.0*T.at( second ) - T.at( first );
+				// // Initial gradient
+
+				// scalar gradRho[3] = {0,0,0};
+
+				// rho.grad(gradRho, first);												
+
+				// scalar gmag = sqrt( gradRho[0]*gradRho[0] + gradRho[1]*gradRho[1] + gradRho[2]*gradRho[2] );
+
+
+
+				// // Implicit calculation 
+
+				// scalar vrho = rho.at(second) + gmag * cos(_contactAngle.at(first));
+
+				// for(uint m = 0 ; m < 50 ; m++ ) {
+
+				//     gradRho[2] = 0.5*( rho.at(nb[first][6]) - vrho );
+
+				//     gmag = sqrt( gradRho[0]*gradRho[0] + gradRho[1]*gradRho[1] + gradRho[2]*gradRho[2] );
+
+				//     vrho = rho.at(second) + gmag * cos(_contactAngle.at(first));
+
+				// }
+
+			       
+
+				// _rho = vrho;
 
 				// _T = T.at( first );
+				
 
 
 			    }
