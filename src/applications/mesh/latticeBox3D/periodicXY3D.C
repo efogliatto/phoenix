@@ -59,9 +59,10 @@ void periodicXY3D( basicMesh& mesh, const uint nx, const uint ny, const uint nz 
 
     // i = 0, i = nx-1
     // 0 < j < ny
-    // 1 < k < nz - 1
-    
-    for( uint k = 1 ; k < (nz-1) ; k++ ) {
+    // 0 < k < nz
+
+    for( uint k = 0 ; k < nz ; k++ ) {
+    // for( uint k = 1 ; k < (nz-1) ; k++ ) {
     
     	for( uint j = 0 ; j < ny ; j++ ) {
 
@@ -104,9 +105,10 @@ void periodicXY3D( basicMesh& mesh, const uint nx, const uint ny, const uint nz 
 
     // 0 < i < nx
     // j = 0, j = ny -1
-    // 1 < k < nz - 1
-    
-    for( uint k = 1 ; k < (nz-1) ; k++ ) {
+    // 0 < k < nz
+
+    for( uint k = 0 ; k < nz ; k++ ) {
+    // for( uint k = 1 ; k < (nz-1) ; k++ ) {
     
     	for( uint i = 0 ; i < nx ; i++ ) {
 
