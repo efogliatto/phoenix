@@ -76,6 +76,7 @@ void singleRangeMixedIntForce::update( scalarField& rho, scalarField& T ) {
 	}
 
 
+	
 
 
 	// Compute only if node is not on boundary
@@ -89,7 +90,34 @@ void singleRangeMixedIntForce::update( scalarField& rho, scalarField& T ) {
 
 		vector<scalar> F1 = {0, 0, 0};
 
-		vector<scalar> F2 = {0, 0, 0};		
+		vector<scalar> F2 = {0, 0, 0};
+
+
+
+		// Compute aparent angle
+
+		scalar apangle( M_PI );
+
+		{
+
+		    scalar gradRho[3] = {0,0,0};
+
+		    rho.grad(gradRho, i);
+				
+		    scalar gmag = sqrt( gradRho[0]*gradRho[0] + gradRho[1]*gradRho[1] );
+
+
+		    // Compute aparent angle
+
+		    if(gmag != 0) {
+				
+			apangle = -gradRho[2]  /  gmag;
+
+			apangle = M_PI/2 - atan(apangle);
+			
+		    }
+
+		}
 		
 
 
@@ -131,7 +159,7 @@ void singleRangeMixedIntForce::update( scalarField& rho, scalarField& T ) {
 
 				
 
-				// // Compute apparent angle first
+				// Compute apparent angle first
 				
 				// if( _hysteresis.at(i)[0] != _hysteresis.at(i)[1] ) {
 			    					
@@ -153,6 +181,7 @@ void singleRangeMixedIntForce::update( scalarField& rho, scalarField& T ) {
 				rho.grad(gradRho, first);
 				
 				scalar gmag = sqrt( gradRho[0]*gradRho[0] + gradRho[1]*gradRho[1] );
+
 				
 
 
