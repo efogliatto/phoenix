@@ -83,6 +83,13 @@ void singleRangeMixedIntForce::update( scalarField& rho, scalarField& T ) {
 
 	if( isOnBnd ) {
 
+
+	    // No not compute flag
+
+	    bool wallForce( true );
+
+	    
+
 	    if( _computeOnBnd ) {
 
 
@@ -98,7 +105,7 @@ void singleRangeMixedIntForce::update( scalarField& rho, scalarField& T ) {
 
 		scalar apangle( M_PI );
 
-		{
+		if( _withGeomContact ) {
 
 		    scalar gradRho[3] = {0,0,0};
 
@@ -113,9 +120,13 @@ void singleRangeMixedIntForce::update( scalarField& rho, scalarField& T ) {
 				
 			apangle = -gradRho[2]  /  gmag;
 
-			apangle = M_PI/2 - atan(apangle);
+			apangle = M_PI/2 - atan(apangle); 
 			
 		    }
+
+
+		    if( apangle > (0.65 * M_PI) )
+		    	wallForce = false;
 
 		}
 		
@@ -314,9 +325,23 @@ void singleRangeMixedIntForce::update( scalarField& rho, scalarField& T ) {
 		    _force[i][j] =  F1[j] * kappa
  			         +   0.5 * ( 1 - _beta) * F2[j] ;
 	
-		}	
+		}
+
+
+
+
+
+
+
+		// Correct force 
 		
-		
+		if( wallForce == false ) {
+
+		    for( uint j = 0 ; j < 3 ; j++ )
+			_force[i][j] = 0;
+
+
+		}
 
 	    }
 
