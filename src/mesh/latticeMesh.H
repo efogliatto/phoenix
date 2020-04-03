@@ -46,9 +46,9 @@ protected:
     std::map< std::string, std::vector<uint> > boundary;
 
 
-    /** Tell if node is on boundary. Performance */
+    /** Tell if node is on a non periodic boundary. Performance */
 
-    std::vector<uint> isOnBnd;
+    std::vector<bool> isOnBnd;
 
 
     /** Boundary to which node belongs */
@@ -160,7 +160,7 @@ public:
 
     /** Check if point is on boundary */
 
-    const uint isOnBoundary( const uint id ) const { return isOnBnd[id]; };
+    const bool isOnBoundary( const uint id ) const { return isOnBnd[id]; };
 
 
     /** Boundary which node belongs */

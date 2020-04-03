@@ -3,9 +3,22 @@
 
 #include <singleRangeMixedIntForce.H>
 
+#include <singleRangeWithContact.H>
+
 
 class intForce {
 
+    
+protected:
+
+    
+    // Interaction types
+
+    enum class ifType{ singleRange, singleRangeMixed, singleRangeContact };
+
+    std::map<std::string, ifType> _ifMapType;
+
+    
 public:
 
     

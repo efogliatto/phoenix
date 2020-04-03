@@ -308,114 +308,50 @@ const void latticeMesh::readBoundaryNodes() {
 
 
 
-    // Check if node is on boundary
+    // Check if node is on non periodic boundary
 
-    isOnBnd.resize(local(),0);
+    isOnBnd.resize(local(),false);
 
-    for(uint i = 0 ; i < local() ; i++) {
-
-	// if( nodeToBnd.find(i) != nodeToBnd.end() )
-	//     isOnBnd[i] = 1;
-
+    for( const auto &bd : boundary ) {
 
 	const uint q = lmodel()->q();
-	
-	for(uint k = 1 ; k < q ; k++) {
 
-	    if( nb[i][k] == -1 )
-		isOnBnd[i] = 1;
+	
+	for( auto id : bd.second ) {
+
+	    for( uint k = 1 ; k < q ; k++ ) {
+
+		if( nb[id][k] == -1 )
+		    isOnBnd[id] = true;
+
+	    }	    
 
 	}
 
-	
-
-    }
-
-
-    // // Create map for closests nodes
-
-    // const uint q = lmodel()->q();    
+    }    
     
-    // for( const auto &bd : boundary ) {
+    
 
-    // 	for( auto id : bd.second ) {
+    // for(uint i = 0 ; i < local() ; i++) {
 
-
-
-    // 	    // Dont check for periodic nodes
-
-    // 	    bool is_periodic(true);
-	    
-    // 	    for( uint k = 0 ; k < q ; k++ ) {
-
-    // 		if(nb[id][k] == -1)
-    // 		    is_periodic = false;
-
-    // 	    }
-
-	    
-
-    // 	    // Check neighbour of boundary node
-
-    // 	    if( !is_periodic ) {
-	    
-    // 		for( uint k = 0 ; k < q ; k++ ) {
-
-    // 		    int nbid = nb[id][k];
-
-		
-    // 		    if(  (nbid != -1)  &&  (nbid < (int)local())  ) {
-
-    // 			bool is_on_bnd(false);
-		    
-    // 			for( uint l = 0 ; l < q ; l++ ) {
-
-    // 			    if( nb[nbid][l] == -1 ) {
-
-    // 				is_on_bnd = true;
-
-    // 			    }
-
-    // 			}
+    // 	// if( nodeToBnd.find(i) != nodeToBnd.end() )
+    // 	//     isOnBnd[i] = 1;
 
 
-    // 			// Neighbour on boundary node is not on boundary
+    // 	const uint q = lmodel()->q();
+	
+    // 	for(uint k = 1 ; k < q ; k++) {
 
-    // 			if( !is_on_bnd ) {
-
-
-    // 			    // Before adding to closestNodes, check if it is not already in the map
-
-    // 			    bool isClosest(false);
-			
-    // 			    for( const auto &cnbd : closestNodes ) {
-
-    // 				if( std::find(cnbd.second.begin(), cnbd.second.end(), nbid) != cnbd.second.end() )
-    // 				    isClosest = true;
-			    
-    // 			    }
-
-    // 			    if( !isClosest )
-    // 				closestNodes[bd.first].push_back(nbid);
-			
-
-    // 			}
-
-		    
-
-
-    // 		    }
-		
-    // 		}
-		
-    // 	    }
-
-	    
+    // 	    if( nb[i][k] == -1 )
+    // 		isOnBnd[i] = 1;
 
     // 	}
 
-    // }    
-    
+	
+
+    // }
+
+   
     
 
 }

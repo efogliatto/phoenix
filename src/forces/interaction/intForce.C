@@ -7,6 +7,14 @@ using namespace std;
 
 interactionForce* intForce::create (const string& dictName, const string& eqName, const latticeMesh& mesh, timeOptions& Time) {
 
+
+    // Initialize types
+
+    _ifMapType["singleRange"]             = ifType::singleRange;
+    _ifMapType["singleRangeMixed"]        = ifType::singleRangeMixed;
+    _ifMapType["singleRangeWithContact"]  = ifType::singleRangeContact;
+
+    
     
     // Load model name from dictionary
 
@@ -14,36 +22,55 @@ interactionForce* intForce::create (const string& dictName, const string& eqName
 
     string itype = dict.lookUp<string>( eqName + "/Forces/Interaction/type" );
 
+
+
+
+    // Assign interaction force
     
-    if( itype == "singleRange" ) {
+    if( _ifMapType.find(itype) != _ifMapType.end() ) {
+	
 
-    	return new singleRangeIntForce(dictName, eqName, mesh, Time);
+	switch( _ifMapType[itype] ) {
+	
 
-    }
+	case ifType::singleRange:
 
-    else {
+	    return new singleRangeIntForce(dictName, eqName, mesh, Time);
 
-	if( itype == "singleRangeMixed" ) {
+	    break;
+
+
+	case ifType::singleRangeMixed:
 
 	    return new singleRangeMixedIntForce(dictName, eqName, mesh, Time);
 
+	    break;
+
+
+	case ifType::singleRangeContact:
+
+	    return new singleRangeWithContact(dictName, eqName, mesh, Time);
+
+	    break;	    
+	    
+	    
 	}
 
-
-	else {
-
-
-	    // Default
-    
-	    cout << endl << " [ERROR]  Interaction type " << itype << " not available" << endl << endl;
-
-	    exit(1);
-
-
-	}
     
     }
 
+    
+    else {
+    
+	cout << endl << " [ERROR]  Interaction type " << itype << " not available" << endl << endl;
+
+	exit(1);
+
+    }    
+
+
+
+   
     
     return 0;
 
