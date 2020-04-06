@@ -88,7 +88,7 @@ const bool timeOptions::update() {
 
 /** Write flag */
 
-const bool timeOptions::write() const {
+const bool timeOptions::write( const bool updCaseFile ) const {
 
     bool wrt(false);
 
@@ -97,9 +97,14 @@ const bool timeOptions::write() const {
 	
 	wrt = true;
 
-	updateCaseFile();
 
-	MPI_Barrier(MPI_COMM_WORLD);
+	if(updCaseFile) {
+
+	    updateCaseFile();
+
+	    MPI_Barrier(MPI_COMM_WORLD);
+
+	}
 	
     }
 	

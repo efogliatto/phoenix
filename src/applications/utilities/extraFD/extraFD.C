@@ -56,35 +56,44 @@ int main( int argc, char **argv ) {
 
     scalarField rho( mesh, Time, "rho", IO::MUST_READ, IO::NO_WRITE );
 
+    scalarField lapRho( mesh, Time, "lapRho", IO::NO_READ, IO::MUST_WRITE );
 
-    // Macroscopic temperature
 
-    scalarField T( mesh, Time, "T", IO::MUST_READ, IO::NO_WRITE );
+    // // Macroscopic temperature
 
-    scalarField oldT( mesh, Time, "T", IO::NO_READ, IO::NO_WRITE );
+    // scalarField T( mesh, Time, "T", IO::MUST_READ, IO::NO_WRITE );
 
-    scalarField residual( mesh, Time, "residual", IO::NO_READ, IO::MUST_WRITE );
+
+    // // Macroscopic velocity
+
+    // vectorField U( mesh, Time, "U", IO::NO_READ, IO::NO_WRITE );
     
 
+    // // PDF field. Navier - Stokes equation
 
-    // Macroscopic velocity
-
-    vectorField U( mesh, Time, "U", IO::NO_READ, IO::NO_WRITE );
-
-
-    // // Temperature laplacian
-
-    // scalarField lapT( mesh, Time, "laplacian_T", IO::NO_READ, IO::MUST_WRITE );
+    // pdfField f( mesh, Time, "f", IO::NO_READ, IO::NO_WRITE );
 
 
-    // Temperature gradient
+    // // Macroscopic pressure
 
-    vectorField v_dot_T( mesh, Time, "vT", IO::NO_READ, IO::MUST_WRITE );
+    // scalarField p( mesh, Time, "p", IO::NO_READ, IO::MUST_WRITE );
+
+
+    // // Potential as scalar field
+    
+    // scalarField phi( mesh, Time, "phi", IO::NO_READ, IO::NO_WRITE );    
 
 
    
-     
+    
+    
+    // // Navier-Stokes MRT equation
 
+    // pseudoPotEqHandler NS("Navier-Stokes", mesh, Time, f, rho, U, T);
+
+
+    cout << "Computing density laplacian" << endl;
+    
     
     // Advance over write times
     
@@ -99,66 +108,28 @@ int main( int argc, char **argv ) {
 	
 
 	// Update necessary fields
-	
-	T.update(i);
-
-	U.update(i);
 
 	rho.update(i);
 
 
+	for(uint id = 0; id < mesh.local() ; id++)
+	    lapRho[id] = rho.laplacian(id);
+
+
+	lapRho.sync();
 	
-	// Compute v * T
-
-	for( uint id = 0 ; id < mesh.local() ; id++ ) {
-
-	    for( uint j = 0 ; j < 3 ; j++ )
-		v_dot_T[id][j] = U.at(id)[j] * T.at(id);
-
-	}
-
-	v_dot_T.sync();
+	
+	// T.update(i);
 	
 
-	
-	// Compute residuals
+	// // Update potential
 
-	for( uint id = 0 ; id < mesh.local() ; id++ ) {
-
-
-	    scalar phi(0);
-
-	    scalar gradRho[3];
-
-	    scalar gradT[3];
-
-	    T.grad(gradT, id);
-
-	    rho.grad(gradRho, id);
-
-	    
-	    for( uint j = 0 ; j < 3 ; j++ )
-		phi += gradT[j] * gradRho[j];
-
-	    phi = phi * 0.06 / rho.at(id) + 0.06 * T.laplacian(id);
-		
-
-	    
-	    residual[id] = T.at(id) - oldT.at(id)
-		         + v_dot_T.div(id)
-		         - 0.5 * T.laplacian(id) / 3
-		         + phi;
-
-	}
-
-	residual.sync();
+	// NS.updatePotential(phi);
 
 
-	for( uint id = 0 ; id < mesh.local() ; id++ )
-	    oldT[id] = T.at(id);
+	// // Compute pressure
 
-	    
-
+	// NS.pressure(phi, p);
 	
 		
     	// Write fields
@@ -166,8 +137,7 @@ int main( int argc, char **argv ) {
 	while( Time.currentTime() != tlist[i] )
 	    Time.update();
 
-	residual.write();
-	
+	lapRho.write();
 		    
 
     }
@@ -200,4 +170,3 @@ int main( int argc, char **argv ) {
     MPI_Finalize();
 
 }
-

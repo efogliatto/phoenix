@@ -93,6 +93,10 @@ public:
 
     const std::string fieldName() const { return name; }
     
+
+    /** Reference to time */
+
+    const timeOptions& time() const {return Time;}
     
 
 };

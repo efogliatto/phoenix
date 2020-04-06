@@ -35,9 +35,9 @@ protected:
     scalar _G;
 
 
-    /** Flag: compute on boundary nodes */
+    // /** Flag: compute on boundary nodes */
 
-    bool _computeOnBnd;
+    // bool _computeOnBnd;
 
 
     /** Interaction weights */

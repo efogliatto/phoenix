@@ -103,7 +103,7 @@ public:
 
     /** Write flag */
 
-    const bool write() const;
+    const bool write(const bool updCaseFile=true) const;
 
 
     /** Add simulation file names */

@@ -119,6 +119,12 @@ void singleRangeWithContact::update( scalarField& rho, scalarField& T ) {
 
 
 
+    // Temporary
+
+    const timeOptions& Time = rho.time();
+
+    scalar cline[2] = {100000000, 0};
+
    
 
     // Move over points
@@ -126,7 +132,7 @@ void singleRangeWithContact::update( scalarField& rho, scalarField& T ) {
     for( uint i = 0 ; i < _mesh.local() ; i++ ) {
 
 
-	// Compute only if node is not on boundary
+	// Compute only if node is on boundary
 
 	if( _mesh.isOnBoundary(i) ) {
 	    
@@ -142,39 +148,82 @@ void singleRangeWithContact::update( scalarField& rho, scalarField& T ) {
 
 	    scalar apangle( M_PI );
 
-	    bool wallForce( true );
+	    bool wallForce( false );
 
 	    
 
-	    if( _withGeomContact ) {
+	    if(      ( _withGeomContact )
+	    	 &&  (  _contactAngle.find(i) != _contactAngle.end() )   ){ 
 		
-		scalar gradRho[3] = {0,0,0};
+	    	// scalar gradRho[3] = {0,0,0};
 
-		rho.grad(gradRho, i);
+	    	// rho.grad(gradRho, i);
+
+	    	scalar gradRho[3] = { 0.5*(rho.at(nb[i][2]) - rho.at(nb[i][1])),
+	    			      0.5*(rho.at(nb[i][4]) - rho.at(nb[i][3])),
+	    			          // (rho.at(nb[i][6]) - rho.at(i))  };
+	    			      0.5*( -3.0*rho.at(i) + 4.0*rho.at(nb[i][6]) - rho.at(nb[nb[i][6]][6]) )  };				      
 				
-		scalar gmag = sqrt( gradRho[0]*gradRho[0] + gradRho[1]*gradRho[1] );
+	    	scalar gmag = sqrt( gradRho[0]*gradRho[0] + gradRho[1]*gradRho[1] );
 
 
-		// Compute aparent angle
+	    	// Compute aparent angle
 
-		if(gmag != 0) {
+	    	if(gmag != 0) {
 				
-		    apangle = -gradRho[2]  /  gmag;
+	    	    apangle = -gradRho[2]  /  gmag;
 
-		    apangle = M_PI/2 - atan(apangle); 
+	    	    apangle = M_PI/2 - atan(apangle); 
 			
-		}
+	    	}
 
 
-		if( apangle > _limitAngle )
-		    wallForce = false;
+	    	if( apangle < _limitAngle )
+	    	    wallForce = true;
+
+
+		// if(wallForce)
+		// {
+
+		//     const vector<int>& point = _mesh.latticePoint(i);
+		    
+		//     scalar rad = sqrt( (point[0] - 30) * (point[0] - 30)
+		// 		       + (point[1] - 30) * (point[1] - 30)
+		// 		       + (point[2] - 0)  * (point[2] - 0) );
+
+
+		//     if(rad > 8)
+		// 	wallForce=false;
+
+
+
+		// }		
 
 
 	    }
 
 
 
+
+
+
 	    if( wallForce ) {
+
+		if(  _contactAngle.find(i) != _contactAngle.end() ){
+
+		    const vector<int>& point = _mesh.latticePoint(i);
+		    
+		    scalar rad = sqrt( (point[0] - 30) * (point[0] - 30)
+				       + (point[1] - 30) * (point[1] - 30)
+				       + (point[2] - 0)  * (point[2] - 0) );
+
+		    if(rad <= cline[0])
+			cline[0] = rad;
+
+		    if(rad >= cline[1])
+			cline[1] = rad;
+
+		}
 		
 
 
@@ -228,9 +277,13 @@ void singleRangeWithContact::update( scalarField& rho, scalarField& T ) {
 				
 				    // We need density gradients along the boundary
 
-				    scalar gradRho[3] = {0,0,0};
+				    // scalar gradRho[3] = {0,0,0};
 
-				    rho.grad(gradRho, first);
+				    // rho.grad(gradRho, first);
+
+				    scalar gradRho[3] = { 0.5*(rho.at(nb[first][2]) - rho.at(nb[first][1])),
+							  0.5*(rho.at(nb[first][4]) - rho.at(nb[first][3])),
+							  0};	    
 				
 				    scalar gmag = sqrt( gradRho[0]*gradRho[0] + gradRho[1]*gradRho[1] );
 				
@@ -385,6 +438,13 @@ void singleRangeWithContact::update( scalarField& rho, scalarField& T ) {
 
 
 
+
+
+    if(_mesh.pid()==0){
+    	if( Time.write(false) )
+    	    cout << cline[0] << " " << cline[1] << endl;
+    }
+    
 
     // Sync across processors
 
