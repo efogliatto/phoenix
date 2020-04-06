@@ -12,6 +12,7 @@ add_library(forces SHARED
   interaction/singleRangeIntForce.C
   interaction/singleRangeWithContact.C
   interaction/singleRangeMixedIntForce.C
+  interaction/singleRangeMixedWithContact.C
   interaction/intForce.C
   buoyant/buoyantForce.C
   buoyant/fixedDensityBForce.C

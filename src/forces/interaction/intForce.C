@@ -10,9 +10,10 @@ interactionForce* intForce::create (const string& dictName, const string& eqName
 
     // Initialize types
 
-    _ifMapType["singleRange"]             = ifType::singleRange;
-    _ifMapType["singleRangeMixed"]        = ifType::singleRangeMixed;
-    _ifMapType["singleRangeWithContact"]  = ifType::singleRangeContact;
+    _ifMapType["singleRange"]                  = ifType::singleRange;
+    _ifMapType["singleRangeMixed"]             = ifType::singleRangeMixed;
+    _ifMapType["singleRangeWithContact"]       = ifType::singleRangeContact;
+    _ifMapType["singleRangeMixedWithContact"]  = ifType::singleRangeMixedContact;
 
     
     
@@ -51,7 +52,14 @@ interactionForce* intForce::create (const string& dictName, const string& eqName
 
 	    return new singleRangeWithContact(dictName, eqName, mesh, Time);
 
-	    break;	    
+	    break;
+
+
+	case ifType::singleRangeMixedContact:
+
+	    return new singleRangeMixedWithContact(dictName, eqName, mesh, Time);
+
+	    break;	    	    
 	    
 	    
 	}

@@ -1,7 +1,7 @@
 #ifndef INTFORCE_H
 #define INTFORCE_H
 
-#include <singleRangeMixedIntForce.H>
+#include <singleRangeMixedWithContact.H>
 
 #include <singleRangeWithContact.H>
 
@@ -14,7 +14,7 @@ protected:
     
     // Interaction types
 
-    enum class ifType{ singleRange, singleRangeMixed, singleRangeContact };
+    enum class ifType{ singleRange, singleRangeMixed, singleRangeContact, singleRangeMixedContact };
 
     std::map<std::string, ifType> _ifMapType;
 
