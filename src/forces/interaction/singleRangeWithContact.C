@@ -119,11 +119,11 @@ void singleRangeWithContact::update( scalarField& rho, scalarField& T ) {
 
 
 
-    // Temporary
+    // // Temporary
 
-    const timeOptions& Time = rho.time();
+    // const timeOptions& Time = rho.time();
 
-    scalar cline[2] = {100000000, 0};
+    // scalar cline[2] = {100000000, 0};
 
    
 
@@ -149,20 +149,16 @@ void singleRangeWithContact::update( scalarField& rho, scalarField& T ) {
 	    scalar apangle( M_PI );
 
 	    bool wallForce( false );
-
-	    
+    
 
 	    if(      ( _withGeomContact )
 	    	 &&  (  _contactAngle.find(i) != _contactAngle.end() )   ){ 
 		
-	    	// scalar gradRho[3] = {0,0,0};
+	    	scalar gradRho[3] = {0,0,0};
 
 	    	// rho.grad(gradRho, i);
 
-	    	scalar gradRho[3] = { 0.5*(rho.at(nb[i][2]) - rho.at(nb[i][1])),
-	    			      0.5*(rho.at(nb[i][4]) - rho.at(nb[i][3])),
-	    			          // (rho.at(nb[i][6]) - rho.at(i))  };
-	    			      0.5*( -3.0*rho.at(i) + 4.0*rho.at(nb[i][6]) - rho.at(nb[nb[i][6]][6]) )  };				      
+		rho.cartesianGradient(gradRho, i);		
 				
 	    	scalar gmag = sqrt( gradRho[0]*gradRho[0] + gradRho[1]*gradRho[1] );
 
@@ -182,24 +178,6 @@ void singleRangeWithContact::update( scalarField& rho, scalarField& T ) {
 	    	    wallForce = true;
 
 
-		// if(wallForce)
-		// {
-
-		//     const vector<int>& point = _mesh.latticePoint(i);
-		    
-		//     scalar rad = sqrt( (point[0] - 30) * (point[0] - 30)
-		// 		       + (point[1] - 30) * (point[1] - 30)
-		// 		       + (point[2] - 0)  * (point[2] - 0) );
-
-
-		//     if(rad > 8)
-		// 	wallForce=false;
-
-
-
-		// }		
-
-
 	    }
 
 
@@ -209,21 +187,21 @@ void singleRangeWithContact::update( scalarField& rho, scalarField& T ) {
 
 	    if( wallForce ) {
 
-		if(  _contactAngle.find(i) != _contactAngle.end() ){
+		// if(  _contactAngle.find(i) != _contactAngle.end() ){
 
-		    const vector<int>& point = _mesh.latticePoint(i);
+		//     const vector<int>& point = _mesh.latticePoint(i);
 		    
-		    scalar rad = sqrt( (point[0] - 30) * (point[0] - 30)
-				       + (point[1] - 30) * (point[1] - 30)
-				       + (point[2] - 0)  * (point[2] - 0) );
+		//     scalar rad = sqrt( (point[0] - 30) * (point[0] - 30)
+		// 		       + (point[1] - 30) * (point[1] - 30)
+		// 		       + (point[2] - 0)  * (point[2] - 0) );
 
-		    if(rad <= cline[0])
-			cline[0] = rad;
+		//     if(rad <= cline[0])
+		// 	cline[0] = rad;
 
-		    if(rad >= cline[1])
-			cline[1] = rad;
+		//     if(rad >= cline[1])
+		// 	cline[1] = rad;
 
-		}
+		// }
 		
 
 
@@ -440,10 +418,10 @@ void singleRangeWithContact::update( scalarField& rho, scalarField& T ) {
 
 
 
-    if(_mesh.pid()==0){
-    	if( Time.write(false) )
-    	    cout << cline[0] << " " << cline[1] << endl;
-    }
+    // if(_mesh.pid()==0){
+    // 	if( Time.write(false) )
+    // 	    cout << cline[0] << " " << cline[1] << endl;
+    // }
     
 
     // Sync across processors

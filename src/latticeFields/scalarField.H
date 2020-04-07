@@ -47,6 +47,11 @@ public:
 
     const void grad(scalar g[3], const uint& id, const bool inverse = false) const;
 
+    
+    /** Gradient at node. Cartesian scheme */
+    
+    const void cartesianGradient(scalar g[3], const uint& id) const;
+    
 
     /** Laplacian at node */
 
@@ -81,6 +86,7 @@ public:
     /** Update field values from time index (not time value) */
     
     const void update( const uint& t );
+
 
 };
 

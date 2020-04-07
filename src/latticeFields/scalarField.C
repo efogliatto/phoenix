@@ -833,3 +833,371 @@ const void scalarField::update( const uint& t ) {
     
 
 }
+
+
+
+
+
+/** Gradient at node. Cartesian */
+
+const void scalarField::cartesianGradient(scalar g[3], const uint& id) const {
+
+
+    // Lattice constants
+
+    const vector< vector<int> >& nb = mesh.nbArray();
+
+
+    
+    // Initialize gradient
+
+    for( uint j = 0 ; j < 3 ; j++ )
+	g[j] = 0;
+
+    
+
+    // Neighbours
+    int a;
+    int b;
+  
+
+
+    // Compute gradient at node
+
+    switch( mesh.lmodel()->type() ) {
+
+    case latticeModel::latticeType::D2Q9:
+    
+
+    	// X - derivative
+
+    	a = nb[id][3];
+    	b = nb[id][1];
+    
+    	if(  (a != -1)  &&  (b != -1)  ) {
+    
+    	    g[0] = 0.5 * (field[a] - field[b]);
+
+    	}
+
+    	else {
+
+    	    if(  (a == -1)  &&  (b != -1)  ) {
+
+		if(nb[b][1] != -1) {
+
+		    g[0] = 0.5*(-3*field[id] + 4.0*field[b] - field[nb[b][1]] );
+
+		}
+
+		else{		
+    
+		    g[0] = (field[id] - field[b]);
+
+		}
+
+    	    }
+
+    	    else {
+
+    		if(  (a != -1)  &&  (b == -1)  ) {
+
+		    if(nb[a][3] != -1) {
+
+			g[0] = 0.5*(-3*field[id] + 4.0*field[a] - field[nb[a][3]] );
+
+		    }
+
+		    else{		    
+    
+			g[0] = (field[a] - field[id]);
+
+		    }
+
+    		}
+
+    		else {
+
+    		    g[0] = 0;
+
+    		}
+
+    	    }
+
+    	}
+
+
+
+
+    	// Y - derivative
+
+    	a = nb[id][4];
+    	b = nb[id][2];
+    
+    	if(  (a != -1)  &&  (b != -1)  ) {
+    
+    	    g[1] = 0.5 * (field[a] - field[b]);
+
+    	}
+
+    	else {
+
+    	    if(  (a == -1)  &&  (b != -1)  ) {
+
+		if(nb[b][2] != -1) {
+
+		    g[1] = 0.5*(-3*field[id] + 4.0*field[b] - field[nb[b][2]] );
+
+		}
+
+		else {		
+    
+		    g[1] = (field[id] - field[b]);
+
+		}
+
+    	    }
+
+    	    else {
+
+    		if(  (a != -1)  &&  (b == -1)  ) {
+
+		    if(nb[a][4] != -1) {
+
+			g[1] = 0.5*(-3*field[id] + 4.0*field[a] - field[nb[a][4]] );
+
+		    }
+
+		    else {		    
+    
+			g[1] = (field[a] - field[id]);
+
+		    }
+
+    		}
+
+    		else {
+
+    		    g[1] = 0;
+
+    		}
+
+    	    }
+
+    	}
+    
+
+
+	break;
+
+
+	
+    case latticeModel::latticeType::D3Q15:
+	
+
+    	// X - derivative
+
+    	a = nb[id][2];
+    	b = nb[id][1];
+    
+    	if(  (a != -1)  &&  (b != -1)  ) {
+    
+    	    g[0] = 0.5 * (field[a] - field[b]);
+
+    	}
+
+    	else {
+
+
+	    // Neighbour missing at mayor direction
+	    
+    	    if(  (a == -1)  &&  (b != -1)  ) {
+
+		if(nb[b][1] != -1) {
+
+		    g[0] = 0.5*(-3*field[id] + 4.0*field[b] - field[nb[b][1]] );
+
+		}
+
+		else{
+    
+		    g[0] = (field[id] - field[b]);
+
+		}
+
+    	    }
+
+
+	    // Neighbour missing at minor direction	    
+
+    	    else {
+
+    		if(  (a != -1)  &&  (b == -1)  ) {
+
+		    if(nb[a][2] != -1) {
+
+			g[0] = 0.5*(-3*field[id] + 4.0*field[a] - field[nb[a][2]] );
+
+		    }
+
+		    else{		    
+    
+			g[0] = (field[a] - field[id]);
+
+		    }
+
+    		}
+
+    		else {
+
+    		    g[0] = 0;
+
+    		}
+
+    	    }
+
+    	}
+
+
+
+
+    	// Y - derivative
+
+    	a = nb[id][4];
+    	b = nb[id][3];
+    
+    	if(  (a != -1)  &&  (b != -1)  ) {
+    
+    	    g[1] = 0.5 * (field[a] - field[b]);
+
+    	}
+
+    	else {
+
+
+	    // Neighbour missing at mayor direction
+	    
+    	    if(  (a == -1)  &&  (b != -1)  ) {
+
+		if(nb[b][3] != -1) {
+
+		    g[1] = 0.5*(-3*field[id] + 4.0*field[b] - field[nb[b][3]] );
+
+		}
+
+		else {
+    
+		    g[1] = (field[id] - field[b]);
+
+		}
+
+    	    }
+
+    	    else {
+
+    		if(  (a != -1)  &&  (b == -1)  ) {
+
+		    if(nb[a][4] != -1) {
+
+			g[1] = 0.5*(-3*field[id] + 4.0*field[a] - field[nb[a][4]] );
+
+		    }
+
+		    else {		    
+    
+			g[1] = (field[a] - field[id]);
+
+		    }
+
+    		}
+
+    		else {
+
+    		    g[1] = 0;
+
+    		}
+
+    	    }
+
+    	}
+
+
+
+
+	
+    	// Z - derivative
+
+    	a = nb[id][6];
+    	b = nb[id][5];
+    
+    	if(  (a != -1)  &&  (b != -1)  ) {
+    
+    	    g[2] = 0.5 * (field[a] - field[b]);
+
+    	}
+
+    	else {
+
+    	    if(  (a == -1)  &&  (b != -1)  ) {
+
+		if(nb[b][5] != -1) {
+
+		    g[2] = 0.5*(-3*field[id] + 4.0*field[b] - field[nb[b][5]] );
+
+		}
+
+		else {		
+    
+		    g[2] = (field[id] - field[b]);
+
+		}
+
+    	    }
+
+    	    else {
+
+    		if(  (a != -1)  &&  (b == -1)  ) {
+
+		    if(nb[a][6] != -1) {
+
+			g[2] = 0.5*(-3*field[id] + 4.0*field[a] - field[nb[a][6]] );
+
+		    }
+
+		    else {		    
+    
+			g[2] = (field[a] - field[id]);
+
+		    }
+
+    		}
+
+    		else {
+
+    		    g[2] = 0;
+
+    		}
+
+    	    }
+
+    	}
+
+	
+
+	break;
+
+
+
+    default:
+
+	cout << "Finite difference scheme not implemented" << endl << endl;
+
+	break;	
+
+
+	
+
+    }
+    
+    
+}
