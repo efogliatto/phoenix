@@ -99,9 +99,13 @@ void markusHaziHS::update( const scalarField& rho, const scalarField& T, const v
 
 	// Scalar fields gradients
 
-	T.grad(gradT, id);
+	// T.grad(gradT, id);
 
-	rho.grad(gradRho, id);
+	// rho.grad(gradRho, id);
+
+	T.cartesianGradient(gradT, id);
+
+	rho.cartesianGradient(gradRho, id);	
 
 	
 	scalar first(0);

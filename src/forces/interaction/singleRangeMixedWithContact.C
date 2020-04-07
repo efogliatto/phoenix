@@ -149,12 +149,12 @@ void singleRangeMixedWithContact::update( scalarField& rho, scalarField& T ) {
 	    bool wallForce( true );
 
 	    
-
-	    if( _withGeomContact ) {
+	    if(      ( _withGeomContact )
+	    	 &&  (  _contactAngle.find(i) != _contactAngle.end() )   ){ 		
 		
 		scalar gradRho[3] = {0,0,0};
 
-		rho.grad(gradRho, i);
+		rho.cartesianGradient(gradRho, i);
 				
 		scalar gmag = sqrt( gradRho[0]*gradRho[0] + gradRho[1]*gradRho[1] );
 
@@ -234,7 +234,7 @@ void singleRangeMixedWithContact::update( scalarField& rho, scalarField& T ) {
 
 				    scalar gradRho[3] = {0,0,0};
 
-				    rho.grad(gradRho, first);
+				    rho.cartesianGradient(gradRho, first);
 				
 				    scalar gmag = sqrt( gradRho[0]*gradRho[0] + gradRho[1]*gradRho[1] );
 				

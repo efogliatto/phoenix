@@ -255,13 +255,14 @@ void singleRangeWithContact::update( scalarField& rho, scalarField& T ) {
 				
 				    // We need density gradients along the boundary
 
-				    // scalar gradRho[3] = {0,0,0};
+				    scalar gradRho[3] = {0,0,0};
 
-				    // rho.grad(gradRho, first);
+				    rho.cartesianGradient(gradRho, first);
 
-				    scalar gradRho[3] = { 0.5*(rho.at(nb[first][2]) - rho.at(nb[first][1])),
-							  0.5*(rho.at(nb[first][4]) - rho.at(nb[first][3])),
-							  0};	    
+				    // scalar gradRho[3] = { 0.5*(rho.at(nb[first][2]) - rho.at(nb[first][1])),
+				    // 			  0.5*(rho.at(nb[first][4]) - rho.at(nb[first][3])),
+				    // 			  0};
+				    
 				
 				    scalar gmag = sqrt( gradRho[0]*gradRho[0] + gradRho[1]*gradRho[1] );
 				

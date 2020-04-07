@@ -3,7 +3,7 @@
 
 #include <noSurfaceTension.H>
 
-#include <liSurfaceTension.H>
+#include <liSurfaceTensionContact.H>
 
 
 

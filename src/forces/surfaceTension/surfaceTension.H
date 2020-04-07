@@ -23,7 +23,7 @@ public:
     
     /** Surface tension model type */
 
-    enum class stType { none, liST };
+    enum class stType { none, liST, liSTContact };
     
     
     /** Constructor */

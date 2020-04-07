@@ -34,12 +34,24 @@ surfaceTension* stCreator::create( const string& dictName,
 	}
 
 	else {
+	    
+	    if( sttype == "liSurfaceTensionContact" ) {
 
-	    // Default
+		return new liSurfaceTensionContact(dictName, eqName, mesh);
+
+	    }
+
+	    else {
+
+	    
+
+		// Default
     
-	    cout << endl << " [ERROR]  Surface tension type " << sttype << " not available" << endl << endl;
+		cout << endl << " [ERROR]  Surface tension type " << sttype << " not available" << endl << endl;
 
-	    exit(1);
+		exit(1);
+
+	    }
 
 	}
 	

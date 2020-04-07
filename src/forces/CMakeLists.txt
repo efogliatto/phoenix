@@ -28,5 +28,6 @@ add_library(forces SHARED
   surfaceTension/surfaceTension.C
   surfaceTension/noSurfaceTension.C
   surfaceTension/stCreator.C
-  surfaceTension/liSurfaceTension.C  
+  surfaceTension/liSurfaceTension.C
+  surfaceTension/liSurfaceTensionContact.C  
   )

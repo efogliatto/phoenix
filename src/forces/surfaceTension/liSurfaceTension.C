@@ -61,27 +61,13 @@ const void liSurfaceTension::ST( const uint& i, const scalarField& rho, const sc
 
 
 
-
-    // Move over neighbours and check for boundary
-
-    uint noneigh(0);
-
-    for( uint k = 1 ; k < q ; k++ ) {
-
-	if( nb[i][k] == -1 ) {
-	    
-	    noneigh++;
-	    
-	}
-
-    }
-    
+   
     
     if( q == 9 ) {
 
 
 	// Do not use unexisting neighbour
-	if( noneigh == 0 ) {
+	if( _mesh.isOnBoundary(i) == false ) {
 
 
 	    // Q tensor
@@ -189,7 +175,7 @@ const void liSurfaceTension::ST( const uint& i, const scalarField& rho, const sc
 
 
 	    // Do not use unexisting neighbour
-	    if( noneigh == 0 ) {
+	    if( _mesh.isOnBoundary(i) == false ) {
 
 
 		// Q tensor
