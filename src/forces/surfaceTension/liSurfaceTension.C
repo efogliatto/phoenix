@@ -38,7 +38,7 @@ liSurfaceTension::~liSurfaceTension() {}
 
 /** Force at specific node */
 
-const void liSurfaceTension::ST( const uint& i, const scalarField& rho, const scalarField& T, vector<scalar>& C, interactionForce* _fi, const vector<scalar>& Tau ) const {
+void liSurfaceTension::ST( const uint& i, const scalarField& rho, const scalarField& T, vector<scalar>& C, interactionForce* _fi, const vector<scalar>& Tau ) {
 
 
     // Lattice constants

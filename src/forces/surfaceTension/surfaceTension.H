@@ -43,7 +43,7 @@ public:
 
     /** Surface tension at specific node */
 
-    virtual const void ST( const uint& i, const scalarField& rho, const scalarField& T, std::vector<scalar>& C, interactionForce* _fi, const std::vector<scalar>& Tau ) const = 0;
+    virtual void ST( const uint& i, const scalarField& rho, const scalarField& T, std::vector<scalar>& C, interactionForce* _fi, const std::vector<scalar>& Tau ) = 0;
 
 
     /** Model constant value */

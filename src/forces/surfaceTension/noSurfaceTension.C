@@ -23,7 +23,7 @@ noSurfaceTension::~noSurfaceTension() {}
 
 /** Force at specific node */
 
-const void noSurfaceTension::ST( const uint& i, const scalarField& rho, const scalarField& T, vector<scalar>& C, interactionForce* _fi, const std::vector<scalar>& Tau ) const {
+void noSurfaceTension::ST( const uint& i, const scalarField& rho, const scalarField& T, vector<scalar>& C, interactionForce* _fi, const std::vector<scalar>& Tau ) {
 
     const uint q = _mesh.lmodel()->q();
     

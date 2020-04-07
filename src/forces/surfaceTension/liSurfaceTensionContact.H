@@ -39,15 +39,10 @@ public:
 
     ~liSurfaceTensionContact();
 
-
-    /** Surface Tension model */
-
-    const stType sTModel() const { return stType::liSTContact; };
-
     
     /** Additional surface term at specific node */
 
-    const void ST( const uint& i, const scalarField& rho, const scalarField& T, std::vector<scalar>& C, interactionForce* _fi, const std::vector<scalar>& Tau ) const;   
+    void ST( const uint& i, const scalarField& rho, const scalarField& T, std::vector<scalar>& C, interactionForce* _fi, const std::vector<scalar>& Tau );   
 
 };
 
