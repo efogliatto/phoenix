@@ -48,7 +48,17 @@ public:
 
     // Bounding box
 
-    void boundingBox( scalar min[3], scalar max[3] ) const;    
+    void boundingBox( scalar min[3], scalar max[3] ) const;
+
+
+    // Centre
+
+    const std::vector<scalar>& centre() const {return _centre;}
+
+
+    // Radius
+
+    const scalar radius() const {return _radius;} 
 
 };
 

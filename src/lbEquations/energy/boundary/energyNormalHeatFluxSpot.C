@@ -41,15 +41,60 @@ energyNormalHeatFluxSpot::energyNormalHeatFluxSpot( const std::string& eqName,
 
 	    scalar lval = dict.lookUp<scalar>( entry + "/value" );
 
+
+	    // Sphere properties
+	    
+	    const vector<scalar>& centre = sph.centre();
+
+	    const scalar radius = sph.radius();
+	    
+
+	    // Assign over nodes
+	    
 	    for( uint i = 0 ; i < _nodes.size() ; i++ ) {
 
 		uint id = _nodes[i];
 
-		if(  sph.isInside( _mesh.latticePoint(id) )  ) {
+		// if(  sph.isInside( _mesh.latticePoint(id) )  ) {
+
+		//     _grad[i] = lval;
+
+		// }
+
+		
+		// Compute distance to sphere centre
+
+		const vector<int>& point = mesh.latticePoint(id);
+
+		scalar dist = sqrt(  (point[0]-centre[0]) * (point[0]-centre[0])
+		                  +  (point[1]-centre[1]) * (point[1]-centre[1])
+		                  +  (point[2]-centre[2]) * (point[2]-centre[2]) );
+
+
+
+		// Linear interpolation. Piecewise linear
+		
+		if( dist <= (radius - 1) ) {
 
 		    _grad[i] = lval;
 
 		}
+
+		else {
+
+		    if( dist <= (radius + 1) ) {
+
+			scalar a = ( _grad[i] - lval ) / 2.0;
+
+			scalar b = lval - a * (radius-1.0);
+			
+			_grad[i] = a*dist + b;
+
+		    }
+
+		}
+		
+
 		
 
 	    }
