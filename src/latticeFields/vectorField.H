@@ -45,9 +45,14 @@ public:
     const std::vector<scalar>& at(const uint& i) const{ return field[i]; }
 
 
-    /** Vector divergence at node */
+    /** Vector divergence at node. Isotropic scheme */
 
     const scalar div( const uint& id ) const;
+
+
+    /** Vector divergence at node. Cartesian scheme */
+
+    const scalar cartesianDivergence( const uint& id ) const;    
 
     
     /** Synchronization across procceses */

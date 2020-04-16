@@ -619,224 +619,325 @@ const scalar vectorField::div( const uint& id ) const {
 
 
 
-// /** Vector divergence at node */
-// /** Plain old difference schemes */
+/** Vector divergence at node */
+/** Plain old difference schemes */
 
-// const scalar vectorField::div( const uint& id ) const {
+const scalar vectorField::cartesianDivergence( const uint& id ) const {
 
 
-//     // Constants
+    // Constants
 
-//     int a, b;
+    int a, b;
 
-//     scalar d(0);
+    scalar d(0);
 
-//     const vector< vector<int> >& nb = mesh.nbArray();
+    const vector< vector<int> >& nb = mesh.nbArray();
         
 
-//     // D2Q9 model
+    // D2Q9 model
 
-//     if( mesh.lmodel()->name() == "D2Q9" ) {
+    switch( mesh.lmodel()->type() ) {
 
-    
-//     	// X - derivative
+    case latticeModel::latticeType::D2Q9:
 
-//     	a = nb[id][3];
+
+    	// X - derivative
+
+    	a = nb[id][3];
 	
-//     	b = nb[id][1];
-
-	
-//     	if(  (a != -1)  &&  (b != -1)  ) {
-    
-//     	    d += 0.5 * (field[a][0] - field[b][0]);
-
-//     	}
-
-//     	else {
-
-//     	    if(  (a == -1)  &&  (b != -1)  ) {
-    
-//     		d += (field[id][0] - field[b][0]);
-
-//     	    }
-
-//     	    else {
-
-//     		if(  (a != -1)  &&  (b == -1)  ) {
-    
-//     		    d += (field[a][0] - field[id][0]);
-
-//     		}
-
-//     	    }
-
-//     	}
-
-
-
-
-//     	// Y - derivative
-
-//     	a = nb[id][4];
-	
-//     	b = nb[id][2];
+    	b = nb[id][1];
 
 	
-//     	if(  (a != -1)  &&  (b != -1)  ) {
+    	if(  (a != -1)  &&  (b != -1)  ) {
     
-//     	    d += 0.5 * (field[a][1] - field[b][1]);
+    	    d += 0.5 * (field[a][0] - field[b][0]);
 
-//     	}
+    	}
 
-//     	else {
+    	else {
 
-//     	    if(  (a == -1)  &&  (b != -1)  ) {
+    	    if(  (a == -1)  &&  (b != -1)  ) {
+
+		if(nb[b][1] != -1) {
+
+		    d += 0.5*(-3*field[id][0] + 4.0*field[b][0] - field[nb[b][1]][0] );
+
+		}
+
+		else{				
     
-//     		d += (field[id][1] - field[b][1]);
+		    d += (field[id][0] - field[b][0]);
 
-//     	    }
+		}
 
-//     	    else {
+    	    }
 
-//     		if(  (a != -1)  &&  (b == -1)  ) {
+    	    else {
+
+    		if(  (a != -1)  &&  (b == -1)  ) {
+
+		    if(nb[a][3] != -1) {
+
+			d += 0.5*(-3*field[id][0] + 4.0*field[a][0] - field[nb[a][3]][0] );
+
+		    }
+
+		    else{		    		    
     
-//     		    d += (field[a][1] - field[id][1]);
+			d += (field[a][0] - field[id][0]);
 
-//     		}
+		    }
 
-//     	    }
+    		}
 
-//     	} 
+    	    }
+
+    	}
+
+
+
+
+    	// Y - derivative
+
+    	a = nb[id][4];
 	
-
-	
-
-//     }
-
-    
-
-//     else {
-
-// 	if( mesh.lmodel()->name() == "D3Q15") {
-
-
-// 	    // X - derivative
-
-// 	    a = nb[id][2];
-	
-// 	    b = nb[id][1];
-
-	
-// 	    if(  (a != -1)  &&  (b != -1)  ) {
-    
-// 		d += 0.5 * (field[a][0] - field[b][0]);
-
-// 	    }
-
-// 	    else {
-
-// 		if(  (a == -1)  &&  (b != -1)  ) {
-    
-// 		    d += (field[id][0] - field[b][0]);
-
-// 		}
-
-// 		else {
-
-// 		    if(  (a != -1)  &&  (b == -1)  ) {
-    
-// 			d += (field[a][0] - field[id][0]);
-
-// 		    }
-
-// 		}
-
-// 	    }
-
-
-
-
-// 	    // Y - derivative
-
-// 	    a = nb[id][4];
-	
-// 	    b = nb[id][3];
+    	b = nb[id][2];
 
 	
-// 	    if(  (a != -1)  &&  (b != -1)  ) {
+    	if(  (a != -1)  &&  (b != -1)  ) {
     
-// 		d += 0.5 * (field[a][1] - field[b][1]);
+    	    d += 0.5 * (field[a][1] - field[b][1]);
 
-// 	    }
+    	}
 
-// 	    else {
+    	else {
 
-// 		if(  (a == -1)  &&  (b != -1)  ) {
+    	    if(  (a == -1)  &&  (b != -1)  ) {
+
+		if(nb[b][2] != -1) {
+
+		    d += 0.5*(-3*field[id][1] + 4.0*field[b][1] - field[nb[b][2]][1] );
+
+		}
+
+		else {		
+		
+		    d += (field[id][1] - field[b][1]);
+
+		}
+
+    	    }
+
+    	    else {
+
+    		if(  (a != -1)  &&  (b == -1)  ) {
+
+		    if(nb[a][4] != -1) {
+
+			d += 0.5*(-3*field[id][1] + 4.0*field[a][1] - field[nb[a][4]][1] );
+
+		    }
+
+		    else {		    		    
     
-// 		    d += (field[id][1] - field[b][1]);
+			d += (field[a][1] - field[id][1]);
 
-// 		}
+		    }
 
-// 		else {
+    		}
 
-// 		    if(  (a != -1)  &&  (b == -1)  ) {
-    
-// 			d += (field[a][1] - field[id][1]);
+    	    }
 
-// 		    }
+    	} 	
 
-// 		}
-
-// 	    }   
-
-
-
-
-// 	    // Z - derivative
-
-// 	    a = nb[id][6];
 	
-// 	    b = nb[id][5];
+	break;
+
 
 	
-// 	    if(  (a != -1)  &&  (b != -1)  ) {
+
+    case latticeModel::latticeType::D3Q15:
+
+
+	// X - derivative
+
+	a = nb[id][2];
+	
+	b = nb[id][1];
+
+	
+	if(  (a != -1)  &&  (b != -1)  ) {
     
-// 		d += 0.5 * (field[a][2] - field[b][2]);
+	    d += 0.5 * (field[a][0] - field[b][0]);
 
-// 	    }
+	}
 
-// 	    else {
+	else {
 
-// 		if(  (a == -1)  &&  (b != -1)  ) {
+	    if(  (a == -1)  &&  (b != -1)  ) {
+
+		if(nb[b][1] != -1) {
+
+		    d += 0.5*(-3*field[id][0] + 4.0*field[b][0] - field[nb[b][1]][0] );
+
+		}
+
+		else{
+		    
+		    d += (field[id][0] - field[b][0]);
+
+		}
+
+	    }
+
+	    else {
+
+		if(  (a != -1)  &&  (b == -1)  ) {
+
+		    if(nb[a][2] != -1) {
+
+			d += 0.5*(-3*field[id][0] + 4.0*field[a][0] - field[nb[a][2]][0] );
+
+		    }
+
+		    else{			    
     
-// 		    d += (field[id][2] - field[b][2]);
+			d += (field[a][0] - field[id][0]);
 
-// 		}
+		    }
 
-// 		else {
+		}
 
-// 		    if(  (a != -1)  &&  (b == -1)  ) {
+	    }
+
+	}
+
+
+
+
+	// Y - derivative
+
+	a = nb[id][4];
+	
+	b = nb[id][3];
+
+	
+	if(  (a != -1)  &&  (b != -1)  ) {
     
-// 			d += (field[a][2] - field[id][2]);
+	    d += 0.5 * (field[a][1] - field[b][1]);
 
-// 		    }
+	}
 
-// 		}
+	else {
 
-// 	    }   
+	    if(  (a == -1)  &&  (b != -1)  ) {
+
+		if(nb[b][3] != -1) {
+
+		    d += 0.5*(-3*field[id][1] + 4.0*field[b][1] - field[nb[b][3]][1] );
+
+		}
+
+		else {
+    
+		    d += (field[id][1] - field[b][1]);
+
+		}
+
+	    }
+
+	    else {
+
+		if(  (a != -1)  &&  (b == -1)  ) {
+
+		    if(nb[a][4] != -1) {
+
+			d += 0.5*(-3*field[id][1] + 4.0*field[a][1] - field[nb[a][4]][1] );
+
+		    }
+
+		    else {		    
+		        
+			d += (field[a][1] - field[id][1]);
+
+		    }
+
+		}
+
+	    }
+
+	}   
 
 
-// 	}
 
-//     }
+
+	// Z - derivative
+
+	a = nb[id][6];
+	
+	b = nb[id][5];
+
+	
+	if(  (a != -1)  &&  (b != -1)  ) {
+    
+	    d += 0.5 * (field[a][2] - field[b][2]);
+
+	}
+
+	else {
+
+	    if(  (a == -1)  &&  (b != -1)  ) {
+
+		if(nb[b][5] != -1) {
+
+		    d += 0.5*(-3*field[id][2] + 4.0*field[b][2] - field[nb[b][5]][2] );
+
+		}
+
+		else {		
+    
+		    d += (field[id][2] - field[b][2]);
+
+		}
+
+	    }
+
+	    else {
+
+		if(  (a != -1)  &&  (b == -1)  ) {
+
+		    if(nb[a][6] != -1) {
+
+			d += 0.5*(-3*field[id][2] + 4.0*field[a][2] - field[nb[a][6]][2] );
+
+		    }
+
+		    else {		    
+    
+			d += (field[a][2] - field[id][2]);
+
+		    }
+
+		}
+
+	    }
+
+	}
+	    
+	
+	break;
+	
+
+    }
+
 
 
 	
        
 
-//     return d;
+    return d;
 
-// }
+}
 
 
 

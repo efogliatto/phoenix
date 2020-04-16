@@ -119,7 +119,7 @@ void markusHaziHS::update( const scalarField& rho, const scalarField& T, const v
 	
 	// Velocity divergence term
 
-	scalar second = U.div(id) * _T * ( 1.0   -   eos->dp_dT(_rho, _T) / (_rho * _Cv) );
+	scalar second = U.cartesianDivergence(id) * _T * ( 1.0   -   eos->dp_dT(_rho, _T) / (_rho * _Cv) );
 
 
 	
