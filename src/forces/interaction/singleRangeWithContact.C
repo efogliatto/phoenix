@@ -174,7 +174,7 @@ void singleRangeWithContact::update( scalarField& rho, scalarField& T ) {
 	    	}
 
 
-	    	if( apangle < _limitAngle )
+	    	if(  ( apangle < _limitAngle )  &&  ( apangle >= _hysteresis.at(i)[0] )  )
 	    	    wallForce = true;
 
 

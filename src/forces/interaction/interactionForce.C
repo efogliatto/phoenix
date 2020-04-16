@@ -140,9 +140,9 @@ const void interactionForce::readGeometricContact( const string& eqname ) {
 		angle[bd.first] = ang * M_PI / 180.0;
 
 
-		hmin[bd.first] = dict.lookUpOrDefault<scalar>( eqname + "/Forces/Interaction/ContactAngle/" + bd.first + "/Hysteresis/min", 0);
+		hmin[bd.first] = dict.lookUpOrDefault<scalar>( eqname + "/Forces/Interaction/ContactAngle/" + bd.first + "/Hysteresis/min", 0) * M_PI / 180.0;
 
-		hmax[bd.first] = dict.lookUpOrDefault<scalar>( eqname + "/Forces/Interaction/ContactAngle/" + bd.first + "/Hysteresis/max", 0);		
+		hmax[bd.first] = dict.lookUpOrDefault<scalar>( eqname + "/Forces/Interaction/ContactAngle/" + bd.first + "/Hysteresis/max", 0) * M_PI / 180.0;		
 		
 
 	    }
