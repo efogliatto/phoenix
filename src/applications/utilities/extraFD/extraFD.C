@@ -31,7 +31,7 @@ int main( int argc, char **argv ) {
     	cout << "     o-----o-----o  " << endl;
     	cout << "     | -   |   - |  " << endl;
     	cout << "     |   - | -   |  " << endl;
-    	cout << "     o<----o---->o  Pressure calculation" << endl;
+    	cout << "     o<----o---->o  Additional calculations" << endl;
     	cout << "     |   - | -   |  " << endl;
     	cout << "     | -   |   - |  " << endl;
     	cout << "     o-----o-----o  " << endl << endl;
@@ -57,6 +57,17 @@ int main( int argc, char **argv ) {
     scalarField rho( mesh, Time, "rho", IO::MUST_READ, IO::NO_WRITE );
 
     scalarField lapRho( mesh, Time, "lapRho", IO::NO_READ, IO::MUST_WRITE );
+
+
+    // Apparent contact angle
+
+    scalarField contactAngle( mesh, Time, "contactAngle", IO::NO_READ, IO::MUST_WRITE );
+
+    for(uint i = 0 ; i < mesh.local() ; i++)
+	contactAngle[i] = 180;
+
+    contactAngle.sync();
+    
 
 
     // // Macroscopic temperature
@@ -92,7 +103,8 @@ int main( int argc, char **argv ) {
     // pseudoPotEqHandler NS("Navier-Stokes", mesh, Time, f, rho, U, T);
 
 
-    cout << "Computing density laplacian" << endl;
+    if(pid == 0)
+	cout << "Computing density laplacian and apparent contact angle" << endl;
     
     
     // Advance over write times
@@ -116,7 +128,48 @@ int main( int argc, char **argv ) {
 	    lapRho[id] = rho.laplacian(id);
 
 
+
+	// Density laplacian
+	
 	lapRho.sync();
+
+
+
+	// Apparent contact angle
+
+	for( uint i = 0 ; i < mesh.local() ; i++ ) {
+
+	    if( mesh.latticePoint(i)[2] == 0 ) {
+
+		scalar apangle(180);
+		
+		scalar gradRho[3] = {0,0,0};
+
+		rho.cartesianGradient(gradRho, i);
+				
+		scalar gmag = sqrt( gradRho[0]*gradRho[0] + gradRho[1]*gradRho[1] );
+
+
+		// Compute aparent angle
+
+		if(gmag != 0) {
+				
+		    apangle = -gradRho[2]  /  gmag;
+
+		    apangle = M_PI/2 - atan(apangle);
+
+		    apangle = apangle * 180 / M_PI;
+			
+		}
+
+		contactAngle[i] = apangle;
+
+	    }
+
+	}
+
+
+	
 	
 	
 	// T.update(i);
@@ -138,6 +191,8 @@ int main( int argc, char **argv ) {
 	    Time.update();
 
 	lapRho.write();
+
+	contactAngle.write();
 		    
 
     }
