@@ -112,7 +112,7 @@ energyNormalHeatFluxSpot::energyNormalHeatFluxSpot( const std::string& eqName,
     }
     
 
-
+    
     
 }
 

@@ -13,7 +13,17 @@ energyNormalHeatFlux::energyNormalHeatFlux( const std::string& eqName,
 				    const vectorField& U,
 				    pdfField& pdf )
 
-    : energyFixedGradT( eqName, bdName, mesh, rho, T, U, pdf ) {}
+    : energyFixedGradT( eqName, bdName, mesh, rho, T, U, pdf ) {
+
+
+    // Temperature limit
+
+    dictionary dict("start/boundaries");    
+
+    _tempLimit = dict.lookUpOrDefault<scalar>( eqName + "/" + bdName + "/limit", 1000 );        
+    
+
+}
 
 
 
@@ -36,6 +46,11 @@ void energyNormalHeatFlux::update( const energyEquation* eeq ) {
     	// _bndVal[i] = _T.at(_nbid[i]) + _grad / eeq->thermalCond(_nbid[i]);
     	_bndVal[i] = ( 4*_T.at(_nbid[i]) - _T.at(_snbid[i]) + 2*_grad[i] / eeq->thermalCond(_nbid[i]) ) / 3;
 	// cout << _nodes[i] << " " << _nbid[i] << " " << _snbid[i] << "     " << _T.at(_nbid[i]) << " " << _T.at(_snbid[i]) << " " << _bndVal[i] << endl;
+
+
+	if( _bndVal[i] > _tempLimit )
+	    _bndVal[i] = _tempLimit;
+	
     }
     
 

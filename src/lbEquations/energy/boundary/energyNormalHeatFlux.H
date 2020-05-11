@@ -6,6 +6,15 @@
 class energyNormalHeatFlux : public energyFixedGradT {
 
 
+protected:
+
+
+    /** Temperature limit */
+
+    scalar _tempLimit;
+    
+    
+
 public:
 
     

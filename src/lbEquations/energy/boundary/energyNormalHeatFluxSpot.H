@@ -6,8 +6,8 @@
 #include <sphere.H>
 
 
-class energyNormalHeatFluxSpot : public energyNormalHeatFlux {
-
+class energyNormalHeatFluxSpot : public energyNormalHeatFlux { 
+    
 
 public:
 
