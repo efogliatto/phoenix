@@ -79,7 +79,7 @@ int main( int argc, char **argv ) {
 
     // Potential as scalar field
     
-    scalarField phi( mesh, Time, "phi", IO::NO_READ, IO::NO_WRITE );    
+    scalarField phi( mesh, Time, "phi", IO::NO_READ, IO::MUST_WRITE );    
 
 
    
@@ -126,6 +126,8 @@ int main( int argc, char **argv ) {
 	    Time.update();
 
 	p.write();
+
+	phi.write();
 		    
 
     }
