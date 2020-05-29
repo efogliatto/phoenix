@@ -50,6 +50,37 @@ void energyNormalHeatFlux::update( const energyEquation* eeq ) {
 
 	if( _bndVal[i] > _tempLimit )
 	    _bndVal[i] = _tempLimit;
+
+
+	// Correcion explicita de corners
+	
+	if(  ( _mesh.latticePoint(i)[0] <= 3 )  &&  ( _mesh.latticePoint(i)[1] <= 3 )  ) {
+
+	    if( _bndVal[i] > 0.037 )
+		_bndVal[i] = 0.037;
+
+	}
+
+	if(  ( _mesh.latticePoint(i)[0] >= 197 )  &&  ( _mesh.latticePoint(i)[1] <= 3 )  ) {
+
+	    if( _bndVal[i] > 0.037 )
+		_bndVal[i] = 0.037;
+
+	}
+
+	if(  ( _mesh.latticePoint(i)[0] <= 3 )  &&  ( _mesh.latticePoint(i)[1] >= 197 )  ) {
+
+	    if( _bndVal[i] > 0.037 )
+		_bndVal[i] = 0.037;
+
+	}
+
+	if(  ( _mesh.latticePoint(i)[0] >= 197 )  &&  ( _mesh.latticePoint(i)[1] >= 197 )  ) {
+
+	    if( _bndVal[i] > 0.037 )
+		_bndVal[i] = 0.037;
+
+	}	
 	
     }
     
