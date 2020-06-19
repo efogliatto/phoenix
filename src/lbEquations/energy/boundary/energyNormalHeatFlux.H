@@ -13,7 +13,7 @@ protected:
 
     scalar _tempLimit;
     
-    
+    scalar _maxX;
 
 public:
 

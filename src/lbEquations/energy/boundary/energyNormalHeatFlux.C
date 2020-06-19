@@ -21,6 +21,11 @@ energyNormalHeatFlux::energyNormalHeatFlux( const std::string& eqName,
     dictionary dict("start/boundaries");    
 
     _tempLimit = dict.lookUpOrDefault<scalar>( eqName + "/" + bdName + "/limit", 1000 );        
+
+
+    // Look for xmax
+
+    _maxX = dict.lookUpOrDefault<scalar>(eqName + "/" + bdName + "/maxX",297);
     
 
 }
@@ -54,33 +59,40 @@ void energyNormalHeatFlux::update( const energyEquation* eeq ) {
 
 	// Correcion explicita de corners
 	
-	if(  ( _mesh.latticePoint(i)[0] <= 3 )  &&  ( _mesh.latticePoint(i)[1] <= 3 )  ) {
+	if(  ( _mesh.latticePoint(i)[0] <= 3 )  ||  ( _mesh.latticePoint(i)[0] >= _maxX )  ) {
 
-	    if( _bndVal[i] > 0.037 )
-		_bndVal[i] = 0.037;
-
-	}
-
-	if(  ( _mesh.latticePoint(i)[0] >= 197 )  &&  ( _mesh.latticePoint(i)[1] <= 3 )  ) {
-
-	    if( _bndVal[i] > 0.037 )
-		_bndVal[i] = 0.037;
+	    if( _bndVal[i] > 0.035 )
+		_bndVal[i] = 0.035;
 
 	}
 
-	if(  ( _mesh.latticePoint(i)[0] <= 3 )  &&  ( _mesh.latticePoint(i)[1] >= 197 )  ) {
+	if(  ( _mesh.latticePoint(i)[1] <= 3 )  ||  ( _mesh.latticePoint(i)[1] >= _maxX )  ) {
 
-	    if( _bndVal[i] > 0.037 )
-		_bndVal[i] = 0.037;
+	    if( _bndVal[i] > 0.035 )
+		_bndVal[i] = 0.035;
 
 	}
 
-	if(  ( _mesh.latticePoint(i)[0] >= 197 )  &&  ( _mesh.latticePoint(i)[1] >= 197 )  ) {
+	// if(  ( _mesh.latticePoint(i)[0] >= 197 )  &&  ( _mesh.latticePoint(i)[1] <= 3 )  ) {
 
-	    if( _bndVal[i] > 0.037 )
-		_bndVal[i] = 0.037;
+	//     if( _bndVal[i] > 0.037 )
+	// 	_bndVal[i] = 0.037;
 
-	}	
+	// }
+
+	// if(  ( _mesh.latticePoint(i)[0] <= 3 )  &&  ( _mesh.latticePoint(i)[1] >= 197 )  ) {
+
+	//     if( _bndVal[i] > 0.037 )
+	// 	_bndVal[i] = 0.037;
+
+	// }
+
+	// if(  ( _mesh.latticePoint(i)[0] >= 197 )  &&  ( _mesh.latticePoint(i)[1] >= 197 )  ) {
+
+	//     if( _bndVal[i] > 0.037 )
+	// 	_bndVal[i] = 0.037;
+
+	// }	
 	
     }
     
