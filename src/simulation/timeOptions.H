@@ -122,7 +122,12 @@ public:
 
     /** Current time */
 
-    const uint currentTime() const { return current; }    
+    const uint currentTime() const { return current; }
+
+
+    /** Write interval */
+
+    const uint writeInt() const { return writeInterval; }        
 
 
     /** Match time to ensight index */

@@ -352,6 +352,27 @@ const void pdfField::write() const {
     free(auxField);
     
 
+
+
+    // Delete old times
+
+    if( mesh.pid() == 0 ) {
+
+
+	// Avoid deleting first time step
+
+	if( Time.currentTime() > (Time.startTime() + Time.writeInt()) ) {
+
+	    uint rmIdx = Time.timeToIndex( Time.currentTime() ) - 1;
+
+	    for( uint k = 0 ; k < q ; k++ )
+		system( ("rm -rf lattice." + name + to_string(k) + "_" + to_string(rmIdx) ).c_str() );	
+
+	}
+
+    }
+
+    
 }
 
 
