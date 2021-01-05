@@ -24,9 +24,14 @@ T
     internalField
     {
 
-        type uniform;
+	Box
+	{
 
-        value 0.036667;
+            type uniform;
+
+            value 0.036667;
+
+        }
 
     }
 
@@ -39,11 +44,16 @@ rho
     internalField
     {
 
-        type random;
+	InitialBox
+	{
 
-        value 0.083333;
+            type random;
 
-        perturbation 1;
+            value 0.083333;
+
+            perturbation 1;
+
+	}
 
     }
 

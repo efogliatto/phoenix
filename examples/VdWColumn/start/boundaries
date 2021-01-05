@@ -13,14 +13,14 @@ Navier-Stokes
 
     Y0
     {
-        type fixedU;
+        type NEBB;
 
 	value (0 0 0);
     }
 
     Y1
     {
-        type fixedU;
+        type NEBB;
 
 	value (0 0 0);
     }
