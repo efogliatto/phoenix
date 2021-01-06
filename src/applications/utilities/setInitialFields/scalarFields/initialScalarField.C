@@ -8,6 +8,8 @@
 
 #include "linearScalarField.H"
 
+#include "tgProfileScalarField.H"
+
 #include "bgSphereBoundedScalarField.H"
 
 
@@ -24,7 +26,8 @@ initialScalarField::initialScalarField() {
     _spMapType["random"]     = ishape::random;
     _spMapType["bgSphere"]   = ishape::bgsphere;
     _spMapType["uniform"]    = ishape::uniform;
-    _spMapType["linear"]     = ishape::linear;            
+    _spMapType["linear"]     = ishape::linear;
+    _spMapType["tgprofile"]  = ishape::tg;            
 
 }
 
@@ -81,8 +84,15 @@ void initialScalarField::updateField( scalarField& field, const latticeMesh& mes
 
 	    linearScalarField(field, mesh, fname, sptype);
 	    
-    	    break;	    
+    	    break;
+
+
+    	case ishape::tg:
+
+	    tgProfileScalarField(field, mesh, fname, sptype);
 	    
+    	    break;	    	    
+    
 	    
 	    
     	}
