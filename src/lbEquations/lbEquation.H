@@ -12,44 +12,35 @@
 #include <relaxModelCreator.H>
 
 
+/**
+ * @file lbEquation.H
+ * @author Ezequiel O. Fogliatto
+ * @date 07 Jan 2020
+ * @brief Base class for LBE
+ */
+
+/**
+ *  A test class. A more elaborate class description.
+ */
+
 class lbEquation {
 
 protected:
-
-    
-    /** Equation model name */
-
-    std::string ename;
-
-
-    /** Reference to lattice mesh */
-
-    const latticeMesh& mesh;
-
-
-    /** Reference to time options */
-
-    timeOptions& Time;
     
 
-    /** Reference to external pdf field */
+    std::string ename;           /**< Equation model name. */
 
-    pdfField& _pdf;
-
-
-    /** Relaxation coefficients */
-
-    std::vector<scalar> _Tau;
-
+    const latticeMesh& mesh;     /**< Reference to lattice mesh */
     
-    /** Swap auxiliary field */
+    timeOptions& Time;           /**< Reference to time options */
+     
+    pdfField& _pdf;              /**< Reference to external pdf field */  
 
-    std::vector< std::vector<scalar> > _swap;
+    std::vector<scalar> _Tau;    /**< Relaxation coefficients */
+        
+    std::vector< std::vector<scalar> > _swap;  /**< Swap auxiliary field */
 
-
-    /** Relaxation model */
-
-    std::unique_ptr<relaxModel> _relax;
+    std::unique_ptr<relaxModel> _relax;      /**< Relaxation model */
     
 
 
@@ -57,8 +48,13 @@ protected:
 public:
 
 
-    /** Default constructor */
-
+    /** 
+     * Default constructor. 
+     * @param name equation name.
+     * @param mesh_ external reference to mesh object.
+     * @param Time_ external reference to time object.
+     * @param pdf_ external reference to distribution field.
+     */
     lbEquation( const std::string& name,
 		const latticeMesh& mesh_,
 		timeOptions& Time_,
