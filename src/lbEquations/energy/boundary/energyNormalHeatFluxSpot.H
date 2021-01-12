@@ -8,7 +8,7 @@
 
 class energyNormalHeatFluxSpot : public energyNormalHeatFlux { 
     
-
+    
 public:
 
     

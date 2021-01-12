@@ -7,13 +7,11 @@ class energyNormalHeatFlux : public energyFixedGradT {
 
 
 protected:
+   
+    /**< Temperature limit */
 
-
-    /** Temperature limit */
-
-    scalar _tempLimit;
+    std::vector< scalar > _Tlimit;
     
-    scalar _maxX;
 
 public:
 
